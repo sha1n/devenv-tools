@@ -16,6 +16,7 @@ archive_dir_path = tempfile.mkdtemp(prefix="envdmp-")
 
 
 def prepare_env_info_file():
+    log.info("Collecting platform info...")
     info = env.snapshot()
 
     info_file_path = archive_dir_path + "/platform-info.json"
@@ -26,17 +27,26 @@ def prepare_env_info_file():
 
 def prepare_intellij_info_files():
     index = 0
+    log.info("Collecting IntelliJ product(s) info...")
     for file_path in intellij.collect_product_info_files():
         copyfile(file_path, "%s/intellij-product-info-%d.json" % (archive_dir_path, index))
         index += 1
 
+    log.info("Collecting IntelliJ logs...")
     for logs_dir_path in intellij.collect_log_libraries(user_home_dir):
         dir_name = _file_name_from(logs_dir_path)
 
         copytree(logs_dir_path, "%s/logs/%s" % (archive_dir_path, dir_name))
 
+    log.info("Collecting IntelliJ user configuration files...")
+    for config_dir_path in intellij.collect_configurations(user_home_dir):
+        dir_name = _file_name_from(config_dir_path)
+
+        copytree(config_dir_path, "%s/configs/%s" % (archive_dir_path, dir_name))
+
 
 def create_dump_archive():
+    log.info("Preparing tar archive...")
     os.system("tar -czf %s -C %s ." % (tar_file_path, archive_dir_path))
 
 
@@ -44,12 +54,11 @@ def _file_name_from(path):
     path_segs = os.path.split(path)
     return path_segs[len(path_segs) - 1]
 
-log.info("Collecting platform info...")
+
 prepare_env_info_file()
-log.info("Collecting IntelliJ product(s) info...")
 prepare_intellij_info_files()
-log.warn("Preparing tar archive...")
 create_dump_archive()
+
 log.success("Done!")
 
 os.system("open -R %s" % tar_file_path)
