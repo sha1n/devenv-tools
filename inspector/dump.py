@@ -1,6 +1,7 @@
 #!/bin/python
 
 import os
+import platform
 import tempfile
 from datetime import datetime
 
@@ -28,7 +29,9 @@ def _create_dump_archive():
 
 
 def _check_prerequisites():
-    pass
+    os_name = platform.system()
+    if os_name != "Darwin":
+        raise Exception("Unsupported operating system \"%s\"" % os_name)
 
 
 def _safe(*methods):
@@ -61,6 +64,6 @@ try:
     os.system("open -R %s" % tar_file_path)
 
 except Exception as e:
-    log.failure(e.message)
+    log.failure("Failure! %s" % e.message)
     exit(1)
 
