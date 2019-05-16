@@ -15,12 +15,20 @@ archive_dir_path = tempfile.mkdtemp(prefix="envdmp-")
 
 
 def _prepare_env_info_file():
-    log.info("Collecting platform info...")
-    env.create_snapshot_file(archive_dir_path)
+    env_info_target_dir_path = "%s/env" % archive_dir_path
+    os.mkdir(env_info_target_dir_path)
+    user_home_files_dir_path = "%s/bazel" % env_info_target_dir_path
+    os.mkdir(user_home_files_dir_path)
+
+    env.create_snapshot_file(env_info_target_dir_path)
+    env.copy_bazelrc_files(user_home_dir_path, user_home_files_dir_path)
 
 
 def _prepare_intellij_info_files():
-    intellij.collect_intellij_info_files(user_home_dir_path, archive_dir_path)
+    intellij_target_dir_path = "%s/intellij" % archive_dir_path
+    os.mkdir(intellij_target_dir_path)
+
+    intellij.collect_intellij_info_files(user_home_dir_path, intellij_target_dir_path)
 
 
 def _create_dump_archive():
