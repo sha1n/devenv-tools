@@ -1,9 +1,19 @@
 import getpass
-import json
 import multiprocessing
 import socket
 import subprocess
+import json
+
 import oscmd
+
+
+def create_snapshot_file(target_dir_path):
+    info = snapshot()
+
+    info_file_path = target_dir_path + "/platform-info.json"
+
+    with open(info_file_path, 'w') as json_file:
+        json.dump(obj=info, fp=json_file, indent=2)
 
 
 def snapshot():
@@ -39,8 +49,3 @@ def _get_bazel_version():
 def _get_total_ram():
     raw_total_ram = oscmd.cmd_output_for(["sysctl", "hw.memsize"]).split(":")[1].strip()
     return "%dG" % (int(raw_total_ram) / (1024 * 1000 * 1024))
-
-
-# def cmd_output_for(cmd):
-#     output = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-#     return output.communicate()[0].strip()
