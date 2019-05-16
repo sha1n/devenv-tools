@@ -1,64 +1,66 @@
 #!/bin/python
 
-import json
 import os
 import tempfile
 from datetime import datetime
-from shutil import copyfile
-from shutil import copytree
+
+import util.console as log
 import util.env as env
 import util.intellij as intellij
-import util.console as log
 
-user_home_dir = os.path.expanduser("~")
-tar_file_path = user_home_dir + ("/Desktop/envdump-%s.tar.gz" % datetime.now().isoformat())
+user_home_dir_path = os.path.expanduser("~")
+tar_file_path = user_home_dir_path + ("/Desktop/envdump-%s.tar.gz" % datetime.now().isoformat())
 archive_dir_path = tempfile.mkdtemp(prefix="envdmp-")
 
 
-def prepare_env_info_file():
+def _prepare_env_info_file():
     log.info("Collecting platform info...")
-    info = env.snapshot()
-
-    info_file_path = archive_dir_path + "/platform-info.json"
-
-    with open(info_file_path, 'w') as json_file:
-        json.dump(obj=info, fp=json_file, indent=2)
+    env.create_snapshot_file(archive_dir_path)
 
 
-def prepare_intellij_info_files():
-    index = 0
-    log.info("Collecting IntelliJ product(s) info...")
-    for file_path in intellij.collect_product_info_files():
-        copyfile(file_path, "%s/intellij-product-info-%d.json" % (archive_dir_path, index))
-        index += 1
-
-    log.info("Collecting IntelliJ logs...")
-    for logs_dir_path in intellij.collect_log_libraries(user_home_dir):
-        dir_name = _file_name_from(logs_dir_path)
-
-        copytree(logs_dir_path, "%s/logs/%s" % (archive_dir_path, dir_name))
-
-    log.info("Collecting IntelliJ user configuration files...")
-    for config_dir_path in intellij.collect_configurations(user_home_dir):
-        dir_name = _file_name_from(config_dir_path)
-
-        copytree(config_dir_path, "%s/configs/%s" % (archive_dir_path, dir_name))
+def _prepare_intellij_info_files():
+    intellij.collect_intellij_info_files(user_home_dir_path, archive_dir_path)
 
 
-def create_dump_archive():
+def _create_dump_archive():
     log.info("Preparing tar archive...")
     os.system("tar -czf %s -C %s ." % (tar_file_path, archive_dir_path))
 
 
-def _file_name_from(path):
-    path_segs = os.path.split(path)
-    return path_segs[len(path_segs) - 1]
+def _check_prerequisites():
+    pass
 
 
-prepare_env_info_file()
-prepare_intellij_info_files()
-create_dump_archive()
+def _safe(*methods):
+    count = len(methods)
 
-log.success("Done!")
+    for method in methods:
+        try:
+            method()
+        except Exception as error:
+            count -= 1
+            log.error(error.message)
 
-os.system("open -R %s" % tar_file_path)
+    if count == 0:
+        raise Exception("All data collection tasks have failed...")
+
+
+try:
+
+    _check_prerequisites()
+
+    _safe(
+        _prepare_env_info_file,
+        _prepare_intellij_info_files,
+        )
+
+    _create_dump_archive()
+
+    log.success("Done!")
+
+    os.system("open -R %s" % tar_file_path)
+
+except Exception as e:
+    log.failure(e.message)
+    exit(1)
+
