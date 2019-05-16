@@ -3,14 +3,15 @@ import console as log
 from shutil import copyfile
 from shutil import copytree
 import os
+import json
 
 
 def collect_intellij_info_files(user_home_dir_path, archive_dir_path):
-    index = 0
     log.info("Collecting IntelliJ product(s) info...")
     for file_path in _collect_product_info_files():
-        copyfile(file_path, "%s/intellij-product-info-%d.json" % (archive_dir_path, index))
-        index += 1
+        version = _read_json_property(file_path, "version")
+        code = _read_json_property(file_path, "productCode")
+        copyfile(file_path, "%s/intellij-%s-%s-product-info.json" % (archive_dir_path, code, version))
 
     log.info("Collecting IntelliJ logs...")
     for logs_dir_path in _collect_log_libraries(user_home_dir_path):
@@ -49,3 +50,9 @@ def _collect_configurations(user_home):
 def _file_name_from(path):
     path_segments = os.path.split(path)
     return path_segments[len(path_segments) - 1]
+
+
+def _read_json_property(file_path, property_name):
+    with open(file_path) as json_file:
+        data = json.load(json_file)
+        return data[property_name]
