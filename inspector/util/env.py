@@ -1,8 +1,9 @@
 import getpass
 import multiprocessing
-import socket
 import subprocess
 import json
+import platform
+from datetime import datetime
 
 import oscmd
 
@@ -18,10 +19,12 @@ def create_snapshot_file(target_dir_path):
 
 def snapshot():
     info = {
+        "timestamp_utc": datetime.utcnow().isoformat(),
         "user": getpass.getuser(),
-        "hostname": socket.gethostname(),
+        "hostname": platform.node(),
         "cpu_count": multiprocessing.cpu_count(),
         "total_ram": _get_total_ram(),
+        "os": {},
         "disk": {},
     }
 
@@ -32,8 +35,13 @@ def snapshot():
     info["disk"]["total"] = disk_line[1]
     info["disk"]["used"] = disk_line[2]
     info["disk"]["free"] = disk_line[3]
-    info["os_spec"] = _get_os_spec()
+
+    info["os"]["name"] = platform.system()
+    info["os"]["version"] = platform.mac_ver()[0]
+
     info["bazel_version"] = _get_bazel_version()
+
+    info["python_version"] = platform.python_version()
 
     return info
 
