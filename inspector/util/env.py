@@ -45,6 +45,7 @@ def snapshot():
         "os": {},
         "disk": {},
         "bazel": {},
+        "python": {},
     }
 
     output = subprocess.Popen(["df", "-H", "/"],
@@ -62,7 +63,7 @@ def snapshot():
     info["bazel"]["real_path"] = _get_bazel_real_path()
     info["bazel"]["version"] = _get_bazel_version()
 
-    info["python_version"] = platform.python_version()
+    info["python"]["version"] = platform.python_version()
 
     return info
 
