@@ -50,7 +50,7 @@ def _safe(*methods):
             method()
         except Exception as error:
             count -= 1
-            log.error(error.message)
+            log.error(error)
 
     if count == 0:
         raise Exception("All data collection tasks have failed...")
