@@ -7,19 +7,19 @@ from datetime import datetime
 import shutil
 from os import path
 
-import oscmd
-import console as log
+from util import console as log
+from util import oscmd as oscmd
 
 
 def create_snapshot_file(target_dir_path):
     log.info("Collecting platform info...")
 
-    info = snapshot()
+    data = snapshot()
 
-    info_file_path = target_dir_path + "/platform-info.json"
+    info_file_path = target_dir_path + "/platform-data.json"
 
     with open(info_file_path, 'w') as json_file:
-        json.dump(obj=info, fp=json_file, indent=2)
+        json.dump(obj=data, fp=json_file, indent=2)
 
 
 def copy_bazelrc_files(user_home_dir_path, target_dir_path):
@@ -36,7 +36,7 @@ def copy_bazelrc_files(user_home_dir_path, target_dir_path):
 
 
 def snapshot():
-    info = {
+    data = {
         "timestamp_utc": datetime.utcnow().isoformat(),
         "user": getpass.getuser(),
         "hostname": platform.node(),
@@ -51,21 +51,21 @@ def snapshot():
     output = subprocess.Popen(["df", "-H", "/"],
                               stdout=subprocess.PIPE)
     disk_line = output.communicate()[0].strip().split("\n")[1].split()
-    info["disk"]["filesystem"] = disk_line[0]
-    info["disk"]["total"] = disk_line[1]
-    info["disk"]["used"] = disk_line[2]
-    info["disk"]["free"] = disk_line[3]
+    data["disk"]["filesystem"] = disk_line[0]
+    data["disk"]["total"] = disk_line[1]
+    data["disk"]["used"] = disk_line[2]
+    data["disk"]["free"] = disk_line[3]
 
-    info["os"]["name"] = platform.system()
-    info["os"]["version"] = platform.mac_ver()[0]
+    data["os"]["name"] = platform.system()
+    data["os"]["version"] = platform.mac_ver()[0]
 
-    info["bazel"]["path"] = _get_bazel_path()
-    info["bazel"]["real_path"] = _get_bazel_real_path()
-    info["bazel"]["version"] = _get_bazel_version()
+    data["bazel"]["path"] = _get_bazel_path()
+    data["bazel"]["real_path"] = _get_bazel_real_path()
+    data["bazel"]["version"] = _get_bazel_version()
 
-    info["python"]["version"] = platform.python_version()
+    data["python"]["version"] = platform.python_version()
 
-    return info
+    return data
 
 
 def _get_os_spec():

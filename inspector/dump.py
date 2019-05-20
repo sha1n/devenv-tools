@@ -1,13 +1,11 @@
 #!/bin/python
 
-import os
-import platform
-import tempfile
+import os, platform, tempfile
 from datetime import datetime
 
 import util.console as log
-import util.env as env
-import util.intellij as intellij
+import collectors.env as env
+import collectors.intellij as intellij
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
@@ -53,9 +51,9 @@ def _safe(*methods):
     for method in methods:
         try:
             method()
-        except Exception as error:
+        except Exception as err:
             count -= 1
-            log.error(error)
+            log.error(err)
 
     if count == 0:
         raise Exception("All data collection tasks have failed...")

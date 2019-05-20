@@ -1,10 +1,11 @@
-import oscmd
-import console as log
 from shutil import copyfile
 from shutil import copytree
 import os
 import json
 import time
+
+from util import console as log
+from util import oscmd as oscmd
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 

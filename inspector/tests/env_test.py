@@ -1,5 +1,5 @@
 import unittest
-import inspector.util.env as env
+import inspector.collectors.env as env
 
 
 class TestEnv(unittest.TestCase):
