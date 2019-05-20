@@ -5,7 +5,7 @@ import json
 import platform
 from datetime import datetime
 import shutil
-from os import path
+import os
 
 from util import console as log
 from util import oscmd as oscmd
@@ -30,27 +30,35 @@ def copy_bazelrc_files(user_home_dir_path, target_dir_path):
     bazelrc_file_path = "%s/.bazelrc" % user_home_dir_path
     bazelenv_file_path = "%s/.bazelenv" % user_home_dir_path
 
-    if path.exists(bazelrc_file_path):
+    if os.path.exists(bazelrc_file_path):
         shutil.copyfile(bazelrc_file_path, "%s/user_home.bazelrc" % target_dir_path)
     else:
         log.info("%s file not found." % bazelrc_file_path)
 
-    if path.exists(bazelenv_file_path):
+    if os.path.exists(bazelenv_file_path):
         shutil.copyfile(bazelenv_file_path, "%s/user_home.bazelenv" % target_dir_path)
     else:
         log.warn("%s file expected but not found." % bazelenv_file_path)
 
 
 @log.timeit_if(more_than_sec=3)
-def copy_docker4mac_files(user_home_dir_path, target_dir_path):
+def copy_docker_config_files(user_home_dir_path, target_dir_path):
     log.info("Collecting Docker For Mac config files...")
 
-    settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % user_home_dir_path
+    def copy_file(file_path):
+        if os.path.exists(file_path):
+            name = _file_name_from(file_path)
+            shutil.copyfile(file_path, "%s/%s" % (target_dir_path, name))
+        else:
+            log.warn("%s file expected but not found." % file_path)
 
-    if path.exists(settings_file_path):
-        shutil.copyfile(settings_file_path, "%s/settings.json" % target_dir_path)
-    else:
-        log.warn("%s file expected but not found." % settings_file_path)
+    settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % user_home_dir_path
+    docker_config_file_path = "%s/.docker/config.json" % user_home_dir_path
+    docker_daemon_file_path = "%s/.docker/daemon.json" % user_home_dir_path
+
+    copy_file(settings_file_path)
+    copy_file(docker_config_file_path)
+    copy_file(docker_daemon_file_path)
 
 
 @log.timeit_if(more_than_sec=5)
@@ -109,3 +117,8 @@ def _get_bazel_real_path():
 def _get_total_ram():
     raw_total_ram = oscmd.cmd_output_for(["sysctl", "hw.memsize"]).split(":")[1].strip()
     return "%dG" % (int(raw_total_ram) / (1024 * 1000 * 1024))
+
+
+def _file_name_from(path):
+    path_segments = os.path.split(path)
+    return path_segments[len(path_segments) - 1]
