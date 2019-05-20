@@ -29,10 +29,25 @@ def copy_bazelrc_files(user_home_dir_path, target_dir_path):
     bazelenv_file_path = "%s/.bazelenv" % user_home_dir_path
 
     if path.exists(bazelrc_file_path):
-        shutil.copyfile("%s/.bazelrc" % user_home_dir_path, "%s/user_home.bazelrc" % target_dir_path)
+        shutil.copyfile(bazelrc_file_path, "%s/user_home.bazelrc" % target_dir_path)
+    else:
+        log.info("%s file not found." % bazelrc_file_path)
 
     if path.exists(bazelenv_file_path):
-        shutil.copyfile("%s/.bazelrc" % user_home_dir_path, "%s/user_home.bazelenv" % target_dir_path)
+        shutil.copyfile(bazelenv_file_path, "%s/user_home.bazelenv" % target_dir_path)
+    else:
+        log.warn("%s file expected but not found." % bazelenv_file_path)
+
+
+def copy_docker4mac_files(user_home_dir_path, target_dir_path):
+    log.info("Collecting Docker For Mac config files...")
+
+    settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % user_home_dir_path
+
+    if path.exists(settings_file_path):
+        shutil.copyfile(settings_file_path, "%s/settings.json" % target_dir_path)
+    else:
+        log.warn("%s file expected but not found." % settings_file_path)
 
 
 def snapshot():

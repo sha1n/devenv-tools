@@ -16,11 +16,16 @@ archive_content_dir_path = tempfile.mkdtemp(prefix="envdmp-")
 def _prepare_env_info_file():
     env_info_target_dir_path = "%s/env" % archive_content_dir_path
     os.mkdir(env_info_target_dir_path)
-    user_home_files_dir_path = "%s/bazel" % env_info_target_dir_path
-    os.mkdir(user_home_files_dir_path)
+
+    user_home_bazel_files_dir_path = "%s/bazel" % env_info_target_dir_path
+    os.mkdir(user_home_bazel_files_dir_path)
+
+    user_home_d4m_files_dir_path = "%s/d4m" % env_info_target_dir_path
+    os.mkdir(user_home_d4m_files_dir_path)
 
     env.create_snapshot_file(env_info_target_dir_path)
-    env.copy_bazelrc_files(user_home_dir_path, user_home_files_dir_path)
+    env.copy_bazelrc_files(user_home_dir_path, user_home_bazel_files_dir_path)
+    env.copy_docker4mac_files(user_home_dir_path, user_home_d4m_files_dir_path)
 
 
 def _prepare_intellij_info_files():
