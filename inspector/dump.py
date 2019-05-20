@@ -47,7 +47,7 @@ def _create_dump_archive():
 def _check_prerequisites():
     os_name = platform.system()
     if os_name != "Darwin":
-        raise Exception("Unsupported operating system \"%s\"" % os_name)
+        raise Exception("Unsupported operating system '%s'" % os_name)
 
 
 def _safe(*methods):
@@ -80,8 +80,8 @@ def dump():
 
         os.system("open -R %s" % tar_file_path)
 
-    except Exception as e:
-        log.failure("Failure! %s" % e.message)
+    except Exception as err:
+        log.failure("Failure! %s" % err)
         exit(1)
 
 
