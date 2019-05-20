@@ -64,21 +64,25 @@ def _safe(*methods):
         raise Exception("All data collection tasks have failed...")
 
 
-try:
+def dump():
+    try:
 
-    _check_prerequisites()
+        _check_prerequisites()
 
-    _safe(
-        _prepare_env_info_file,
-        _prepare_intellij_info_files,
+        _safe(
+            _prepare_env_info_file,
+            _prepare_intellij_info_files,
         )
 
-    _create_dump_archive()
+        _create_dump_archive()
 
-    log.success("Done!")
+        log.success("Done!")
 
-    os.system("open -R %s" % tar_file_path)
+        os.system("open -R %s" % tar_file_path)
 
-except Exception as e:
-    log.failure("Failure! %s" % e.message)
-    exit(1)
+    except Exception as e:
+        log.failure("Failure! %s" % e.message)
+        exit(1)
+
+
+dump()

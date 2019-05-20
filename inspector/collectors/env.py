@@ -11,6 +11,7 @@ from util import console as log
 from util import oscmd as oscmd
 
 
+@log.timeit_if(more_than_sec=5)
 def create_snapshot_file(target_dir_path):
     log.info("Collecting platform info...")
 
@@ -22,6 +23,7 @@ def create_snapshot_file(target_dir_path):
         json.dump(obj=data, fp=json_file, indent=2)
 
 
+@log.timeit_if(more_than_sec=3)
 def copy_bazelrc_files(user_home_dir_path, target_dir_path):
     log.info("Collecting bazel config files...")
 
@@ -39,6 +41,7 @@ def copy_bazelrc_files(user_home_dir_path, target_dir_path):
         log.warn("%s file expected but not found." % bazelenv_file_path)
 
 
+@log.timeit_if(more_than_sec=3)
 def copy_docker4mac_files(user_home_dir_path, target_dir_path):
     log.info("Collecting Docker For Mac config files...")
 
@@ -50,6 +53,7 @@ def copy_docker4mac_files(user_home_dir_path, target_dir_path):
         log.warn("%s file expected but not found." % settings_file_path)
 
 
+@log.timeit_if(more_than_sec=5)
 def snapshot():
     data = {
         "timestamp_utc": datetime.utcnow().isoformat(),
@@ -79,6 +83,9 @@ def snapshot():
     data["bazel"]["version"] = _get_bazel_version()
 
     data["python"]["version"] = platform.python_version()
+    # data["python"]["major"] = platform.python_version_tuple()[0]
+    # data["python"]["minor"] = platform.python_version_tuple()[1]
+    # data["python"]["patch"] = platform.python_version_tuple()[2]
 
     return data
 
