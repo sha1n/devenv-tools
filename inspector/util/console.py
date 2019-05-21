@@ -2,28 +2,44 @@ import functools
 from time import time
 
 
-def info(text):
-    print("\033[1;37;40mINFO\033[0;0m: %s" % text)
+_ERASE_LINE = '\x1b[2K'
 
 
-def warn(text):
-    print("\033[1;33;40mWARN\033[0;0m: %s" % text)
+class Console:
+    def input(self, prompt):
+        pass
 
+    @staticmethod
+    def log(message):
+        print("\033[1;37;40mINFO\033[0;0m: {}".format(message), end="\r")
 
-def error(text):
-    print("\033[1;31;40mERRO\033[0;0m: %s" % text)
+    @staticmethod
+    def debug(message):
+        print("{}\033[0;37;40mDEBG\033[0;0m: {}\033[0;0m".format(_ERASE_LINE, message))
 
+    @staticmethod
+    def info(message):
+        print("{}\033[1;37;40mINFO\033[0;0m: {}".format(_ERASE_LINE, message))
 
-def success(text):
-    print("\033[1;37;40mINFO\033[0;0m: \033[0;30;42m%s\033[0;0m" % text)
+    @staticmethod
+    def warn(message):
+        print("{}\033[1;33;40mWARN\033[0;0m: {}".format(_ERASE_LINE, message))
 
+    @staticmethod
+    def error(message):
+        print("{}\033[1;31;40mERRO\033[0;0m: {}".format(_ERASE_LINE, message))
 
-def failure(text):
-    print("\033[1;31;40mERRO\033[0;0m: \033[0;37;41m%s\033[0;0m" % text)
+    @staticmethod
+    def success(message):
+        print("{}\033[1;37;40mINFO\033[0;0m: \033[0;30;42m{}\033[0;0m".format(_ERASE_LINE, message))
+
+    @staticmethod
+    def failure(message):
+        print("{}\033[1;31;40mERRO\033[0;0m: \033[0;37;41m{}\033[0;0m".format(_ERASE_LINE, message))
 
 
 def _debug_time(text):
-    print("\033[0;37;40mDEBG\033[0;0m: %s\033[0;0m" % text)
+    print("\n\033[0;37;40mDEBG\033[0;0m: %s\033[0;0m" % text)
 
 
 def timeit_if(more_than_sec=0, alt_text=None):
@@ -41,9 +57,9 @@ def timeit_if(more_than_sec=0, alt_text=None):
                     msg = "Function '%s' from [%s] took %f secs" % (func.__name__, module, run_time)
 
                 if more_than_sec != 0:
-                    _debug_time(msg)
+                    Console.debug(msg)
                 else:
-                    info(msg)
+                    Console.info(msg)
 
             return value
 

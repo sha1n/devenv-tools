@@ -8,7 +8,7 @@ from datetime import datetime
 
 import collectors.env as env
 import collectors.intellij as intellij
-import util.console as log
+from util.console import Console
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
@@ -39,7 +39,7 @@ def _prepare_intellij_info_files():
 
 
 def _create_dump_archive():
-    log.info("Preparing tar archive...")
+    Console.info("Preparing tar archive...")
 
     os.makedirs(archive_target_dir_path, exist_ok=True)
 
@@ -48,6 +48,7 @@ def _create_dump_archive():
 
 
 def _check_prerequisites():
+    Console.log("Checking prerequisites...")
     os_name = platform.system()
     if os_name != "Darwin":
         raise Exception("Unsupported operating system '%s'" % os_name)
@@ -61,7 +62,7 @@ def _safe(*methods):
             method()
         except Exception as err:
             count -= 1
-            log.error(err)
+            Console.error(err)
 
     if count == 0:
         raise Exception("All data collection tasks have failed...")
@@ -79,12 +80,12 @@ def dump():
 
         _create_dump_archive()
 
-        log.success("Done!")
+        Console.success("Done!")
 
         os.system("open -R %s" % tar_file_path)
 
     except Exception as err:
-        log.failure("Failure! %s" % err)
+        Console.failure("Failure! %s" % err)
         exit(1)
 
 

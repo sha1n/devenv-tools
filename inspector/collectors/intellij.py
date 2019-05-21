@@ -5,38 +5,41 @@ from os import listdir
 from shutil import copyfile
 from shutil import copytree
 
-from util import console as log
 from util import file
+from util.console import Console
+from util.console import timeit_if
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 
 
-@log.timeit_if(more_than_sec=20)
+@timeit_if(more_than_sec=20)
 def collect_intellij_info_files(user_home_dir_path, target_dir_path):
-    log.info("Collecting IntelliJ product(s) info...")
+    Console.info("Collecting IntelliJ product(s) info...")
     for file_path in _collect_product_info_files():
         version = _read_json_property(file_path, "version")
         code = _read_json_property(file_path, "productCode")
-        copyfile(file_path, "%s/intellij-%s-%s-product-info.json" % (target_dir_path, code, version))
+        copyfile(file_path, "{}/intellij-{}-{}-product-info.json".format(target_dir_path, code, version))
 
-    log.info("\t- Collecting logs... (files older than two weeks will be ignored)")
+    Console.log("Collecting IntelliJ logs... (files older than two weeks will be ignored)")
     for logs_dir_path in _collect_log_libraries(user_home_dir_path):
         dir_name = file.name_from(logs_dir_path)
 
+        Console.log("Copying {}...".format(logs_dir_path))
         copytree(
             src=logs_dir_path,
-            dst="%s/logs/%s" % (target_dir_path, dir_name),
+            dst="{}/logs/{}".format(target_dir_path, dir_name),
             ignore=_ignore_files_mtime_gt(two_week_sec)
         )
 
-    log.info("\t- Collecting configuration files...")
+    Console.log("Collecting IntelliJ configuration files...")
     for config_dir_path in _collect_configurations(user_home_dir_path):
         dir_name = file.name_from(config_dir_path)
 
-        copytree(config_dir_path, "%s/configs/%s" % (target_dir_path, dir_name))
+        Console.log("Copying {}...".format(config_dir_path))
+        copytree(config_dir_path, "{}/configs/{}".format(target_dir_path, dir_name))
 
 
-@log.timeit_if(more_than_sec=3)
+@timeit_if(more_than_sec=3)
 def _collect_product_info_files():
     candidates = listdir("/Applications")
 
@@ -46,21 +49,21 @@ def _collect_product_info_files():
     )
 
 
-@log.timeit_if(more_than_sec=10)
+@timeit_if(more_than_sec=10)
 def _collect_log_libraries(user_home):
-    candidates = listdir("%s/Library/Logs" % user_home)
+    candidates = listdir("{}/Library/Logs".format(user_home))
 
     return (
-        "%s/Library/Logs/%s" % (user_home, ij_logs_dir)
+        "{}/Library/Logs/{}".format(user_home, ij_logs_dir)
         for ij_logs_dir in candidates if ij_logs_dir.find("Idea") != -1
     )
 
 
 def _collect_configurations(user_home):
-    candidates = listdir("%s/Library/Preferences" % user_home)
+    candidates = listdir("{}/Library/Preferences".format(user_home))
 
     return (
-        "%s/Library/Preferences/%s" % (user_home, ij_prefs_dir)
+        "{}/Library/Preferences/{}".format(user_home, ij_prefs_dir)
         for ij_prefs_dir in candidates if ij_prefs_dir.find("Idea") != -1
     )
 
@@ -73,6 +76,6 @@ def _read_json_property(file_path, property_name):
 
 def _ignore_files_mtime_gt(interval_sec):
     def ignore(path, names):
-        return (name for name in names if os.path.getmtime("%s/%s" % (path, name)) < time.time() - interval_sec)
+        return (name for name in names if os.path.getmtime("{}/{}".format(path, name)) < time.time() - interval_sec)
 
     return ignore

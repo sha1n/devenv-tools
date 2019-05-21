@@ -1,6 +1,7 @@
 import os
 import shutil
-import util.console as log
+
+from util.console import Console
 
 
 def name_from(path):
@@ -13,4 +14,4 @@ def try_copy_file(file_path, target_dir_path, target_name_prefix=""):
         name = name_from(file_path)
         shutil.copyfile(file_path, "%s/%s%s" % (target_dir_path, target_name_prefix, name))
     else:
-        log.warn("%s file expected but not found." % file_path)
+        Console.warn("%s file expected but not found." % file_path)

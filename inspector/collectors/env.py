@@ -5,13 +5,14 @@ import platform
 from datetime import datetime
 
 from util import cmd
-from util import console as log
 from util import file
+from util.console import Console
+from util.console import timeit_if
 
 
-@log.timeit_if(more_than_sec=5)
+@timeit_if(more_than_sec=5)
 def create_snapshot_file(target_dir_path):
-    log.info("Collecting platform info...")
+    Console.info("Collecting platform info...")
 
     data = snapshot()
 
@@ -21,9 +22,9 @@ def create_snapshot_file(target_dir_path):
         json.dump(obj=data, fp=json_file, indent=2)
 
 
-@log.timeit_if(more_than_sec=3)
+@timeit_if(more_than_sec=3)
 def copy_bazelrc_files(user_home_dir_path, target_dir_path):
-    log.info("Collecting bazel config files...")
+    Console.info("Collecting bazel config files...")
 
     bazelrc_file_path = "%s/.bazelrc" % user_home_dir_path
     bazelenv_file_path = "%s/.bazelenv" % user_home_dir_path
@@ -32,9 +33,9 @@ def copy_bazelrc_files(user_home_dir_path, target_dir_path):
     file.try_copy_file(bazelenv_file_path, target_dir_path, target_name_prefix="user_home")
 
 
-@log.timeit_if(more_than_sec=3)
+@timeit_if(more_than_sec=3)
 def copy_docker_config_files(user_home_dir_path, target_dir_path):
-    log.info("Collecting Docker For Mac config files...")
+    Console.info("Collecting Docker For Mac config files...")
 
     settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % user_home_dir_path
     docker_config_file_path = "%s/.docker/config.json" % user_home_dir_path
@@ -45,7 +46,7 @@ def copy_docker_config_files(user_home_dir_path, target_dir_path):
     file.try_copy_file(docker_daemon_file_path, target_dir_path)
 
 
-@log.timeit_if(more_than_sec=5)
+@timeit_if(more_than_sec=5)
 def snapshot():
     data = {
         "timestamp_utc": datetime.utcnow().isoformat(),
