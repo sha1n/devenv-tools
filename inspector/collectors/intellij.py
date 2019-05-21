@@ -39,24 +39,30 @@ def collect_intellij_info_files(user_home_dir_path, target_dir_path):
 @log.timeit_if(more_than_sec=3)
 def _collect_product_info_files():
     candidates = cmd.execute(["ls", "/Applications"]).split("\n")
-    intellij_dirs = filter(lambda d: d.find("IntelliJ") == 0, candidates)
 
-    return map(lambda d: "/Applications/" + d + "/Contents/Resources/product-info.json", intellij_dirs)
+    return (
+        "/Applications/" + ij_app_dir + "/Contents/Resources/product-info.json"
+        for ij_app_dir in candidates if ij_app_dir.find("IntelliJ") == 0
+    )
 
 
 @log.timeit_if(more_than_sec=10)
 def _collect_log_libraries(user_home):
     candidates = cmd.execute(["ls", "%s/Library/Logs" % user_home]).split("\n")
-    intellij_dirs = filter(lambda d: d.find("Idea") != -1, candidates)
 
-    return map(lambda d: "%s/Library/Logs/%s" % (user_home, d), intellij_dirs)
+    return (
+        "%s/Library/Logs/%s" % (user_home, ij_logs_dir)
+        for ij_logs_dir in candidates if ij_logs_dir.find("Idea") != -1
+    )
 
 
 def _collect_configurations(user_home):
     candidates = cmd.execute(["ls", "%s/Library/Preferences" % user_home]).split("\n")
-    intellij_dirs = filter(lambda d: d.find("Idea") != -1, candidates)
 
-    return map(lambda d: "%s/Library/Preferences/%s" % (user_home, d), intellij_dirs)
+    return (
+        "%s/Library/Preferences/%s" % (user_home, ij_prefs_dir)
+        for ij_prefs_dir in candidates if ij_prefs_dir.find("Idea") != -1
+    )
 
 
 def _read_json_property(file_path, property_name):
@@ -67,9 +73,6 @@ def _read_json_property(file_path, property_name):
 
 def _ignore_files_mtime_gt(interval_sec):
     def ignore(path, names):
-        return filter(
-            lambda name: os.path.getmtime("%s/%s" % (path, name)) < time.time() - interval_sec,
-            names
-        )
+        return (name for name in names if os.path.getmtime("%s/%s" % (path, name)) < time.time() - interval_sec)
 
     return ignore
