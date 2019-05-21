@@ -8,6 +8,7 @@ if [[ ! "$TMP_DIR" || ! -d "$TMP_DIR" ]]; then
 fi
 
 function onexit() {
+  echo
   echo "Cleaning up..."
   rm -rf "$TMP_DIR"
 }
@@ -17,7 +18,9 @@ trap onexit EXIT
 echo "Deploying program code into '$TMP_DIR'..."
 echo
 cd "$TMP_DIR"
-git clone git@github.com:sha1n/macos-devenv-dump-poc.git "dump"
+mkdir ./dump
+curl -L https://github.com/sha1n/macos-devenv-dump-poc/tarball/master | tar zx -C ./dump --strip-components=1
+
 cd "dump"
 
 echo

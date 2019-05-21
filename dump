@@ -1,12 +1,35 @@
 #!/usr/bin/env bash
 
-PYTHON_REQUIRED_MAJOR="2"
-PYTHON_ACTUAL_MAJOR=`python -c 'import sys; print sys.version_info[0]'`
+PYTHON_REQUIRED_MAJOR="3"
+PYTHON_REQUIRED_MINOR="7"
+PYTHON_ACTUAL_MAJOR=`python3 -c 'import sys; print(sys.version_info[0])'`
+PYTHON_ACTUAL_MINOR=`python3 -c 'import sys; print(sys.version_info[1])'`
+
+
+validateLastCommand() {
+    if [[ "$!" != "0" ]]; then
+        exit 1
+    fi
+}
 
 if [[ "$PYTHON_REQUIRED_MAJOR" != "$PYTHON_ACTUAL_MAJOR" ]]; then
     echo "Oh shit.. Python $PYTHON_REQUIRED_MAJOR.x is required to run this program.."
 
-    exit 1
+    echo "Trying to install the latest Python $PYTHON_REQUIRED_MAJOR version.."
+    brew install python3
+
+    validateLastCommand
 fi
 
-python inspector/dump.py
+if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
+    echo "Trying to update Python $PYTHON_REQUIRED_MAJOR to the latest version.."
+
+    brew upgrade python3
+
+    validateLastCommand
+fi
+
+
+python3 inspector/dump.py
+
+validateLastCommand

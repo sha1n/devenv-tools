@@ -1,11 +1,14 @@
 #!/bin/python
 
-import os, platform, tempfile
+import os
+import platform
+import tarfile
+import tempfile
 from datetime import datetime
 
-import util.console as log
 import collectors.env as env
 import collectors.intellij as intellij
+import util.console as log
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
@@ -37,11 +40,11 @@ def _prepare_intellij_info_files():
 
 def _create_dump_archive():
     log.info("Preparing tar archive...")
-    if os.system("mkdir -p %s" % archive_target_dir_path) != 0:
-        raise Exception("Failed to create dump target directory '%s'" % archive_target_dir_path)
 
-    if os.system("tar -czf %s -C %s ." % (tar_file_path, archive_content_dir_path)) != 0:
-        raise Exception("Failed to create dump archive '%s'" % tar_file_path)
+    os.makedirs(archive_target_dir_path, exist_ok=True)
+
+    with tarfile.open(tar_file_path, "w:gz") as tar:
+        tar.add(archive_content_dir_path, arcname=os.path.basename(archive_content_dir_path))
 
 
 def _check_prerequisites():

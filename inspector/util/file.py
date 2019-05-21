@@ -1,6 +1,6 @@
 import os
 import shutil
-import console as log
+import util.console as log
 
 
 def name_from(path):

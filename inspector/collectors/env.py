@@ -2,12 +2,11 @@ import getpass
 import json
 import multiprocessing
 import platform
-import subprocess
 from datetime import datetime
 
+from util import cmd
 from util import console as log
 from util import file
-from util import cmd
 
 
 @log.timeit_if(more_than_sec=5)
@@ -60,9 +59,7 @@ def snapshot():
         "python": {},
     }
 
-    output = subprocess.Popen(["df", "-H", "/"],
-                              stdout=subprocess.PIPE)
-    disk_line = output.communicate()[0].strip().split("\n")[1].split()
+    disk_line = cmd.execute(["df", "-H", "/"]).split("\n")[1].split()
     data["disk"]["filesystem"] = disk_line[0]
     data["disk"]["total"] = disk_line[1]
     data["disk"]["used"] = disk_line[2]
@@ -78,10 +75,6 @@ def snapshot():
     data["python"]["version"] = platform.python_version()
 
     return data
-
-
-def _get_os_spec():
-    return cmd.execute(["uname", "-v"])
 
 
 def _get_bazel_version():

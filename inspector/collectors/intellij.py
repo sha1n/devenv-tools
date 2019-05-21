@@ -1,11 +1,11 @@
+import json
+import os
+import time
+from os import listdir
 from shutil import copyfile
 from shutil import copytree
-import os
-import json
-import time
 
 from util import console as log
-from util import cmd
 from util import file
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
@@ -38,7 +38,7 @@ def collect_intellij_info_files(user_home_dir_path, target_dir_path):
 
 @log.timeit_if(more_than_sec=3)
 def _collect_product_info_files():
-    candidates = cmd.execute(["ls", "/Applications"]).split("\n")
+    candidates = listdir("/Applications")
 
     return (
         "/Applications/" + ij_app_dir + "/Contents/Resources/product-info.json"
@@ -48,7 +48,7 @@ def _collect_product_info_files():
 
 @log.timeit_if(more_than_sec=10)
 def _collect_log_libraries(user_home):
-    candidates = cmd.execute(["ls", "%s/Library/Logs" % user_home]).split("\n")
+    candidates = listdir("%s/Library/Logs" % user_home)
 
     return (
         "%s/Library/Logs/%s" % (user_home, ij_logs_dir)
@@ -57,7 +57,7 @@ def _collect_log_libraries(user_home):
 
 
 def _collect_configurations(user_home):
-    candidates = cmd.execute(["ls", "%s/Library/Preferences" % user_home]).split("\n")
+    candidates = listdir("%s/Library/Preferences" % user_home)
 
     return (
         "%s/Library/Preferences/%s" % (user_home, ij_prefs_dir)
