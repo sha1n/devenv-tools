@@ -11,7 +11,7 @@ from util.diag import timeit_if
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 
 
-class IntelliJCollector:
+class IntelliJDataCollector:
     def __init__(self, ctx):
         self.ctx = ctx
 

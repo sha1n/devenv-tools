@@ -7,8 +7,8 @@ import tarfile
 import tempfile
 from datetime import datetime
 
-from collectors.env import EnvCollector
-from collectors.intellij import IntelliJCollector
+from collectors.env import EnvDataCollector
+from collectors.intellij import IntelliJDataCollector
 from util.context import Context
 from util.context import Mode
 
@@ -28,7 +28,7 @@ def _prepare_env_info_file(ctx):
     user_home_d4m_files_dir_path = "%s/docker" % env_info_target_dir_path
     os.mkdir(user_home_d4m_files_dir_path)
 
-    env = EnvCollector(ctx)
+    env = EnvDataCollector(ctx)
     env.create_snapshot_file(env_info_target_dir_path)
     env.copy_bazelrc_files(user_home_dir_path, user_home_bazel_files_dir_path)
     env.copy_docker_config_files(user_home_dir_path, user_home_d4m_files_dir_path)
@@ -38,7 +38,7 @@ def _prepare_intellij_info_files(ctx):
     intellij_target_dir_path = "%s/intellij" % archive_content_dir_path
     os.mkdir(intellij_target_dir_path)
 
-    intellij = IntelliJCollector(ctx)
+    intellij = IntelliJDataCollector(ctx)
     intellij.collect_intellij_info_files(user_home_dir_path, intellij_target_dir_path)
 
 

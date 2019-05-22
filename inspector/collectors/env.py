@@ -4,12 +4,17 @@ import multiprocessing
 import platform
 from datetime import datetime
 
+from .python import PythonInfoCollector
+from .bazel import BazelInfoCollector
+from .os import OsInfoCollector
+from .disk import DiskInfoCollector
+from .hardware import HardwareInfoCollector
 from util import cmd
 from util import file
 from util.diag import timeit_if
 
 
-class EnvCollector:
+class EnvDataCollector:
     def __init__(self, ctx):
         self.ctx = ctx
 
@@ -48,56 +53,40 @@ class EnvCollector:
 
     @timeit_if(more_than_sec=5)
     def snapshot(self):
+        hw_info = HardwareInfoCollector(self.ctx).collect()
         data = {
             "timestamp_utc": datetime.utcnow().isoformat(),
             "user": getpass.getuser(),
             "hostname": platform.node(),
-            "cpu_count": multiprocessing.cpu_count(),
-            "total_ram": _total_ram(),
+            "cpu_count": hw_info.cpu_count,
+            "total_ram": hw_info.total_ram,
             "os": {},
             "disk": {},
             "bazel": {},
             "python": {},
         }
 
-        disk_line = cmd.execute(["df", "-H", "/"]).split("\n")[1].split()
-        data["disk"]["filesystem"] = disk_line[0]
-        data["disk"]["total"] = disk_line[1]
-        data["disk"]["used"] = disk_line[2]
-        data["disk"]["free"] = disk_line[3]
+        disk_info = DiskInfoCollector(self.ctx).collect()
+        data["disk"]["filesystem"] = disk_info.filesystem
+        data["disk"]["total"] = disk_info.total
+        data["disk"]["used"] = disk_info.used
+        data["disk"]["free"] = disk_info.free
 
-        data["os"]["name"] = platform.system()
-        data["os"]["version"] = platform.mac_ver()[0]
+        os_info = OsInfoCollector(self.ctx).collect()
+        data["os"]["name"] = os_info.name
+        data["os"]["version"] = str(os_info.version)
 
-        data["bazel"]["path"] = _bazel_path()
-        data["bazel"]["real_path"] = _bazel_real_path()
-        data["bazel"]["version"] = _bazel_version()
+        bazel_info = BazelInfoCollector(self.ctx).collect()
+        data["bazel"]["path"] = bazel_info.path
+        data["bazel"]["real_path"] = bazel_info.real_path
+        data["bazel"]["version"] = str(bazel_info.version)
 
-        data["python"]["version"] = _python_version()
+        python_info = PythonInfoCollector(self.ctx).collect()
+        data["python"]["path"] = str(python_info.path)
+        data["python"]["version"] = str(python_info.version)
 
         return data
 
     def _try_copy_file(self, source_file_path, target_dir_path, target_name_prefix=""):
         if not file.try_copy_file(source_file_path, target_dir_path, target_name_prefix):
             self.ctx.logger.warn("%s file expected but not found." % source_file_path)
-
-
-def _bazel_version():
-    return cmd.execute(["bazel-real", "version", "--gnu_format=true"]).split()[1]
-
-
-def _bazel_path():
-    return cmd.execute(["which", "bazel"]).split()[0]
-
-
-def _bazel_real_path():
-    return cmd.execute(["which", "bazel-real"]).split()[0]
-
-
-def _python_version():
-    return cmd.execute(["python", "--version"]).split()[1]
-
-
-def _total_ram():
-    raw_total_ram = cmd.execute(["sysctl", "hw.memsize"]).split(":")[1].strip()
-    return "%dG" % (int(raw_total_ram) / (1024 * 1000 * 1024))
