@@ -1,4 +1,5 @@
 import logging
+import logging.handlers as handlers
 from abc import abstractmethod
 
 _ERASE_LINE = '\x1b[2K'
@@ -54,10 +55,10 @@ class ConsoleLogger(Logger):
 
 class FileLogger(Logger):
 
-    def __init__(self, filename, filemode, level=logging.DEBUG):
+    def __init__(self, filename, level=logging.DEBUG):
+        log_handlers = [handlers.RotatingFileHandler(filename=filename, mode="a", maxBytes=1024 * 1000, backupCount=3)]
         logging.basicConfig(
-            filename=filename,
-            filemode=filemode,
+            handlers=log_handlers,
             format='[%(asctime)s] %(levelname)s:\t %(message)s',
             level=level)
         self.logger = logging.getLogger()

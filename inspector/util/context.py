@@ -36,7 +36,7 @@ class Context:
         if mode == Mode.INTERACTIVE:
             self.logger = ConsoleLogger()
         else:
-            self.logger = FileLogger(filename="{}.log".format(name), filemode="w")
+            self.logger = FileLogger(filename="{}.log".format(name))
 
     def __str__(self):
         return "Context(mode={}, logger={})".format(self.mode, self.logger.__class__.__name__)
