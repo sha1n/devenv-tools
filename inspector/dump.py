@@ -7,10 +7,10 @@ import tarfile
 import tempfile
 from datetime import datetime
 
-from collectors.env import EnvDataCollector
-from collectors.intellij import IntelliJDataCollector
-from util.context import Context
-from util.context import Mode
+from inspector.collectors.env import EnvDataCollector
+from inspector.collectors.intellij import IntelliJDataCollector
+from inspector.util.context import Context
+from inspector.util.context import Mode
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
@@ -109,6 +109,3 @@ def dump():
     except Exception as err:
         logger.failure("Failure! %s" % err)
         exit(1)
-
-
-dump()

@@ -1,17 +1,19 @@
 import getpass
 import json
-import multiprocessing
 import platform
 from datetime import datetime
 
-from .python import PythonInfoCollector
-from .bazel import BazelInfoCollector
-from .os import OsInfoCollector
+from inspector.util import file
+# from util import file
+from inspector.util.diag import timeit_if
+# from util.diag import timeit_if
+
+from inspector.collectors.bazel import BazelInfoCollector
+# from .bazel import BazelInfoCollector
 from .disk import DiskInfoCollector
 from .hardware import HardwareInfoCollector
-from util import cmd
-from util import file
-from util.diag import timeit_if
+from .os import OsInfoCollector
+from .python import PythonInfoCollector
 
 
 class EnvDataCollector:

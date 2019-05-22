@@ -5,8 +5,8 @@ from os import listdir
 from shutil import copyfile
 from shutil import copytree
 
-from util import file
-from util.diag import timeit_if
+from inspector.util import file
+from inspector.util.diag import timeit_if
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 

@@ -1,8 +1,8 @@
 import platform
 
-from util import context
+from inspector.util import context
 
-from .base_collector import Collector
+from .basecollector import Collector
 from .semver import SemVer
 
 
