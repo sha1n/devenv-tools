@@ -53,7 +53,7 @@ class EnvCollector:
             "user": getpass.getuser(),
             "hostname": platform.node(),
             "cpu_count": multiprocessing.cpu_count(),
-            "total_ram": _get_total_ram(),
+            "total_ram": _total_ram(),
             "os": {},
             "disk": {},
             "bazel": {},
@@ -69,11 +69,11 @@ class EnvCollector:
         data["os"]["name"] = platform.system()
         data["os"]["version"] = platform.mac_ver()[0]
 
-        data["bazel"]["path"] = _get_bazel_path()
-        data["bazel"]["real_path"] = _get_bazel_real_path()
-        data["bazel"]["version"] = _get_bazel_version()
+        data["bazel"]["path"] = _bazel_path()
+        data["bazel"]["real_path"] = _bazel_real_path()
+        data["bazel"]["version"] = _bazel_version()
 
-        data["python"]["version"] = platform.python_version()
+        data["python"]["version"] = _python_version()
 
         return data
 
@@ -82,18 +82,22 @@ class EnvCollector:
             self.ctx.logger.warn("%s file expected but not found." % source_file_path)
 
 
-def _get_bazel_version():
+def _bazel_version():
     return cmd.execute(["bazel-real", "version", "--gnu_format=true"]).split()[1]
 
 
-def _get_bazel_path():
+def _bazel_path():
     return cmd.execute(["which", "bazel"]).split()[0]
 
 
-def _get_bazel_real_path():
+def _bazel_real_path():
     return cmd.execute(["which", "bazel-real"]).split()[0]
 
 
-def _get_total_ram():
+def _python_version():
+    return cmd.execute(["python", "--version"]).split()[1]
+
+
+def _total_ram():
     raw_total_ram = cmd.execute(["sysctl", "hw.memsize"]).split(":")[1].strip()
     return "%dG" % (int(raw_total_ram) / (1024 * 1000 * 1024))
