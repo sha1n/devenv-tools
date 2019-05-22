@@ -2,7 +2,7 @@ import unittest
 
 from inspector.collectors.bazel import BazelInfo
 from inspector.collectors.semver import SemVer
-from inspector.util.context import Context
+from inspector.commons.context import Context
 from inspector.validators.bazel import BazelInfoValidator, Status
 
 

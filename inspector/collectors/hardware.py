@@ -1,9 +1,8 @@
 import multiprocessing
 
+from inspector.collectors.basecollector import Collector
 from inspector.util import cmd
-from inspector.util import context
-
-from .basecollector import Collector
+from inspector.commons import context
 
 
 class HardwareInfo:

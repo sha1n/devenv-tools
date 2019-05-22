@@ -1,6 +1,6 @@
 from inspector.reactors.basereactor import Reactor
 from inspector.validators.basevalidator import ValidationResult, Status
-from inspector.util.context import Context
+from inspector.commons.context import Context
 
 
 class BazelValidationLogReactor(Reactor):

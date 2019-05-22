@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from .logger import Logger, ConsoleLogger, FileLogger
+from inspector.util.logger import Logger, ConsoleLogger, FileLogger
 
 
 class Mode(Enum):

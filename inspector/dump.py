@@ -9,8 +9,8 @@ from datetime import datetime
 
 from inspector.collectors.env import EnvDataCollector
 from inspector.collectors.intellij import IntelliJDataCollector
-from inspector.util.context import Context
-from inspector.util.context import Mode
+from inspector.commons.context import Context
+from inspector.commons.context import Mode
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"

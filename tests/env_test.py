@@ -2,7 +2,7 @@ import unittest
 
 
 from inspector.collectors.env import EnvDataCollector
-from inspector.util.context import Context
+from inspector.commons.context import Context
 
 
 class TestEnv(unittest.TestCase):

@@ -1,8 +1,8 @@
 from inspector.collectors.python import PythonInfo
 from inspector.collectors.semver import SemVer
-from inspector.util import context
+from inspector.commons import context
 
-from .basevalidator import Validator, ValidationResult, Status
+from inspector.validators.basevalidator import Validator, ValidationResult, Status
 
 
 class PythonInfoValidator(Validator):

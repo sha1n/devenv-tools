@@ -2,7 +2,7 @@ import unittest
 
 from inspector.collectors.python import PythonInfo
 from inspector.collectors.semver import SemVer
-from inspector.util.context import Context
+from inspector.commons.context import Context
 from inspector.validators.python import PythonInfoValidator, Status
 
 

@@ -1,9 +1,8 @@
 import platform
 
-from inspector.util import context
-
-from .basecollector import Collector
-from .semver import SemVer
+from inspector.collectors.basecollector import Collector
+from inspector.collectors.semver import SemVer
+from inspector.commons import context
 
 
 class OsInfo:

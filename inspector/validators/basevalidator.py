@@ -2,7 +2,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
-from inspector.util import context
+from inspector.commons.context import Context
 
 
 class Status(Enum):
@@ -16,16 +16,16 @@ class Status(Enum):
 
 @dataclass
 class ValidationResult:
-    def __init__(self, input_data, status: Status, ctx: context.Context):
+    def __init__(self, input_data, status: Status, ctx: Context):
         self.input_data = input_data
         self.status = status
         self.ctx = ctx
 
 
 class Validator:
-    def __init__(self, ctx: context.Context):
+    def __init__(self, ctx: Context):
         self.ctx = ctx
         self.logger = ctx.logger
 
     @abstractmethod
-    def validate(self, input_data): pass
+    def validate(self, input_data) -> ValidationResult: pass

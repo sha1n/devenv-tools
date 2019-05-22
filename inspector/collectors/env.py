@@ -3,17 +3,13 @@ import json
 import platform
 from datetime import datetime
 
-from inspector.util import file
-# from util import file
-from inspector.util.diag import timeit_if
-# from util.diag import timeit_if
-
 from inspector.collectors.bazel import BazelInfoCollector
-# from .bazel import BazelInfoCollector
-from .disk import DiskInfoCollector
-from .hardware import HardwareInfoCollector
-from .os import OsInfoCollector
-from .python import PythonInfoCollector
+from inspector.collectors.disk import DiskInfoCollector
+from inspector.collectors.hardware import HardwareInfoCollector
+from inspector.collectors.os import OsInfoCollector
+from inspector.collectors.python import PythonInfoCollector
+from inspector.util import file
+from inspector.util.diag import timeit_if
 
 
 class EnvDataCollector:

@@ -1,7 +1,7 @@
 import functools
 from time import time
 
-from .logger import ConsoleLogger
+from inspector.util.logger import ConsoleLogger
 
 _logger = ConsoleLogger()
 

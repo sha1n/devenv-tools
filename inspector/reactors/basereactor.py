@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from inspector.util.context import Context
+from inspector.commons.context import Context
 
 
 class Reactor:
