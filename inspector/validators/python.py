@@ -11,6 +11,9 @@ class PythonInfoValidator(Validator):
         self.expected_ver = expected_ver
 
     def validate(self, input_data: PythonInfo) -> ValidationResult:
+        if input_data is None:
+            return ValidationResult(input_data, Status.NOT_FOUND, self.ctx)
+
         if self.expected_ver.major != input_data.version.major:
             return ValidationResult(input_data, Status.ERROR, self.ctx)
         else:

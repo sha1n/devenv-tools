@@ -15,6 +15,13 @@ class TestPythonInfoValidator(unittest.TestCase):
         result = validator.validate(python_info)
         self.assertEqual(result.status, Status.OK)
 
+    def test_missing_python_info(self):
+        validator = PythonInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        python_info = None
+
+        result = validator.validate(python_info)
+        self.assertEqual(result.status, Status.NOT_FOUND)
+
     def test_validate_patch_version_diff(self):
         validator = PythonInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
         python_info = python_info_with(patch="1")
