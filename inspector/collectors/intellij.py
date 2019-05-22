@@ -6,37 +6,40 @@ from shutil import copyfile
 from shutil import copytree
 
 from util import file
-from util.console import Console
-from util.console import timeit_if
+from util.diag import timeit_if
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 
 
-@timeit_if(more_than_sec=20)
-def collect_intellij_info_files(user_home_dir_path, target_dir_path):
-    Console.info("Collecting IntelliJ product(s) info...")
-    for file_path in _collect_product_info_files():
-        version = _read_json_property(file_path, "version")
-        code = _read_json_property(file_path, "productCode")
-        copyfile(file_path, "{}/intellij-{}-{}-product-info.json".format(target_dir_path, code, version))
+class IntelliJCollector:
+    def __init__(self, ctx):
+        self.ctx = ctx
 
-    Console.log("Collecting IntelliJ logs... (files older than two weeks will be ignored)")
-    for logs_dir_path in _collect_log_libraries(user_home_dir_path):
-        dir_name = file.name_from(logs_dir_path)
+    @timeit_if(more_than_sec=20)
+    def collect_intellij_info_files(self, user_home_dir_path, target_dir_path):
+        self.ctx.logger.info("Collecting IntelliJ product(s) info...")
+        for file_path in _collect_product_info_files():
+            version = _read_json_property(file_path, "version")
+            code = _read_json_property(file_path, "productCode")
+            copyfile(file_path, "{}/intellij-{}-{}-product-info.json".format(target_dir_path, code, version))
 
-        Console.log("Copying {}...".format(logs_dir_path))
-        copytree(
-            src=logs_dir_path,
-            dst="{}/logs/{}".format(target_dir_path, dir_name),
-            ignore=_ignore_files_mtime_gt(two_week_sec)
-        )
+        self.ctx.logger.log("Collecting IntelliJ logs... (files older than two weeks will be ignored)")
+        for logs_dir_path in _collect_log_libraries(user_home_dir_path):
+            dir_name = file.name_from(logs_dir_path)
 
-    Console.log("Collecting IntelliJ configuration files...")
-    for config_dir_path in _collect_configurations(user_home_dir_path):
-        dir_name = file.name_from(config_dir_path)
+            self.ctx.logger.log("Copying {}...".format(logs_dir_path))
+            copytree(
+                src=logs_dir_path,
+                dst="{}/logs/{}".format(target_dir_path, dir_name),
+                ignore=_ignore_files_mtime_gt(two_week_sec)
+            )
 
-        Console.log("Copying {}...".format(config_dir_path))
-        copytree(config_dir_path, "{}/configs/{}".format(target_dir_path, dir_name))
+        self.ctx.logger.log("Collecting IntelliJ configuration files...")
+        for config_dir_path in _collect_configurations(user_home_dir_path):
+            dir_name = file.name_from(config_dir_path)
+
+            self.ctx.logger.log("Copying {}...".format(config_dir_path))
+            copytree(config_dir_path, "{}/configs/{}".format(target_dir_path, dir_name))
 
 
 @timeit_if(more_than_sec=3)

@@ -1,10 +1,12 @@
 import unittest
-import inspector.collectors.env as env
+from inspector.collectors.env import EnvCollector
+from inspector.util.context import Context
 
 
 class TestEnv(unittest.TestCase):
 
     def test_snapshot(self):
+        env = EnvCollector(Context(name="test"))
         snapshot = env.snapshot()
         self.assertIsNotNone(snapshot)
         self.assert_non_empty_key(snapshot, "timestamp_utc")
