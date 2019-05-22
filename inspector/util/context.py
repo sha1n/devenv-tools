@@ -16,6 +16,15 @@ class Mode(Enum):
 
         return switch.get(self.value)
 
+    @staticmethod
+    def from_str(mode):
+        switch = {
+            "interactive": Mode.INTERACTIVE,
+            "background": Mode.BACKGROUND,
+        }
+
+        return switch.get(mode, Mode.INTERACTIVE)
+
 
 @dataclass
 class Context:

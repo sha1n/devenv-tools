@@ -30,6 +30,6 @@ if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
 fi
 
 
-python3 inspector/dump.py
+python3 inspector/dump.py $@
 
 validateLastCommand

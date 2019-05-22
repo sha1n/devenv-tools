@@ -1,5 +1,6 @@
 #!/bin/python
 
+import argparse
 import os
 import platform
 import tarfile
@@ -9,6 +10,7 @@ from datetime import datetime
 from collectors.env import EnvCollector
 from collectors.intellij import IntelliJCollector
 from util.context import Context
+from util.context import Mode
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
@@ -70,10 +72,21 @@ def _safe(ctx, *methods):
         raise Exception("All data collection tasks have failed...")
 
 
-def dump():
+def _context():
+    parser = argparse.ArgumentParser(description='Takes an environment dump for support purposes.')
+    parser.add_argument("-m",
+                        choices=["interactive", "background"],
+                        dest="mode",
+                        default="interactive",
+                        help="one of [ interactive | background ]")
 
-    from util.context import Mode
-    ctx = Context(name="dump", mode=Mode.INTERACTIVE)
+    args = parser.parse_args()
+
+    return Context(name="dump", mode=Mode.from_str(args.mode))
+
+
+def dump():
+    ctx = _context()
     logger = ctx.logger
     logger.info("Running in {} mode".format(str(ctx.mode)))
 
