@@ -1,18 +1,10 @@
+from collections import namedtuple
+
 from inspector.collectors.basecollector import Collector
-from inspector.util import cmd
 from inspector.commons import context
+from inspector.util import cmd
 
-
-class DiskInfo:
-    def __init__(self, filesystem, total, used, free):
-        self.filesystem = filesystem
-        self.total = total
-        self.used = used
-        self.free = free
-
-    def __str__(self):
-        return "Disk Info: filesystem={}, total={}, used={}, free={}" \
-            .format(self.filesystem, self.total, self.used, self.free)
+DiskInfo = namedtuple(typename="DiskInfo", field_names=["filesystem", "total", "used", "free"])
 
 
 class DiskInfoCollector(Collector):

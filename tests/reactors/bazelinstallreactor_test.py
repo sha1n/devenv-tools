@@ -13,14 +13,13 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
     def test_no_action_reaction(self):
         reactor = BazelValidationInstallReactor(test_context())
 
-        gen = reactor.react(validation_result_with(status=Status.OK))
-        self.assertEqual(len(list(gen)), 0)
+        commands = reactor.react(validation_result_with(status=Status.OK))
+        self.assertEqual(len(commands), 0)
 
     def test_install_action_reaction(self):
         reactor = BazelValidationInstallReactor(test_context())
 
-        gen = reactor.react(validation_result_with(status=Status.NOT_FOUND))
-        commands = list(gen)
+        commands = reactor.react(validation_result_with(status=Status.NOT_FOUND))
 
         self.assertEqual(len(commands), 1)
 
@@ -30,8 +29,7 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
     def test_upgrade_action_reaction(self):
         reactor = BazelValidationInstallReactor(test_context())
 
-        gen = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED))
-        commands = list(gen)
+        commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED))
         self.assertEqual(len(commands), 1)
 
         upgrade_command = commands[0]
@@ -40,8 +38,7 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
     def test_downgrade_action_reaction(self):
         reactor = BazelValidationInstallReactor(test_context())
 
-        gen = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED))
-        commands = list(gen)
+        commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED))
         self.assertEqual(len(commands), 2)
 
         uninstall_command, install_command = commands

@@ -63,6 +63,9 @@ class FileLogger(Logger):
             level=level)
         self.logger = logging.getLogger()
 
+    def __getattr__(self, key):
+        return getattr(self.logger)
+
     def log(self, message):
         self.logger.info(message)
 
@@ -86,26 +89,8 @@ class FileLogger(Logger):
 
 
 class NoopLogger(Logger):
-    def log(self, message):
-        pass
-
-    def debug(self, message):
-        pass
-
-    def info(self, message):
-        pass
-
-    def warn(self, message):
-        pass
-
-    def error(self, message):
-        pass
-
-    def success(self, message):
-        pass
-
-    def failure(self, message):
-        pass
+    def __getattr__(self, key):
+        return lambda *args, **kwrgs: None
 
 
 class CompositeLogger(Logger):

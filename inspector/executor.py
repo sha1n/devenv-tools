@@ -34,18 +34,19 @@ class Executor:
             collector = self._collectors[name]
             data = collector.collect()
 
-            for result in self._validate(name, data):
+            result = self._validate(name, data)
+            if result is not None:
                 self._react(name, result, ctx)
 
     def _validate(self, name, data):
         validator = self._validators.get(name, None)
         if validator is not None:
-            yield validator.validate(data)
+            return validator.validate(data)
         else:
-            return
-            yield
+            return None
 
     def _react(self, name, validation_result, ctx):
+        # fixme: if not ctx.dryrun:
         for reactor in self._reactors.get(name, []):
             for command in reactor.react(validation_result):
                 ctx.logger.info("\t~ {}".format(command))  # fixme should execute...

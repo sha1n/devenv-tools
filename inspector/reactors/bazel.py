@@ -1,20 +1,17 @@
-from typing import Generator
-
+from inspector.commons.context import Context
 from inspector.reactors.basereactor import Reactor, ReactorCommand
 from inspector.validators.basevalidator import ValidationResult, Status
-from inspector.commons.context import Context
 
 
 class BazelValidationLogReactor(Reactor):
     def __init__(self, ctx: Context):
         super().__init__(ctx)
 
-    def react(self, data: ValidationResult) -> Generator[ReactorCommand, None, None]:
+    def react(self, data: ValidationResult):
         if data.status != Status.OK:
             self.logger.warn("Incompatible Bazel version: {}".format(str(data.input_data.version)))
 
-        return
-        yield
+        return []
 
 
 class BazelValidationInstallReactor(Reactor):
@@ -22,22 +19,28 @@ class BazelValidationInstallReactor(Reactor):
         super().__init__(ctx)
 
     def react(self, data: ValidationResult):
+        commands = []
         if data.status == Status.NOT_FOUND:
-            yield self._install()
+            commands.append(self._install())
         elif data.status == data.status.UPGRADE_REQUIRED:
-            yield self._upgrade()
+            commands.append(self._upgrade())
         elif data.status == data.status.DOWNGRADE_REQUIRED:
-            yield self._uninstall()
-            yield self._install()
+            commands.append(self._uninstall())
+            commands.append(self._install())
+
+        return commands
 
     # fixme that command is not necessarily the real one
     @staticmethod
-    def _install() -> ReactorCommand: return ReactorCommand(["brew", "install", "bazel"])
+    def _install() -> ReactorCommand:
+        return ReactorCommand(["brew", "install", "bazel"])
 
     # fixme that command is not necessarily the real one
     @staticmethod
-    def _upgrade() -> ReactorCommand: return ReactorCommand(["brew", "upgrade", "bazel"])
+    def _upgrade() -> ReactorCommand:
+        return ReactorCommand(["brew", "upgrade", "bazel"])
 
     # fixme that command is not necessarily the real one
     @staticmethod
-    def _uninstall() -> ReactorCommand: return ReactorCommand(["brew", "uninstall", "bazel"])
+    def _uninstall() -> ReactorCommand:
+        return ReactorCommand(["brew", "uninstall", "bazel"])

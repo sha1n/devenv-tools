@@ -1,16 +1,11 @@
+from collections import namedtuple
+
 from inspector.collectors.basecollector import Collector
 from inspector.collectors.semver import SemVer
-from inspector.util import cmd
 from inspector.commons import context
+from inspector.util import cmd
 
-
-class PythonInfo:
-    def __init__(self, path, version: SemVer):
-        self.path = path
-        self.version = version
-
-    def __str__(self):
-        return "Python Info: path={}, version={}".format(self.path, self.version)
+PythonInfo = namedtuple(typename="PythonInfo", field_names=["path", "version"])
 
 
 class PythonInfoCollector(Collector):

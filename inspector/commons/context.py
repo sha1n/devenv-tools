@@ -56,5 +56,3 @@ class Context:
 
     def __str__(self):
         return "Context(mode={}, logger={})".format(self.mode, self.logger.__class__.__name__)
-
-

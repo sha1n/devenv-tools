@@ -1,17 +1,11 @@
 import multiprocessing
+from collections import namedtuple
 
 from inspector.collectors.basecollector import Collector
-from inspector.util import cmd
 from inspector.commons import context
+from inspector.util import cmd
 
-
-class HardwareInfo:
-    def __init__(self, cpu_count, total_ram):
-        self.cpu_count = cpu_count
-        self.total_ram = total_ram
-
-    def __str__(self):
-        return "Hardware Info: cpu_count={}, total_ram={}".format(self.cpu_count, self.total_ram)
+HardwareInfo = namedtuple(typename="HardwareInfo", field_names=["cpu_count", "total_ram"])
 
 
 class HardwareInfoCollector(Collector):

@@ -1,11 +1,11 @@
 from abc import abstractmethod
-from typing import Generator
+from typing import List
 
 from inspector.commons.context import Context
 
 
 class ReactorCommand:
-    def __init__(self, cmd: []):
+    def __init__(self, cmd):
         super().__init__()
         self.cmd = cmd
 
@@ -19,4 +19,4 @@ class Reactor:
         self.logger = ctx.logger
 
     @abstractmethod
-    def react(self, data) -> Generator[ReactorCommand, None, None]: pass
+    def react(self, data) -> List[ReactorCommand]: pass

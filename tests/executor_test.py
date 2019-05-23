@@ -57,12 +57,12 @@ class MockValidator(Validator):
 
 
 class MockReactor(Reactor):
-    def __init__(self, ctx: Context, command: ReactorCommand):
+    def __init__(self, ctx, command):
         super().__init__(ctx)
         self.command = command
 
-    def react(self, data) -> Generator[ReactorCommand, None, None]:
-        yield self.command
+    def react(self, data):
+        return [self.command]
 
 
 def bazel_info_with(major="1", minor="24", patch="0"):

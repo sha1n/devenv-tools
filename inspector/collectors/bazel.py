@@ -1,17 +1,11 @@
+from collections import namedtuple
+
 from inspector.collectors.basecollector import Collector
 from inspector.collectors.semver import SemVer
-from inspector.util import cmd
 from inspector.commons import context
+from inspector.util import cmd
 
-
-class BazelInfo:
-    def __init__(self, path, real_path, version: SemVer):
-        self.path = path
-        self.real_path = real_path
-        self.version = version
-
-    def __str__(self):
-        return "Bazel Info: path={}, real_path={}, version={}".format(self.path, self.real_path, self.version)
+BazelInfo = namedtuple(typename="BazelInfo", field_names=["path", "real_path", "version"])
 
 
 class BazelInfoCollector(Collector):

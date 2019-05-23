@@ -1,17 +1,11 @@
 import platform
+from collections import namedtuple
 
 from inspector.collectors.basecollector import Collector
 from inspector.collectors.semver import SemVer
 from inspector.commons import context
 
-
-class OsInfo:
-    def __init__(self, name, version: SemVer):
-        self.name = name
-        self.version = version
-
-    def __str__(self):
-        return "OS Info: name={}, version={}".format(self.name, self.version)
+OsInfo = namedtuple(typename="OsInfo", field_names=["name", "version"])
 
 
 class OsInfoCollector(Collector):
