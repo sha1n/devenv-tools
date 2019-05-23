@@ -5,7 +5,7 @@ from inspector.collectors.env import EnvDataCollector
 from inspector.commons.context import Context
 
 
-class TestEnv(unittest.TestCase):
+class EnvTest(unittest.TestCase):
 
     def test_snapshot(self):
         env = EnvDataCollector(Context(name="test"))

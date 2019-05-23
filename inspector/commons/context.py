@@ -31,8 +31,9 @@ class Context:
 
     logger: Logger
 
-    def __init__(self, name, mode=Mode.INTERACTIVE):
+    def __init__(self, name, dryrun=False, mode=Mode.INTERACTIVE):
         self.mode = mode
+        self.dryrun = dryrun
         if mode == Mode.INTERACTIVE:
             self.logger = ConsoleLogger()
         else:

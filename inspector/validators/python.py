@@ -12,9 +12,9 @@ class PythonInfoValidator(Validator):
 
     def validate(self, input_data: PythonInfo) -> ValidationResult:
         if input_data is None:
-            return ValidationResult(input_data, Status.NOT_FOUND, self.ctx)
+            return ValidationResult(input_data, Status.NOT_FOUND)
 
         if self.expected_ver.major != input_data.version.major:
-            return ValidationResult(input_data, Status.ERROR, self.ctx)
+            return ValidationResult(input_data, Status.ERROR)
         else:
-            return ValidationResult(input_data, Status.OK, self.ctx)
+            return ValidationResult(input_data, Status.OK)

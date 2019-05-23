@@ -6,7 +6,7 @@ from inspector.commons.context import Context
 from inspector.validators.bazel import BazelInfoValidator, Status
 
 
-class TestBazelInfoValidator(unittest.TestCase):
+class BazelInfoValidatorTest(unittest.TestCase):
 
     def test_validate(self):
         validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))

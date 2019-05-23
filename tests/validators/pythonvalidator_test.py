@@ -6,7 +6,7 @@ from inspector.commons.context import Context
 from inspector.validators.python import PythonInfoValidator, Status
 
 
-class TestPythonInfoValidator(unittest.TestCase):
+class PythonInfoValidatorTest(unittest.TestCase):
 
     def test_validate(self):
         validator = PythonInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))

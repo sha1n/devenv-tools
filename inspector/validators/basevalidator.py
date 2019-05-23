@@ -16,10 +16,9 @@ class Status(Enum):
 
 @dataclass
 class ValidationResult:
-    def __init__(self, input_data, status: Status, ctx: Context):
+    def __init__(self, input_data, status: Status):
         self.input_data = input_data
         self.status = status
-        self.ctx = ctx
 
 
 class Validator:
