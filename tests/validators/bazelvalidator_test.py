@@ -2,55 +2,55 @@ import unittest
 
 from inspector.collectors.bazel import BazelInfo
 from inspector.collectors.semver import SemVer
-from inspector.commons.context import Context
 from inspector.validators.bazel import BazelInfoValidator, Status
+from tests.testutil import test_context
 
 
 class BazelInfoValidatorTest(unittest.TestCase):
 
     def test_validate(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
         bazel_info = bazel_info_with(minor="24")
 
         result = validator.validate(bazel_info)
         self.assertEqual(result.status, Status.OK)
 
     def test_missing_bazel_info(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
 
         result = validator.validate(None)
         self.assertEqual(result.status, Status.NOT_FOUND)
 
     def test_validate_patch_level_diff(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
         bazel_info = bazel_info_with(patch="1")
 
         result = validator.validate(bazel_info)
         self.assertEqual(result.status, Status.OK)
 
     def test_validate_new_major_version(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
         bazel_info = bazel_info_with(major="2")
 
         result = validator.validate(bazel_info)
         self.assertEqual(result.status, Status.DOWNGRADE_REQUIRED)
 
     def test_validate_new_minor_version(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
         bazel_info = bazel_info_with(minor="25")
 
         result = validator.validate(bazel_info)
         self.assertEqual(result.status, Status.DOWNGRADE_REQUIRED)
 
     def test_validate_old_major_version(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
         bazel_info = bazel_info_with(major="0")
 
         result = validator.validate(bazel_info)
         self.assertEqual(result.status, Status.UPGRADE_REQUIRED)
 
     def test_validate_old_minor_version(self):
-        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=Context(name="test"))
+        validator = BazelInfoValidator(expected_ver=expected_version(), ctx=test_context())
         bazel_info = bazel_info_with(minor="12")
 
         result = validator.validate(bazel_info)

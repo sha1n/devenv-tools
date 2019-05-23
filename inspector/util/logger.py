@@ -59,7 +59,7 @@ class FileLogger(Logger):
         log_handlers = [handlers.RotatingFileHandler(filename=filename, mode="a", maxBytes=1024 * 1000, backupCount=3)]
         logging.basicConfig(
             handlers=log_handlers,
-            format='[%(asctime)s] %(levelname)s:\t %(message)s',
+            format='[%(asctime)s] %(levelname)s: %(message)s',
             level=level)
         self.logger = logging.getLogger()
 
@@ -83,3 +83,57 @@ class FileLogger(Logger):
 
     def failure(self, message):
         self.logger.error(message)
+
+
+class NoopLogger(Logger):
+    def log(self, message):
+        pass
+
+    def debug(self, message):
+        pass
+
+    def info(self, message):
+        pass
+
+    def warn(self, message):
+        pass
+
+    def error(self, message):
+        pass
+
+    def success(self, message):
+        pass
+
+    def failure(self, message):
+        pass
+
+
+class CompositeLogger(Logger):
+    def __init__(self, *loggers: Logger):
+        self.loggers = loggers
+
+    def log(self, message):
+        self._all("log", message)
+
+    def debug(self, message):
+        self._all("debug", message)
+
+    def info(self, message):
+        self._all("info", message)
+
+    def warn(self, message):
+        self._all("warn", message)
+
+    def error(self, message):
+        self._all("error", message)
+
+    def success(self, message):
+        self._all("success", message)
+
+    def failure(self, message):
+        self._all("failure", message)
+
+    def _all(self, fn_name, msg):
+        for logger in self.loggers:
+            fn = getattr(logger, fn_name)
+            fn(msg)

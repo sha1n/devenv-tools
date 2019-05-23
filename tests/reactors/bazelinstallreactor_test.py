@@ -2,22 +2,22 @@ import unittest
 
 from inspector.collectors.bazel import BazelInfo
 from inspector.collectors.semver import SemVer
-from inspector.commons.context import Context
 from inspector.reactors.bazel import BazelValidationInstallReactor
 from inspector.validators.basevalidator import ValidationResult
 from inspector.validators.bazel import Status
+from tests.testutil import test_context
 
 
 class BazelValidationInstallReactorTest(unittest.TestCase):
 
     def test_no_action_reaction(self):
-        reactor = BazelValidationInstallReactor(ctx())
+        reactor = BazelValidationInstallReactor(test_context())
 
         gen = reactor.react(validation_result_with(status=Status.OK))
         self.assertEqual(len(list(gen)), 0)
 
     def test_install_action_reaction(self):
-        reactor = BazelValidationInstallReactor(ctx())
+        reactor = BazelValidationInstallReactor(test_context())
 
         gen = reactor.react(validation_result_with(status=Status.NOT_FOUND))
         commands = list(gen)
@@ -28,7 +28,7 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
         self.assertIn(" install", str(install_command))
 
     def test_upgrade_action_reaction(self):
-        reactor = BazelValidationInstallReactor(ctx())
+        reactor = BazelValidationInstallReactor(test_context())
 
         gen = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED))
         commands = list(gen)
@@ -38,7 +38,7 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
         self.assertIn(" upgrade", str(upgrade_command))
 
     def test_downgrade_action_reaction(self):
-        reactor = BazelValidationInstallReactor(ctx())
+        reactor = BazelValidationInstallReactor(test_context())
 
         gen = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED))
         commands = list(gen)
@@ -51,10 +51,6 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
 
 def validation_result_with(status: Status):
     return ValidationResult(bazel_info_with(), status)
-
-
-def ctx():
-    return Context(name="test")
 
 
 def bazel_info_with(major="0", minor="0", patch="0"):
