@@ -5,9 +5,10 @@ from inspector.reactors.basereactor import Reactor
 
 
 class Executor:
-    _collectors = {}
-    _validators = {}
-    _reactors = {}
+    def __init__(self):
+        self._collectors = {}
+        self._validators = {}
+        self._reactors = {}
 
     def register_collector(self, component_id, collector: Collector):
         self._collectors[component_id] = collector
@@ -32,9 +33,19 @@ class Executor:
         for name in self._collectors.keys():
             collector = self._collectors[name]
             data = collector.collect()
-            validator = self._validators[name]
-            validation_result = validator.validate(data)
 
-            for reactor in self._reactors[name]:
-                for command in reactor.react(validation_result):
-                    ctx.logger.info("\t~ {}".format(command)) # fixme should execute...
+            for result in self._validate(name, data):
+                self._react(name, result, ctx)
+
+    def _validate(self, name, data):
+        validator = self._validators.get(name, None)
+        if validator is not None:
+            yield validator.validate(data)
+        else:
+            return
+            yield
+
+    def _react(self, name, validation_result, ctx):
+        for reactor in self._reactors.get(name, []):
+            for command in reactor.react(validation_result):
+                ctx.logger.info("\t~ {}".format(command))  # fixme should execute...
