@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 PYTHON_REQUIRED_MAJOR="3"
 PYTHON_REQUIRED_MINOR="7"
 PYTHON_ACTUAL_MAJOR=`python3 -c 'import sys; print(sys.version_info[0])'`
@@ -30,6 +32,7 @@ if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
 fi
 
 
-python3 envdump.py $@
+
+PYTHONPATH=${SCRIPT_DIR}/pkg python3 envdump.py $@
 
 validateLastCommand

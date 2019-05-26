@@ -1,3 +1,4 @@
+#!/bin/python
 
 from inspector.dump import dump
 
