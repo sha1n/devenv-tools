@@ -1,21 +1,22 @@
 import unittest
 
-from inspector.components.bazel import BazelInfo, BazelValidationInstallReactor
-from inspector.components.semver import SemVer
 from inspector.api.validator import ValidationResult, Status
+from inspector.components.bazel import BazelInfo
+from inspector.components.semver import SemVer
+from installer.components.bazel import BazelInstallReactor
 from tests.testutil import test_context
 
 
 class BazelValidationInstallReactorTest(unittest.TestCase):
 
     def test_no_action_reaction(self):
-        reactor = BazelValidationInstallReactor(test_context())
+        reactor = BazelInstallReactor(test_context())
 
         commands = reactor.react(validation_result_with(status=Status.OK))
         self.assertEqual(len(commands), 0)
 
     def test_install_action_reaction(self):
-        reactor = BazelValidationInstallReactor(test_context())
+        reactor = BazelInstallReactor(test_context())
 
         commands = reactor.react(validation_result_with(status=Status.NOT_FOUND))
 
@@ -25,7 +26,7 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
         self.assertIn(" install", str(install_command))
 
     def test_upgrade_action_reaction(self):
-        reactor = BazelValidationInstallReactor(test_context())
+        reactor = BazelInstallReactor(test_context())
 
         commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED))
         self.assertEqual(len(commands), 1)
@@ -34,7 +35,7 @@ class BazelValidationInstallReactorTest(unittest.TestCase):
         self.assertIn(" upgrade", str(upgrade_command))
 
     def test_downgrade_action_reaction(self):
-        reactor = BazelValidationInstallReactor(test_context())
+        reactor = BazelInstallReactor(test_context())
 
         commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED))
         self.assertEqual(len(commands), 2)
