@@ -8,7 +8,7 @@ import tempfile
 from datetime import datetime
 
 from dump.env import EnvDataCollector
-from dump.intellij import IntelliJDataCollector
+from dump.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
 from inspector.api.context import Context
 from inspector.api.context import Mode
 
@@ -38,8 +38,27 @@ def _prepare_intellij_info_files(ctx):
     intellij_target_dir_path = "%s/intellij" % archive_content_dir_path
     os.mkdir(intellij_target_dir_path)
 
-    intellij = IntelliJDataCollector(ctx)
-    intellij.collect_intellij_info_files(user_home_dir_path, intellij_target_dir_path)
+    intellij = JetBrainsProductDataCollector(
+        JetBrainsProductInfo(name="IntelliJ", log_dir_segment="Idea", pref_dir_segment="Idea"), ctx)
+    intellij.collect_info_files(user_home_dir_path, intellij_target_dir_path)
+
+
+def _prepare_goland_info_files(ctx):
+    intellij_target_dir_path = "%s/goland" % archive_content_dir_path
+    os.mkdir(intellij_target_dir_path)
+
+    intellij = JetBrainsProductDataCollector(
+        JetBrainsProductInfo(name="GoLand", log_dir_segment="GoLand", pref_dir_segment="GoLand"), ctx)
+    intellij.collect_info_files(user_home_dir_path, intellij_target_dir_path)
+
+
+def _prepare_pycharm_info_files(ctx):
+    intellij_target_dir_path = "%s/pycharm" % archive_content_dir_path
+    os.mkdir(intellij_target_dir_path)
+
+    intellij = JetBrainsProductDataCollector(
+        JetBrainsProductInfo(name="PyCharm", log_dir_segment="PyCharm", pref_dir_segment="PyCharm"), ctx)
+    intellij.collect_info_files(user_home_dir_path, intellij_target_dir_path)
 
 
 def _create_dump_archive(ctx):
@@ -98,6 +117,8 @@ def tarball():
             ctx,
             _prepare_env_info_file,
             _prepare_intellij_info_files,
+            _prepare_goland_info_files,
+            _prepare_pycharm_info_files,
         )
 
         _create_dump_archive(ctx)
@@ -109,4 +130,3 @@ def tarball():
     except Exception as err:
         logger.failure("Failure! %s" % err)
         exit(1)
-
