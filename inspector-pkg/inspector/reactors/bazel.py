@@ -1,6 +1,6 @@
-from inspector.commons.context import Context
-from inspector.reactors.basereactor import Reactor, ReactorCommand
-from inspector.validators.basevalidator import ValidationResult, Status
+from inspector.api.context import Context
+from inspector.api.reactor import Reactor, ReactorCommand
+from inspector.api.validator import ValidationResult, Status
 
 
 class BazelValidationLogReactor(Reactor):

@@ -3,7 +3,7 @@ import unittest
 from inspector.collectors.bazel import BazelInfo
 from inspector.collectors.semver import SemVer
 from inspector.reactors.bazel import BazelValidationLogReactor
-from inspector.validators.basevalidator import ValidationResult
+from inspector.api.validator import ValidationResult
 from inspector.validators.bazel import Status
 from tests.testutil import test_context
 

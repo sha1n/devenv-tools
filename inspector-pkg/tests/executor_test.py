@@ -1,13 +1,12 @@
 import unittest
-from typing import Generator
 
-from inspector.collectors.basecollector import Collector
+from inspector.api.collector import Collector
+from inspector.api.context import Context
+from inspector.api.executor import Executor
+from inspector.api.reactor import Reactor, ReactorCommand
+from inspector.api.validator import Validator, ValidationResult
 from inspector.collectors.bazel import BazelInfo
 from inspector.collectors.semver import SemVer
-from inspector.commons.context import Context
-from inspector.executor import Executor
-from inspector.reactors.basereactor import Reactor, ReactorCommand
-from inspector.validators.basevalidator import Validator, ValidationResult
 from inspector.validators.bazel import Status
 from tests.testutil import test_context
 
@@ -28,9 +27,9 @@ class ExecutorTest(unittest.TestCase):
         validator = MockValidator(result=validation_result_with("data", Status.NOT_FOUND), ctx=ctx)
         reactor = MockReactor(ctx=ctx, command=ReactorCommand(cmd=["do", "nothing"]))
 
-        executor.register_collector("id", collector)
-        executor.register_validator("id", validator)
-        executor.register_reactor("id", reactor)
+        ctx.registry.register_collector("id", collector)
+        ctx.registry.register_validator("id", validator)
+        ctx.registry.register_reactor("id", reactor)
 
         self.assertEqual(executor.execute(ctx), 0)
 

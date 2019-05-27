@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from inspector.api.registry import Registry
 from inspector.util.logger import Logger, ConsoleLogger, FileLogger, NoopLogger, CompositeLogger
 
 _MODE_DEBUG = "debug"
@@ -37,10 +38,10 @@ class Mode(Enum):
         return switch.get(mode, Mode.INTERACTIVE)
 
 
-@dataclass
 class Context:
 
     logger: Logger
+    registry: Registry = Registry()
 
     def __init__(self, name, dryrun=False, mode=Mode.INTERACTIVE):
         self.mode = mode

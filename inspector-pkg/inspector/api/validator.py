@@ -2,7 +2,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
-from inspector.commons.context import Context
+from inspector.api.context import Context
 
 
 class Status(Enum):

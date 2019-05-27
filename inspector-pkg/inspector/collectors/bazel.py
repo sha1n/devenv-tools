@@ -1,8 +1,8 @@
 from collections import namedtuple
 
-from inspector.collectors.basecollector import Collector
+from inspector.api.collector import Collector
 from inspector.collectors.semver import SemVer
-from inspector.commons import context
+from inspector.api import context
 from inspector.util import cmd
 
 BazelInfo = namedtuple(typename="BazelInfo", field_names=["path", "real_path", "version"])

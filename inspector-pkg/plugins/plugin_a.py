@@ -1,6 +1,6 @@
-from inspector.validators.basevalidator import Validator, ValidationResult, Status
-from inspector.collectors.basecollector import Collector
-from inspector.commons.context import Context
+from inspector.api.validator import Validator, ValidationResult, Status
+from inspector.api.collector import Collector
+from inspector.api.context import Context
 
 
 class TestValidator(Validator):

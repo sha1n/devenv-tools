@@ -1,5 +1,5 @@
 import os
-from inspector.commons.context import Context, Mode
+from inspector.api.context import Context, Mode
 
 
 def test_context() -> Context:

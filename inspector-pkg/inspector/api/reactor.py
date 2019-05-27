@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from inspector.commons.context import Context
+from inspector.api.context import Context
 
 
 class ReactorCommand:

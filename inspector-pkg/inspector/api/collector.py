@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from inspector.commons.context import Context
+from inspector.api.context import Context
 
 
 class Collector:

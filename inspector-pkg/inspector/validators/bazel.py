@@ -1,8 +1,8 @@
 from inspector.collectors.bazel import BazelInfo
 from inspector.collectors.semver import SemVer
-from inspector.commons import context
+from inspector.api import context
 
-from inspector.validators.basevalidator import Validator, ValidationResult, Status
+from inspector.api.validator import Validator, ValidationResult, Status
 
 
 class BazelInfoValidator(Validator):

@@ -1,8 +1,8 @@
 import multiprocessing
 from collections import namedtuple
 
-from inspector.collectors.basecollector import Collector
-from inspector.commons import context
+from inspector.api.collector import Collector
+from inspector.api import context
 from inspector.util import cmd
 
 HardwareInfo = namedtuple(typename="HardwareInfo", field_names=["cpu_count", "total_ram"])

@@ -1,9 +1,9 @@
 import platform
 from collections import namedtuple
 
-from inspector.collectors.basecollector import Collector
+from inspector.api.collector import Collector
 from inspector.collectors.semver import SemVer
-from inspector.commons import context
+from inspector.api import context
 
 OsInfo = namedtuple(typename="OsInfo", field_names=["name", "version"])
 
