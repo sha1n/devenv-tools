@@ -4,4 +4,4 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source ${SCRIPT_DIR}/scripts/prereq.sh
 
-PYTHONPATH=${SCRIPT_DIR}/dump-pkg python3 -c 'from dump.tarball import tarball; tarball()' $@
+PYTHONPATH=${SCRIPT_DIR}/install-pkg python3 -c 'from installer.install import install; install()' $@
