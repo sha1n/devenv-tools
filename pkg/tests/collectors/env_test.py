@@ -1,9 +1,11 @@
+import sys
 import unittest
 
 from inspector.collectors.env import EnvDataCollector
 from tests.testutil import test_context
 
 
+@unittest.skipUnless(sys.platform == "darwin", "requires MacOS")
 class EnvTest(unittest.TestCase):
 
     def test_snapshot(self):
