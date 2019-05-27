@@ -1,3 +1,4 @@
+import shutil
 from collections import namedtuple
 
 from inspector.api.collector import Collector
@@ -16,8 +17,11 @@ class BazelInfoCollector(Collector):
 
     def collect(self):
         self.logger.info("Collecting Bazel binary information...")
-        path = self._bazel_path()
-        real_path = self._bazel_real_path()
+        path = shutil.which("bazel")
+        if path is None:
+            return None  # bazel not found
+
+        real_path = shutil.which("bazel-real")
         version = self._bazel_version()
         return BazelInfo(path, real_path, version)
 
@@ -26,14 +30,6 @@ class BazelInfoCollector(Collector):
         version = cmd.execute(["bazel-real", "version", "--gnu_format=true"]).split("\n")[1].split()[1]
         major, minor, patch = version.split(".")
         return SemVer(major, minor, patch)
-
-    @staticmethod
-    def _bazel_path():
-        return cmd.execute(["which", "bazel"]).split()[0]
-
-    @staticmethod
-    def _bazel_real_path():
-        return cmd.execute(["which", "bazel-real"]).split()[0]
 
 
 class BazelValidationLogReactor(Reactor):

@@ -1,3 +1,4 @@
+import shutil
 from collections import namedtuple
 
 from inspector.api import context
@@ -15,7 +16,11 @@ class PythonInfoCollector(Collector):
 
     def collect(self):
         self.logger.info("Collecting Python binary information...")
-        path = _python_path()
+        path = shutil.which("python")
+
+        if path is None:
+            return None  # python not found
+
         major, minor, patch = _python_version()
         return PythonInfo(path, SemVer(major, minor, patch))
 
@@ -38,6 +43,3 @@ class PythonInfoValidator(Validator):
 def _python_version():
     return cmd.execute(["python", "--version"]).split()[1].split(".")
 
-
-def _python_path():
-    return cmd.execute(["which", "python"]).split()[0]

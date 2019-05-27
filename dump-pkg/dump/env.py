@@ -51,40 +51,69 @@ class EnvDataCollector:
 
     @timeit_if(more_than_sec=5)
     def snapshot(self):
-        hw_info = HardwareInfoCollector(self.ctx).collect()
+
         data = {
             "timestamp_utc": datetime.utcnow().isoformat(),
             "user": getpass.getuser(),
             "hostname": platform.node(),
-            "cpu_count": hw_info.cpu_count,
-            "total_ram": hw_info.total_ram,
+            "cpu_count": "",
+            "total_ram": "",
             "os": {},
             "disk": {},
             "bazel": {},
             "python": {},
         }
 
-        disk_info = DiskInfoCollector(self.ctx).collect()
-        data["disk"]["filesystem"] = disk_info.filesystem
-        data["disk"]["total"] = disk_info.total
-        data["disk"]["used"] = disk_info.used
-        data["disk"]["free"] = disk_info.free
+        def set_hw_info(hw_info):
+            data["cpu_count"] = hw_info.cpu_count
+            data["total_ram"] = hw_info.total_ram
 
-        os_info = OsInfoCollector(self.ctx).collect()
-        data["os"]["name"] = os_info.name
-        data["os"]["version"] = str(os_info.version)
+        self._try_collect(HardwareInfoCollector(self.ctx), set_hw_info)
 
-        bazel_info = BazelInfoCollector(self.ctx).collect()
-        data["bazel"]["path"] = bazel_info.path
-        data["bazel"]["real_path"] = bazel_info.real_path
-        data["bazel"]["version"] = str(bazel_info.version)
+        def set_disk_info(disk_info):
+            data["disk"]["filesystem"] = disk_info.filesystem
+            data["disk"]["total"] = disk_info.total
+            data["disk"]["used"] = disk_info.used
+            data["disk"]["free"] = disk_info.free
 
-        python_info = PythonInfoCollector(self.ctx).collect()
-        data["python"]["path"] = str(python_info.path)
-        data["python"]["version"] = str(python_info.version)
+        self._try_collect(DiskInfoCollector(self.ctx), set_disk_info)
+
+        def set_os_info(os_info):
+            data["os"]["name"] = os_info.name
+            data["os"]["version"] = str(os_info.version)
+
+        self._try_collect(OsInfoCollector(self.ctx), set_os_info)
+
+        def set_bazel_info(bazel_info):
+            data["bazel"]["path"] = bazel_info.path
+            data["bazel"]["real_path"] = bazel_info.real_path
+            data["bazel"]["version"] = str(bazel_info.version)
+
+        self._try_collect(collector=BazelInfoCollector(self.ctx),
+                          action=set_bazel_info,
+                          not_found_message="Bazel not found!")
+
+        def set_python_info(python_info):
+            data["python"]["path"] = str(python_info.path)
+            data["python"]["version"] = str(python_info.version)
+
+        self._try_collect(collector=PythonInfoCollector(self.ctx),
+                          action=set_python_info,
+                          not_found_message="Python not found!")
 
         return data
 
     def _try_copy_file(self, source_file_path, target_dir_path, target_name_prefix=""):
         if not file.try_copy_file(source_file_path, target_dir_path, target_name_prefix):
             self.ctx.logger.warn("%s file expected but not found." % source_file_path)
+
+    def _try_collect(self, collector, action, not_found_message="No data collected"):
+        try:
+            result = collector.collect()
+            if result is not None:
+                action(result)
+            else:
+                self.ctx.logger.warn(not_found_message)
+        except Exception as err:
+            self.ctx.logger.warn(
+                "Failed to collect data. collector={}, error={}".format(collector.__class__.__name__, err))
