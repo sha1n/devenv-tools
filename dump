@@ -34,5 +34,5 @@ if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
 fi
 
 make install
-make support-dump
-#PYTHONPATH=${SCRIPT_DIR}/inspector-pkg python3 envdump.py $@
+
+PYTHONPATH=${SCRIPT_DIR}/dump-pkg python3 -c 'from dump.tarball import tarball; tarball()' $@

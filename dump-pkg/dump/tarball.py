@@ -1,6 +1,5 @@
 #!/bin/python
 
-import argparse
 import os
 import platform
 import tarfile
@@ -9,8 +8,7 @@ from datetime import datetime
 
 from dump.env import EnvDataCollector
 from dump.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
-from inspector.api.context import Context
-from inspector.api.context import Mode
+from inspector.cli import context, run_safe
 
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
@@ -91,26 +89,10 @@ def _safe(ctx, *methods):
         raise Exception("All data collection tasks have failed...")
 
 
-def _context():
-    parser = argparse.ArgumentParser(description='Takes an environment dump for support purposes.')
-    parser.add_argument("-m",
-                        choices=["interactive", "background"],
-                        dest="mode",
-                        default="interactive",
-                        help="one of [ interactive | background ]")
-
-    args = parser.parse_args()
-
-    return Context(name="dump", mode=Mode.from_str(args.mode))
-
-
 def tarball():
-    ctx = _context()
-    logger = ctx.logger
-    logger.info("Running in {} mode".format(str(ctx.mode)))
+    ctx = context(name="dump")
 
-    try:
-
+    def dump():
         _check_prerequisites(ctx)
 
         _safe(
@@ -122,11 +104,6 @@ def tarball():
         )
 
         _create_dump_archive(ctx)
-
-        logger.success("Done!")
-
         os.system("open -R %s" % tar_file_path)
 
-    except Exception as err:
-        logger.failure("Failure! %s" % err)
-        exit(1)
+    run_safe(ctx, dump)
