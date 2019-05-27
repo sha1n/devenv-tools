@@ -2,6 +2,7 @@
 clean:
 	rm -rf build
 	rm -rf dist
+	rm -rf *.egg-info
 
 test:
 	python3 setup.py test
