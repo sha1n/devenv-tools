@@ -1,11 +1,14 @@
 from setuptools import setup, find_packages
 
+PKG_NAME="devenv-tools-pkg-sha1n"
+PKG_VERSION="0.0.1"
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="devenv-tools-pkg-sha1n",
-    version="0.0.1",
+    name=PKG_NAME,
+    version=PKG_VERSION,
     author="Shai Nagar",
     author_email="shain@wix.com",
     description="Development environment management tools",
