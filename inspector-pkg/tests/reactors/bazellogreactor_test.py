@@ -1,10 +1,8 @@
 import unittest
 
-from inspector.collectors.bazel import BazelInfo
-from inspector.collectors.semver import SemVer
-from inspector.reactors.bazel import BazelValidationLogReactor
-from inspector.api.validator import ValidationResult
-from inspector.validators.bazel import Status
+from inspector.components.bazel import BazelInfo, BazelValidationLogReactor
+from inspector.components.semver import SemVer
+from inspector.api.validator import ValidationResult, Status
 from tests.testutil import test_context
 
 

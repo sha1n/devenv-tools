@@ -3,11 +3,11 @@ import json
 import platform
 from datetime import datetime
 
-from inspector.collectors.bazel import BazelInfoCollector
-from inspector.collectors.disk import DiskInfoCollector
-from inspector.collectors.hardware import HardwareInfoCollector
-from inspector.collectors.os import OsInfoCollector
-from inspector.collectors.python import PythonInfoCollector
+from inspector.components.bazel import BazelInfoCollector
+from inspector.components.disk import DiskInfoCollector
+from inspector.components.hardware import HardwareInfoCollector
+from inspector.components.os import OsInfoCollector
+from inspector.components.python import PythonInfoCollector
 from inspector.util import file
 from inspector.util.diag import timeit_if
 

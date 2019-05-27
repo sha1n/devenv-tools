@@ -4,10 +4,9 @@ from inspector.api.collector import Collector
 from inspector.api.context import Context
 from inspector.api.executor import Executor
 from inspector.api.reactor import Reactor, ReactorCommand
-from inspector.api.validator import Validator, ValidationResult
-from inspector.collectors.bazel import BazelInfo
-from inspector.collectors.semver import SemVer
-from inspector.validators.bazel import Status
+from inspector.api.validator import Validator, ValidationResult, Status
+from inspector.components.bazel import BazelInfo
+from inspector.components.semver import SemVer
 from tests.testutil import test_context
 
 

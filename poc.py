@@ -1,5 +1,5 @@
 from inspector.api.context import Context
-from inspector.collectors.bazel import BazelInfoCollector, SemVer
+from inspector.components.bazel import BazelInfoCollector, SemVer
 from inspector.validators.bazel import BazelInfoValidator
 from inspector.reactors.bazel import BazelValidationLogReactor, BazelValidationInstallReactor
 from inspector.api.executor import Executor

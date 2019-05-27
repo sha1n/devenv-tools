@@ -1,8 +1,8 @@
 import unittest
 
-from inspector.collectors.python import PythonInfo
-from inspector.collectors.semver import SemVer
-from inspector.validators.python import PythonInfoValidator, Status
+from inspector.api.validator import Status
+from inspector.components.python import PythonInfo, PythonInfoValidator
+from inspector.components.semver import SemVer
 from tests.testutil import test_context
 
 
