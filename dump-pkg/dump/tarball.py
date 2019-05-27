@@ -7,8 +7,8 @@ import tarfile
 import tempfile
 from datetime import datetime
 
-from inspector.collectors.env import EnvDataCollector
-from inspector.collectors.intellij import IntelliJDataCollector
+from dump.env import EnvDataCollector
+from dump.intellij import IntelliJDataCollector
 from inspector.commons.context import Context
 from inspector.commons.context import Mode
 
@@ -85,7 +85,7 @@ def _context():
     return Context(name="dump", mode=Mode.from_str(args.mode))
 
 
-def dump():
+def tarball():
     ctx = _context()
     logger = ctx.logger
     logger.info("Running in {} mode".format(str(ctx.mode)))

@@ -10,6 +10,7 @@ fi
 function onexit() {
   echo
   echo "Cleaning up..."
+  make uninstall
   rm -rf "$TMP_DIR"
 }
 
@@ -24,6 +25,11 @@ curl -L https://github.com/sha1n/macos-devenv-dump-poc/tarball/master | tar zx -
 cd "dump"
 
 echo
+echo "Installing packages..."
+echo
+make install
+
+echo
 echo "Executing..."
 echo
-bash -c ./dump
+make support-dump

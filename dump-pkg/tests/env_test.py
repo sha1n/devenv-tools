@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-from inspector.collectors.env import EnvDataCollector
+from dump.env import EnvDataCollector
 from tests.testutil import test_context
 
 

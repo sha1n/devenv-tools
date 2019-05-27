@@ -10,4 +10,4 @@ install:
 	python3 setup.py install
 
 uninstall:
-	pip3 uninstall -y devenv-tools-pkg-sha1n
+	pip3 uninstall -y workstation-support-dump-sha1n

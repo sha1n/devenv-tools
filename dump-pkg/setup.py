@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-PKG_NAME="devenv-tools-pkg-sha1n"
+PKG_NAME="workstation-support-dump-sha1n"
 PKG_VERSION="0.0.1"
 
 with open("README.md", "r") as fh:
@@ -11,7 +11,7 @@ setup(
     version=PKG_VERSION,
     author="Shai Nagar",
     author_email="shain@wix.com",
-    description="Development environment management tools",
+    description="Development environment support dump tool",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/sha1n/macos-devenv-dump-poc",
