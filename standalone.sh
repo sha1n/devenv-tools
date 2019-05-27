@@ -24,6 +24,8 @@ curl -L https://github.com/sha1n/macos-devenv-dump-poc/tarball/master | tar zx -
 
 cd "dump"
 
+source ./scripts/prereq.sh
+
 echo
 echo "Installing packages..."
 echo
