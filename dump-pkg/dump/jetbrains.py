@@ -25,8 +25,15 @@ class JetBrainsProductDataCollector:
 
     @timeit_if(more_than_sec=20)
     def collect_info_files(self, user_home_dir_path, target_dir_path):
-        self.ctx.logger.info("Collecting {} product(s) info...".format(self.product_info.name))
-        for file_path in self._collect_product_info_files():
+        product_info_files = list(self._collect_product_info_files())
+        if len(product_info_files) > 0:
+            self._collect_product_files(product_info_files, target_dir_path, user_home_dir_path)
+
+    def _collect_product_files(self, product_info_files, target_dir_path, user_home_dir_path):
+        os.mkdir(target_dir_path)
+        self.ctx.logger.info("{} installation detected! Collecting files...".format(self.product_info.name))
+
+        for file_path in product_info_files:
             version = self._read_json_property(file_path, "version")
             code = self._read_json_property(file_path, "productCode")
             copyfile(file_path,

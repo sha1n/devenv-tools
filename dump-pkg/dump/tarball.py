@@ -34,7 +34,6 @@ def _prepare_env_info_file(ctx):
 
 def _prepare_intellij_info_files(ctx):
     intellij_target_dir_path = "%s/intellij" % archive_content_dir_path
-    os.mkdir(intellij_target_dir_path)
 
     intellij = JetBrainsProductDataCollector(
         JetBrainsProductInfo(name="IntelliJ", log_dir_segment="Idea", pref_dir_segment="Idea"), ctx)
@@ -42,21 +41,19 @@ def _prepare_intellij_info_files(ctx):
 
 
 def _prepare_goland_info_files(ctx):
-    intellij_target_dir_path = "%s/goland" % archive_content_dir_path
-    os.mkdir(intellij_target_dir_path)
+    goland_target_dir_path = "%s/goland" % archive_content_dir_path
 
-    intellij = JetBrainsProductDataCollector(
+    goland = JetBrainsProductDataCollector(
         JetBrainsProductInfo(name="GoLand", log_dir_segment="GoLand", pref_dir_segment="GoLand"), ctx)
-    intellij.collect_info_files(user_home_dir_path, intellij_target_dir_path)
+    goland.collect_info_files(user_home_dir_path, goland_target_dir_path)
 
 
 def _prepare_pycharm_info_files(ctx):
-    intellij_target_dir_path = "%s/pycharm" % archive_content_dir_path
-    os.mkdir(intellij_target_dir_path)
+    pycharm_target_dir_path = "%s/pycharm" % archive_content_dir_path
 
-    intellij = JetBrainsProductDataCollector(
+    pycharm = JetBrainsProductDataCollector(
         JetBrainsProductInfo(name="PyCharm", log_dir_segment="PyCharm", pref_dir_segment="PyCharm"), ctx)
-    intellij.collect_info_files(user_home_dir_path, intellij_target_dir_path)
+    pycharm.collect_info_files(user_home_dir_path, pycharm_target_dir_path)
 
 
 def _create_dump_archive(ctx):
