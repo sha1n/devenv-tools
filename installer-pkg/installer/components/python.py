@@ -4,8 +4,9 @@ from inspector.api.validator import ValidationResult, Status
 
 
 class PythonInstallReactor(Reactor):
-    def __init__(self, ctx: Context):
+    def __init__(self, ctx: Context, formula="python"):
         super().__init__(ctx)
+        self.formula = formula
 
     def react(self, data: ValidationResult):
         self.ctx.logger.info("Detected Python version: {} - {}!".format(data.input_data.version, data.status.name))
@@ -21,17 +22,11 @@ class PythonInstallReactor(Reactor):
 
         return commands
 
-    # fixme that command is not necessarily the real one
-    @staticmethod
-    def _install_cmd() -> ReactorCommand:
-        return ReactorCommand(["brew", "install", "python"])
+    def _install_cmd(self) -> ReactorCommand:
+        return ReactorCommand(["brew", "install", self.formula])
 
-    # fixme that command is not necessarily the real one
-    @staticmethod
-    def _upgrade_cmd() -> ReactorCommand:
-        return ReactorCommand(["brew", "upgrade", "python"])
+    def _upgrade_cmd(self) -> ReactorCommand:
+        return ReactorCommand(["brew", "upgrade", self.formula])
 
-    # fixme that command is not necessarily the real one
-    @staticmethod
-    def _uninstall_cmd() -> ReactorCommand:
-        return ReactorCommand(["brew", "uninstall", "python"])
+    def _uninstall_cmd(self) -> ReactorCommand:
+        return ReactorCommand(["brew", "uninstall", self.formula])

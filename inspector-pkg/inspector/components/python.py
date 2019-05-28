@@ -1,7 +1,7 @@
 import shutil
 from collections import namedtuple
 
-from inspector.api import context
+from inspector.api.context import Context
 from inspector.api.collector import Collector
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.components.semver import SemVer
@@ -11,22 +11,26 @@ PythonInfo = namedtuple(typename="PythonInfo", field_names=["path", "version"])
 
 
 class PythonInfoCollector(Collector):
-    def __init__(self, ctx: context.Context):
+    def __init__(self, ctx: Context, binary_name="python"):
         super().__init__(ctx)
+        self.binary_name = binary_name
 
     def collect(self):
-        self.logger.info("Collecting Python binary information...")
-        path = shutil.which("python")
+        self.logger.info("Collecting Python binary information for {}...".format(self.binary_name))
+        path = shutil.which(self.binary_name)
 
         if path is None:
             return None  # python not found
 
-        major, minor, patch = _python_version()
+        major, minor, patch = self._python_version()
         return PythonInfo(path, SemVer(major, minor, patch))
+
+    def _python_version(self):
+        return cmd.execute([self.binary_name, "--version"]).split()[1].split(".")
 
 
 class PythonInfoValidator(Validator):
-    def __init__(self, expected_ver: SemVer, ctx: context.Context):
+    def __init__(self, expected_ver: SemVer, ctx: Context):
         super().__init__(ctx)
         self.expected_ver = expected_ver
 
@@ -34,12 +38,10 @@ class PythonInfoValidator(Validator):
         if input_data is None:
             return ValidationResult(input_data, Status.NOT_FOUND)
 
-        if self.expected_ver.major != input_data.version.major:
-            return ValidationResult(input_data, Status.ERROR)
+        if int(self.expected_ver.major) > int(input_data.version.major) \
+                or int(self.expected_ver.minor) > int(input_data.version.minor):
+            return ValidationResult(input_data, Status.UPGRADE_REQUIRED)
         else:
             return ValidationResult(input_data, Status.OK)
 
-
-def _python_version():
-    return cmd.execute(["python", "--version"]).split()[1].split(".")
 
