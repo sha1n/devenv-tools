@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
-PKG_NAME="workstation-inspector-sha1n"
-PKG_VERSION="0.0.1"
+PKG_NAME = "workstation-inspector-sha1n"
+PKG_VERSION = "0.0.1"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
