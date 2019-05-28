@@ -1,3 +1,5 @@
+import os
+
 from inspector.api.context import Context
 
 
@@ -12,14 +14,15 @@ class Executor:
             ctx.logger.failure("Failure! %s" % err)
             return 1
 
-    def _exec(self, ctx: Context):
+    @staticmethod
+    def _exec(ctx: Context):
         for comp_id in ctx.registry.component_ids():
             collector = ctx.registry.find_collector(comp_id)
             data = collector.collect()
 
-            result = self._validate(comp_id, data, ctx)
+            result = Executor._validate(comp_id, data, ctx)
             if result is not None:
-                self._react(comp_id, result, ctx)
+                Executor._react(comp_id, result, ctx)
 
     @staticmethod
     def _validate(name, data, ctx):
@@ -31,7 +34,24 @@ class Executor:
 
     @staticmethod
     def _react(comp_id, validation_result, ctx):
-        # fixme: if not ctx.dryrun:
-        for reactor in ctx.registry.find_reactors(comp_id):
-            for command in reactor.react(validation_result):
-                ctx.logger.info("\t~ {}".format(command))  # fixme should execute...
+        def exec_with(fn):
+            for reactor in ctx.registry.find_reactors(comp_id):
+                for command in reactor.react(validation_result):
+                    fn(command, ctx)
+
+        if ctx.dryrun:
+            exec_with(Executor._log_command)
+        else:
+            exec_with(Executor._execute_command)
+
+    @staticmethod
+    def _execute_command(command, ctx):
+        ctx.logger.info("Executing command:\n\t~ {}".format(command))
+        code = os.system(str(command))
+
+        if code != 0 and not command.silent:
+            ctx.logger.failure("Exit code {}".format(code))
+
+    @staticmethod
+    def _log_command(command, ctx):
+        ctx.logger.info("\t~ {}".format(command))

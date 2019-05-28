@@ -86,7 +86,7 @@ class EnvDataCollector:
 
         def set_bazel_info(bazel_info):
             data["bazel"]["path"] = bazel_info.path
-            data["bazel"]["real_path"] = bazel_info.real_path
+            data["bazel"]["bazelisk"] = bazel_info.bazelisk
             data["bazel"]["version"] = str(bazel_info.version)
 
         self._try_collect(collector=BazelInfoCollector(self.ctx),

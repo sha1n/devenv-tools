@@ -27,7 +27,7 @@ def _installer_context():
     registry = ctx.registry
 
     registry.register_collector(BAZEL_COMP_ID, BazelInfoCollector(ctx))
-    registry.register_validator(BAZEL_COMP_ID, BazelInfoValidator(expected_ver=SemVer("0", "24", "0"), ctx=ctx))
+    registry.register_validator(BAZEL_COMP_ID, BazelInfoValidator(ctx=ctx))
     registry.register_reactor(BAZEL_COMP_ID, BazelInstallReactor(ctx))
 
     registry.register_collector(PYTHON_COMP_ID, PythonInfoCollector(ctx))

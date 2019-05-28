@@ -11,14 +11,22 @@ def context(name):
                         dest="mode",
                         default="interactive",
                         help="one of [ interactive | background ]")
+    parser.add_argument("--dryrun",
+                        default=False,
+                        dest="dryrun",
+                        action="store_true",
+                        help="runs in dry run mode")
 
     args = parser.parse_args()
 
-    return Context(name=name, mode=Mode.from_str(args.mode))
+    return Context(name=name, mode=Mode.from_str(args.mode), dryrun=args.dryrun)
 
 
 def run_safe(ctx: Context, fn):
     logger = ctx.logger
+    if ctx.dryrun:
+        logger.info("*** DRY RUN ***")
+
     logger.info("Running in {} mode".format(str(ctx.mode)))
 
     try:

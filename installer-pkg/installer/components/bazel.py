@@ -8,30 +8,35 @@ class BazelInstallReactor(Reactor):
         super().__init__(ctx)
 
     def react(self, data: ValidationResult):
-        self.ctx.logger.info("Detected Bazel version: {} - {}!".format(data.input_data.version, data.status.name))
-
         commands = []
-        if data.status == Status.NOT_FOUND:
-            commands.append(self._install_cmd())
-        elif data.status == data.status.UPGRADE_REQUIRED:
-            commands.append(self._upgrade_cmd())
-        elif data.status == data.status.DOWNGRADE_REQUIRED:
-            commands.append(self._uninstall_cmd())
-            commands.append(self._install_cmd())
+
+        if data.status == Status.OK:
+            self.logger.info("Bazelisk installation detected. (will attempt upgrade).")
+            commands.append(self._upgrade_bazelisk_command())
+
+        elif data.status == Status.NOT_FOUND:
+            self.logger.info("Bazel/Bazelisk installation not found. (will be installed).")
+            commands += self._install_bazelisk_commands()
+
+        else: # fixme shai: should probably be more explicit/strict
+            self.logger.info("Bazel installation detected. (will be replaced by Bazelisk).")
+            commands.append(self._uninstall_bazel_command())
+            commands += self._install_bazelisk_commands()
 
         return commands
 
-    # fixme that command is not necessarily the real one
     @staticmethod
-    def _install_cmd() -> ReactorCommand:
-        return ReactorCommand(["brew", "install", "bazel"])
+    def _install_bazelisk_commands():
+        return [
+            ReactorCommand(["brew", "tap", "bazelbuild/tap/bazelisk"], silent=True),
+            ReactorCommand(["brew", "tap-pin", "bazelbuild/tap/bazelisk"], silent=True),
+            ReactorCommand(["brew", "install", "bazelbuild/tap/bazelisk"])
+        ]
 
-    # fixme that command is not necessarily the real one
     @staticmethod
-    def _upgrade_cmd() -> ReactorCommand:
-        return ReactorCommand(["brew", "upgrade", "bazel"])
+    def _upgrade_bazelisk_command() -> ReactorCommand:
+        return ReactorCommand(["brew", "upgrade", "bazelbuild/tap/bazelisk"], silent=True)
 
-    # fixme that command is not necessarily the real one
     @staticmethod
-    def _uninstall_cmd() -> ReactorCommand:
-        return ReactorCommand(["brew", "uninstall", "bazel"])
+    def _uninstall_bazel_command():
+        return ReactorCommand(["brew", "uninstall", "bazelbuild/tap/bazel"])

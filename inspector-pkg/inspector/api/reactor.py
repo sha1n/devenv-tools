@@ -5,9 +5,10 @@ from inspector.api.context import Context
 
 
 class ReactorCommand:
-    def __init__(self, cmd):
+    def __init__(self, cmd, silent=False):
         super().__init__()
         self.cmd = cmd
+        self.silent = silent
 
     def __str__(self):
         return " ".join(self.cmd)
