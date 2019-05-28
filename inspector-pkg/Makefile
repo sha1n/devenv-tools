@@ -8,7 +8,7 @@ test:
 	python3 setup.py test
 
 install:
-	python3 setup.py install
+	pip3 install .
 
 uninstall:
 	pip3 uninstall -y workstation-inspector-sha1n

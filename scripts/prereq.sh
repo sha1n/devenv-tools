@@ -29,5 +29,10 @@ if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
     brew upgrade python3
 fi
 
+echo
 echo "Installing packages..."
-make install >/dev/null 2>&1
+echo
+pip3 install ./inspector-pkg
+pip3 install ./installer-pkg
+pip3 install ./dump-pkg
+echo
