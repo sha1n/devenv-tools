@@ -2,6 +2,7 @@ import os
 import shutil
 from collections import namedtuple
 
+from inspector.util.cmd import try_execute
 from inspector.api.collector import Collector
 from inspector.api.context import Context
 from inspector.api.validator import ValidationResult, Status, Validator
@@ -36,7 +37,9 @@ class BazelInfoCollector(Collector):
 
     @staticmethod
     def _bazelisk_exists():
-        return os.system("brew ls -1 bazelisk | grep bazelisk") == 0
+        code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"])
+
+        return code == 0 and "bazelisk" in stdout
 
 
 class BazelInfoValidator(Validator):
