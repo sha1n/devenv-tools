@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
+function onexit() {
+    echo
+    echo "Cleaning up..."
+    pip3 uninstall -y workstation-support-dump-sha1n >/dev/null 2>&1
+    pip3 uninstall -y workstation-installer-sha1n >/dev/null 2>&1
+    pip3 uninstall -y workstation-inspector-dump-sha1n >/dev/null 2>&1
+}
+
+trap onexit EXIT
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source ${SCRIPT_DIR}/scripts/prereq.sh
 
-PYTHONPATH=${SCRIPT_DIR}/dump-pkg python3 -c 'from dump.tarball import tarball; tarball()' $@
+echo
+python3 -c 'from dump.tarball import tarball; tarball()' $@

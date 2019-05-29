@@ -2,19 +2,10 @@
 
 set -e
 
-function onexit() {
-  echo "Removing installed packages..."
-  make uninstall >/dev/null 2>&1
-}
-
-trap onexit EXIT
-
 PYTHON_REQUIRED_MAJOR="3"
 PYTHON_REQUIRED_MINOR="7"
 
-if command -v python3 &>/dev/null; then
-    echo "Python $PYTHON_REQUIRED_MAJOR.x installed!"
-else
+if not command -v python3 &>/dev/null; then
     echo "Python $PYTHON_REQUIRED_MAJOR.x is required to run this program..."
     echo "Trying to install the latest Python $PYTHON_REQUIRED_MAJOR version..."
     brew install python3
@@ -29,10 +20,7 @@ if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
     brew upgrade python3
 fi
 
-echo
 echo "Installing packages..."
-echo
-pip3 install ./inspector-pkg
-pip3 install ./installer-pkg
-pip3 install ./dump-pkg
-echo
+pip3 install ./inspector-pkg >/dev/null 2>&1
+pip3 install ./installer-pkg >/dev/null 2>&1
+pip3 install ./dump-pkg >/dev/null 2>&1
