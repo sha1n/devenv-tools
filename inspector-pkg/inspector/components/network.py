@@ -5,6 +5,7 @@ from typing import List
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
+from inspector.util.diag import timeit_if
 
 NetConnectivityInfo = namedtuple(typename="NetConnectivityInfo", field_names=["address", "ok", "time"])
 
@@ -19,6 +20,7 @@ class NetworkConnectivityInfoCollector(Collector):
     def collect(self) -> List[NetConnectivityInfo]:
         return list((self._check_connectivity(address) for address in self._addresses))
 
+    @timeit_if(more_than_sec=1)
     def _check_connectivity(self, address):
         try:
             self.ctx.logger.log("Checking connectivity to {}".format(address))

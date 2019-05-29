@@ -18,7 +18,13 @@ def timeit_if(more_than_sec=0, alt_text=None):
                 module = func.__module__
                 msg = alt_text
                 if msg is None:
-                    msg = "Function '{}' from [{}] took {} secs".format(func.__name__, module, run_time)
+                    msg = "Function '{}' from [{}] took {} secs. args: {}, kwargs: {}".format(
+                        func.__name__,
+                        module,
+                        run_time,
+                        args,
+                        kwargs
+                    )
 
                 if more_than_sec != 0:
                     _logger.debug(msg)
