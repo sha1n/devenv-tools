@@ -1,11 +1,15 @@
 from dump.files import copytree_if, try_copy_file
+from inspector.util.cmd import capture_output
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 
 
 def collect_files(user_home_dir, target_dir, ctx):
+    ctx.logger.info("Collecting GCloud files...")
+
     _collect_logs(user_home_dir, target_dir, ctx)
     _collect_config(user_home_dir, target_dir, ctx)
+    _collect_info(target_dir, ctx)
 
 
 def _collect_logs(user_home_dir, target_dir, ctx):
@@ -26,3 +30,7 @@ def _collect_config(user_home_dir, target_dir, ctx):
     active_config_path = "{}/.config/gcloud/active_config".format(user_home_dir)
     if not try_copy_file(active_config_path, target_dir):
         ctx.logger.warn("{} file expected but not found.".format(config_default_path))
+
+
+def _collect_info(target_dir, ctx):
+    capture_output(cmd=["gcloud", "info"], target_dir_path=target_dir, file_name="gcloud_info.txt", ctx=ctx)

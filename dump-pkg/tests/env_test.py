@@ -46,8 +46,8 @@ class EnvTest(unittest.TestCase):
 
         self.assert_non_empty_key(snapshot, "docker")
         docker_info = snapshot["docker"]
+        self.assert_non_empty_key(docker_info, "server_installed")
         self.assert_non_empty_key(docker_info, "configured")
-        self.assert_non_empty_key(docker_info, "running")
 
         self.assert_non_empty_key(snapshot, "network")
         network_info = snapshot["network"]

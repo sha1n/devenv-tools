@@ -4,12 +4,13 @@ import os
 import platform
 from datetime import datetime
 
+import dump.docker as docker
 import dump.gcloud as gcloud
 from dump.files import try_copy_file
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector
 from inspector.components.hardware import HardwareInfoCollector
-from inspector.components.network import NetworkConnectivityInfoCollector
+from inspector.components.network import UrlConnectivityInfoCollector
 from inspector.components.os import OsInfoCollector
 from inspector.components.python import PythonInfoCollector
 from inspector.util.diag import timeit_if
@@ -62,19 +63,10 @@ class EnvDataCollector:
 
     @timeit_if(more_than_sec=3)
     def _copy_docker_config_files(self, target_dir_path):
-        self.ctx.logger.info("Collecting Docker For Mac config files...")
-
-        settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % self.user_home_dir_path
-        docker_config_file_path = "%s/.docker/config.json" % self.user_home_dir_path
-        docker_daemon_file_path = "%s/.docker/daemon.json" % self.user_home_dir_path
-
-        self._try_copy_file(settings_file_path, target_dir_path)
-        self._try_copy_file(docker_config_file_path, target_dir_path)
-        self._try_copy_file(docker_daemon_file_path, target_dir_path)
+        docker.copy_docker_files(self.user_home_dir_path, target_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=3)
     def _copy_gcloud_files(self, target_dir_path):
-        self.ctx.logger.info("Collecting GCloud files...")
         gcloud.collect_files(self.user_home_dir_path, target_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=5)
@@ -97,9 +89,9 @@ class EnvDataCollector:
 
         data["gcloud"]["configured"] = os.path.exists("{}/.config/gcloud".format(self.user_home_dir_path))
         data["docker"]["configured"] = os.path.exists("{}/.docker".format(self.user_home_dir_path))
-        data["docker"]["running"] = os.path.exists("/var/run/docker.sock")
+        data["docker"]["server_installed"] = os.path.exists("/var/run/docker.sock")
 
-        net_connectivity_info_collector = NetworkConnectivityInfoCollector(ctx=self.ctx)
+        net_connectivity_info_collector = UrlConnectivityInfoCollector(ctx=self.ctx)
         results = []
         data["network"]["connectivity_checks"] = results
         for result in net_connectivity_info_collector.collect():

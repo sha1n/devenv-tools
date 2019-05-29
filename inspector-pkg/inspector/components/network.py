@@ -10,7 +10,7 @@ from inspector.util.diag import timeit_if
 NetConnectivityInfo = namedtuple(typename="NetConnectivityInfo", field_names=["address", "ok", "time"])
 
 
-class NetworkConnectivityInfoCollector(Collector):
+class UrlConnectivityInfoCollector(Collector):
 
     def __init__(self, ctx: Context):
         super().__init__(ctx)
