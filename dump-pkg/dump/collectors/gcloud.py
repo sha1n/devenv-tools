@@ -1,4 +1,4 @@
-from dump.files import copytree_if, try_copy_file
+from dump.collectors.files import copytree_if, try_copy_file
 from inspector.util.cmd import capture_output
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds

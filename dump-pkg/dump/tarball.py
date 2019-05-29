@@ -6,8 +6,8 @@ import tarfile
 import tempfile
 from datetime import datetime
 
-from dump.env import EnvDataCollector
-from dump.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
+from dump.collectors.env import EnvDataCollector
+from dump.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
 from inspector.cli import context, run_safe
 
 user_home_dir_path = os.path.expanduser("~")

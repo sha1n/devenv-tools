@@ -21,8 +21,8 @@ uninstall:
 	make -C ./installer-pkg uninstall
 	make -C ./dump-pkg uninstall
 
-run-support-dump:
-	python3 -c 'from dump.tarball import tarball; tarball()' -m=debug
+run-dump:
+	python3 -m dump -m=debug
 
 run-installer:
-	python3 -c 'from installer.install import install; install()' -m=debug --dryrun
+	python3 -m installer -m=debug --dryrun

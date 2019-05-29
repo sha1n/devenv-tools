@@ -1,4 +1,4 @@
-from dump.files import try_copy_file
+from dump.collectors.files import try_copy_file
 from inspector.util.cmd import capture_output
 
 

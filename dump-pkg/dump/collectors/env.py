@@ -4,9 +4,9 @@ import os
 import platform
 from datetime import datetime
 
-import dump.docker as docker
-import dump.gcloud as gcloud
-from dump.files import try_copy_file
+import dump.collectors.docker as docker
+import dump.collectors.gcloud as gcloud
+from dump.collectors.files import try_copy_file
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector
 from inspector.components.hardware import HardwareInfoCollector

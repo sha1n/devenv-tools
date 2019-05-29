@@ -33,4 +33,4 @@ source ./scripts/prereq.sh
 
 echo "Executing..."
 echo
-python3 -c 'from dump.tarball import tarball; tarball()'
+python3 -m dump $@

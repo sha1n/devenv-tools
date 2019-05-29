@@ -5,7 +5,7 @@ from os import listdir
 from shutil import copyfile
 from shutil import copytree
 
-from dump.files import copytree_if, file_name_from
+from dump.collectors.files import copytree_if, file_name_from
 from inspector.api.context import Context
 from inspector.util.diag import timeit_if
 

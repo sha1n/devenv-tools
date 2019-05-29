@@ -15,4 +15,4 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${SCRIPT_DIR}/scripts/prereq.sh
 
 echo
-python3 -c 'from dump.tarball import tarball; tarball()' $@
+python3 -m dump $@

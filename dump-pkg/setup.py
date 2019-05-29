@@ -24,4 +24,5 @@ setup(
     install_requires=[
         'workstation-inspector-sha1n>=0.0.1',
     ],
+    test_suite="tests"
 )
