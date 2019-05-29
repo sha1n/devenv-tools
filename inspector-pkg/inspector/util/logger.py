@@ -35,7 +35,6 @@ class Logger(object):
     def log_command_output(self, output): pass
 
 
-
 class ConsoleLogger(Logger):
     def __init__(self, level=logging.INFO):
         self.logger = logging.getLogger("console")
@@ -46,7 +45,12 @@ class ConsoleLogger(Logger):
         self.logger.setLevel(level)
 
     def log(self, message):
-        self.logger.info(msg="- \033[0;37;40m{}\033[0;0m\r".format(message))
+        if self.logger.level == logging.DEBUG:
+            term = "\n"
+        else:
+            term = "\r"
+
+        self.logger.info(msg="- \033[0;37;40m{}\033[0;0m{}".format(message, term))
 
     def debug(self, message):
         self.logger.debug("{}- \033[0;37;40m{}\033[0;0m\n".format(_ERASE_LINE, message))

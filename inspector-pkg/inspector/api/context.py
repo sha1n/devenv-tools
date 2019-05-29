@@ -48,7 +48,7 @@ class Context:
         if mode == Mode.INTERACTIVE:
             self.logger = ConsoleLogger()
         elif mode == Mode.BACKGROUND:
-            self.logger = FileLogger(filename="{}.log".format(name))
+            self.logger = FileLogger(filename="{}.log".format(name), level=logging.DEBUG)
         elif mode == Mode.DEBUG:
             self.logger = CompositeLogger(
                 FileLogger(filename="{}.log".format(name), level=logging.DEBUG),

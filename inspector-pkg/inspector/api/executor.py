@@ -22,19 +22,27 @@ class Executor:
             result = Executor._validate(comp_id, data, ctx)
             if result is not None:
                 Executor._react(comp_id, result, ctx)
+            else:
+                ctx.logger.warn("{} validator produced no result!".format(comp_id))
 
     @staticmethod
-    def _validate(name, data, ctx):
-        validator = ctx.registry.find_validator(name)
+    def _validate(comp_id, data, ctx):
+        validator = ctx.registry.find_validator(comp_id)
         if validator is not None:
             return validator.validate(data)
         else:
+            ctx.logger.warn("No validator registered for {}".format(comp_id))
             return None
 
     @staticmethod
     def _react(comp_id, validation_result, ctx):
         def exec_with(fn):
-            for reactor in ctx.registry.find_reactors(comp_id):
+            reactors = ctx.registry.find_reactors(comp_id)
+
+            if len(reactors) == 0:
+                ctx.logger.debug("No reactors registered for {}".format(comp_id))
+
+            for reactor in reactors:
                 for command in reactor.react(validation_result):
                     fn(command, ctx)
 
