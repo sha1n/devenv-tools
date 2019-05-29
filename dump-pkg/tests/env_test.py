@@ -9,7 +9,7 @@ from tests.testutil import test_context
 class EnvTest(unittest.TestCase):
 
     def test_snapshot(self):
-        env = EnvDataCollector(test_context())
+        env = EnvDataCollector(test_context(), "", "")
         snapshot = env.snapshot()
         self.assertIsNotNone(snapshot)
         self.assert_non_empty_key(snapshot, "timestamp_utc")
@@ -39,6 +39,14 @@ class EnvTest(unittest.TestCase):
         self.assert_non_empty_key(disk_info, "free")
         self.assert_non_empty_key(disk_info, "used")
         self.assert_non_empty_key(disk_info, "total")
+
+        self.assert_non_empty_key(snapshot, "gcloud")
+        gcloud_info = snapshot["gcloud"]
+        self.assert_non_empty_key(gcloud_info, "configured")
+
+        self.assert_non_empty_key(snapshot, "docker")
+        docker_info = snapshot["docker"]
+        self.assert_non_empty_key(docker_info, "configured")
 
     def assert_non_empty_key(self, dictionary, key):
         self.assertTrue(key in dictionary, "key \"%s\" does not exist" % key)

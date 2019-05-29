@@ -1,13 +1,12 @@
 import json
 import os
-import time
 from collections import namedtuple
 from os import listdir
 from shutil import copyfile
 from shutil import copytree
 
+from dump.files import copytree_if, file_name_from
 from inspector.api.context import Context
-from inspector.util import file
 from inspector.util.diag import timeit_if
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
@@ -19,15 +18,17 @@ JetBrainsProductInfo = namedtuple(
 
 
 class JetBrainsProductDataCollector:
-    def __init__(self, product_info: JetBrainsProductInfo, ctx: Context):
+    def __init__(self, product_info: JetBrainsProductInfo, user_home_dir_path, target_dir_path, ctx: Context):
         self.ctx = ctx
         self.product_info = product_info
+        self.user_home_dir_path = user_home_dir_path
+        self.target_dir_path = target_dir_path
 
     @timeit_if(more_than_sec=20)
-    def collect_info_files(self, user_home_dir_path, target_dir_path):
+    def collect(self):
         product_info_files = list(self._collect_product_info_files())
         if len(product_info_files) > 0:
-            self._collect_product_files(product_info_files, target_dir_path, user_home_dir_path)
+            self._collect_product_files(product_info_files, self.target_dir_path, self.user_home_dir_path)
 
     def _collect_product_files(self, product_info_files, target_dir_path, user_home_dir_path):
         os.mkdir(target_dir_path)
@@ -42,18 +43,18 @@ class JetBrainsProductDataCollector:
         self.ctx.logger.log(
             "Collecting {} logs... (files older than two weeks will be ignored)".format(self.product_info.name))
         for logs_dir_path in self._collect_log_libraries(user_home_dir_path):
-            dir_name = file.name_from(logs_dir_path)
+            dir_name = file_name_from(logs_dir_path)
 
             self.ctx.logger.log("Copying {}...".format(logs_dir_path))
-            copytree(
-                src=logs_dir_path,
-                dst="{}/logs/{}".format(target_dir_path, dir_name),
-                ignore=self._ignore_files_mtime_gt(two_week_sec)
+            copytree_if(
+                source_dir=logs_dir_path,
+                target_dir="{}/logs/{}".format(target_dir_path, dir_name),
+                modified_in_the_past_sec=two_week_sec
             )
 
         self.ctx.logger.log("Collecting {} configuration files...".format(self.product_info.name))
         for config_dir_path in self._collect_configurations(user_home_dir_path):
-            dir_name = file.name_from(config_dir_path)
+            dir_name = file_name_from(config_dir_path)
 
             self.ctx.logger.log("Copying {}...".format(config_dir_path))
             copytree(config_dir_path, "{}/configs/{}".format(target_dir_path, dir_name))
@@ -89,10 +90,3 @@ class JetBrainsProductDataCollector:
         with open(file_path) as json_file:
             data = json.load(json_file)
             return data[property_name]
-
-    @staticmethod
-    def _ignore_files_mtime_gt(interval_sec):
-        def ignore(path, names):
-            return (name for name in names if os.path.getmtime("{}/{}".format(path, name)) < time.time() - interval_sec)
-
-        return ignore

@@ -1,23 +1,45 @@
 import getpass
 import json
+import os
 import platform
 from datetime import datetime
 
+import dump.gcloud as gcloud
+from dump.files import try_copy_file
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector
 from inspector.components.hardware import HardwareInfoCollector
 from inspector.components.os import OsInfoCollector
 from inspector.components.python import PythonInfoCollector
-from inspector.util import file
 from inspector.util.diag import timeit_if
 
 
 class EnvDataCollector:
-    def __init__(self, ctx):
+    def __init__(self, ctx, user_home_dir_path, target_dir_path):
         self.ctx = ctx
+        self.user_home_dir_path = user_home_dir_path
+        self.target_dir_path = target_dir_path
+
+    def collect(self):
+        self.ctx.logger.info("Collecting environment info...")
+        env_info_target_dir_path = self.target_dir_path
+
+        self._create_snapshot_file(env_info_target_dir_path)
+
+        user_home_bazel_files_dir_path = "{}/bazel".format(env_info_target_dir_path)
+        os.makedirs(user_home_bazel_files_dir_path)
+        self._copy_bazelrc_files(user_home_bazel_files_dir_path)
+
+        user_home_d4m_files_dir_path = "{}/docker".format(env_info_target_dir_path)
+        os.mkdir(user_home_d4m_files_dir_path)
+        self._copy_docker_config_files(user_home_d4m_files_dir_path)
+
+        user_home_gcloud_files_dir_path = "{}/gcloud".format(env_info_target_dir_path)
+        os.mkdir(user_home_gcloud_files_dir_path)
+        self._copy_gcloud_files(user_home_gcloud_files_dir_path)
 
     @timeit_if(more_than_sec=5)
-    def create_snapshot_file(self, target_dir_path):
+    def _create_snapshot_file(self, target_dir_path):
         self.ctx.logger.info("Collecting platform info...")
 
         data = self.snapshot()
@@ -28,26 +50,31 @@ class EnvDataCollector:
             json.dump(obj=data, fp=json_file, indent=2)
 
     @timeit_if(more_than_sec=3)
-    def copy_bazelrc_files(self, user_home_dir_path, target_dir_path):
+    def _copy_bazelrc_files(self, target_dir_path):
         self.ctx.logger.info("Collecting Bazel config files...")
 
-        bazelrc_file_path = "%s/.bazelrc" % user_home_dir_path
-        bazelenv_file_path = "%s/.bazelenv" % user_home_dir_path
+        bazelrc_file_path = "%s/.bazelrc" % self.user_home_dir_path
+        bazelenv_file_path = "%s/.bazelenv" % self.user_home_dir_path
 
         self._try_copy_file(bazelrc_file_path, target_dir_path, target_name_prefix="user_home")
         self._try_copy_file(bazelenv_file_path, target_dir_path, target_name_prefix="user_home")
 
     @timeit_if(more_than_sec=3)
-    def copy_docker_config_files(self, user_home_dir_path, target_dir_path):
+    def _copy_docker_config_files(self, target_dir_path):
         self.ctx.logger.info("Collecting Docker For Mac config files...")
 
-        settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % user_home_dir_path
-        docker_config_file_path = "%s/.docker/config.json" % user_home_dir_path
-        docker_daemon_file_path = "%s/.docker/daemon.json" % user_home_dir_path
+        settings_file_path = "%s/Library/Group Containers/group.com.docker/settings.json" % self.user_home_dir_path
+        docker_config_file_path = "%s/.docker/config.json" % self.user_home_dir_path
+        docker_daemon_file_path = "%s/.docker/daemon.json" % self.user_home_dir_path
 
         self._try_copy_file(settings_file_path, target_dir_path)
         self._try_copy_file(docker_config_file_path, target_dir_path)
         self._try_copy_file(docker_daemon_file_path, target_dir_path)
+
+    @timeit_if(more_than_sec=3)
+    def _copy_gcloud_files(self, target_dir_path):
+        self.ctx.logger.info("Collecting GCloud files...")
+        gcloud.collect_files(self.user_home_dir_path, target_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=5)
     def snapshot(self):
@@ -62,7 +89,12 @@ class EnvDataCollector:
             "disk": {},
             "bazel": {},
             "python": {},
+            "gcloud": {},
+            "docker": {},
         }
+
+        data["gcloud"]["configured"] = os.path.exists("{}/.config/gcloud".format(self.user_home_dir_path))
+        data["docker"]["configured"] = os.path.exists("{}/.docker".format(self.user_home_dir_path))
 
         def set_hw_info(hw_info):
             data["cpu_count"] = hw_info.cpu_count
@@ -104,7 +136,7 @@ class EnvDataCollector:
         return data
 
     def _try_copy_file(self, source_file_path, target_dir_path, target_name_prefix=""):
-        if not file.try_copy_file(source_file_path, target_dir_path, target_name_prefix):
+        if not try_copy_file(source_file_path, target_dir_path, target_name_prefix):
             self.ctx.logger.warn("%s file expected but not found." % source_file_path)
 
     def _try_collect(self, collector, action, not_found_message="No data collected"):
