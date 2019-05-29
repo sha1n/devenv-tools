@@ -28,8 +28,8 @@ class BazelInstallReactor(Reactor):
     @staticmethod
     def _install_bazelisk_commands():
         return [
-            ReactorCommand(["brew", "tap", "bazelbuild/tap/bazelisk"], silent=True),
-            ReactorCommand(["brew", "tap-pin", "bazelbuild/tap/bazelisk"], silent=True),
+            ReactorCommand(["brew", "tap", "bazelbuild/tap"], silent=True),
+            ReactorCommand(["brew", "tap-pin", "bazelbuild/tap"], silent=True),
             ReactorCommand(["brew", "install", "bazelbuild/tap/bazelisk"])
         ]
 
