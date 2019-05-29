@@ -1,6 +1,5 @@
-import os
-
 from inspector.api.context import Context
+from inspector.util.cmd import try_execute
 
 
 class Executor:
@@ -46,11 +45,14 @@ class Executor:
 
     @staticmethod
     def _execute_command(command, ctx):
-        ctx.logger.info("Executing command:\n\t~ {}".format(command))
-        code = os.system(str(command))
+        ctx.logger.log_os_command(command)
+        code, stdout = try_execute(command.cmd)
 
-        if code != 0 and not command.silent:
-            ctx.logger.failure("Exit code {}".format(code))
+        if not command.silent:
+            ctx.logger.log_command_output(stdout)
+
+            if code != 0:
+                ctx.logger.failure("Command {} returned code {}".format(command, code))
 
     @staticmethod
     def _log_command(command, ctx):

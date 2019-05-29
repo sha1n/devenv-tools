@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 
 from inspector.api.registry import Registry
@@ -49,7 +50,10 @@ class Context:
         elif mode == Mode.BACKGROUND:
             self.logger = FileLogger(filename="{}.log".format(name))
         elif mode == Mode.DEBUG:
-            self.logger = CompositeLogger(FileLogger(filename="{}.log".format(name)), ConsoleLogger())
+            self.logger = CompositeLogger(
+                FileLogger(filename="{}.log".format(name), level=logging.DEBUG),
+                ConsoleLogger(level=logging.DEBUG)
+            )
         elif mode == Mode.SILENT:
             self.logger = NoopLogger()
 

@@ -28,40 +28,62 @@ class Logger(object):
     @abstractmethod
     def failure(self, message): pass
 
+    @abstractmethod
+    def log_os_command(self, command): pass
+
+    @abstractmethod
+    def log_command_output(self, output): pass
+
+
 
 class ConsoleLogger(Logger):
+    def __init__(self, level=logging.INFO):
+        self.logger = logging.getLogger("console")
+        self.logger.handlers.clear()
+        stream_handler = logging.StreamHandler()
+        stream_handler.terminator = ""
+        self.logger.addHandler(stream_handler)
+        self.logger.setLevel(level)
 
     def log(self, message):
-        print("\033[1;37;40mINFO\033[0;0m: {}".format(message), end="\r")
+        self.logger.info(msg="- \033[0;37;40m{}\033[0;0m\r".format(message))
 
     def debug(self, message):
-        print("{}\033[0;37;40mDEBG\033[0;0m: {}\033[0;0m".format(_ERASE_LINE, message))
+        self.logger.debug("{}- \033[0;37;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
 
     def info(self, message):
-        print("{}\033[1;37;40mINFO\033[0;0m: {}".format(_ERASE_LINE, message))
+        self.logger.info("{}- \033[1;37;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
 
     def warn(self, message):
-        print("{}\033[1;33;40mWARN\033[0;0m: {}".format(_ERASE_LINE, message))
+        self.logger.warning("{}- \033[1;33;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
 
     def error(self, message):
-        print("{}\033[1;31;40mERRO\033[0;0m: {}".format(_ERASE_LINE, message))
+        self.logger.error("{}- \033[1;31;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
 
     def success(self, message):
-        print("{}\033[1;37;40mINFO\033[0;0m: \033[0;30;42m{}\033[0;0m".format(_ERASE_LINE, message))
+        self.logger.info("{}- \033[0;30;42m{}\033[0;0m\n".format(_ERASE_LINE, message))
 
     def failure(self, message):
-        print("{}\033[1;31;40mERRO\033[0;0m: \033[0;37;41m{}\033[0;0m".format(_ERASE_LINE, message))
+        self.logger.error("{}- \033[1;31;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
+
+    def log_os_command(self, command):
+        self.logger.info(
+            msg="-\t ~ \033[1;37;40m \033[0;33;40m{}\033[0;0m\n"
+                .format(command))
+
+    def log_command_output(self, output):
+        self.logger.info(output)
 
 
 class FileLogger(Logger):
 
-    def __init__(self, filename, level=logging.DEBUG):
-        log_handlers = [handlers.RotatingFileHandler(filename=filename, mode="a", maxBytes=1024 * 1000, backupCount=3)]
-        logging.basicConfig(
-            handlers=log_handlers,
-            format='[%(asctime)s] %(levelname)s: %(message)s',
-            level=level)
-        self.logger = logging.getLogger()
+    def __init__(self, filename, level=logging.INFO):
+        file_handler = handlers.RotatingFileHandler(filename=filename, mode="a", maxBytes=1024 * 1000, backupCount=3)
+        file_handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s"))
+
+        self.logger = logging.getLogger("file")
+        self.logger.setLevel(level)
+        self.logger.addHandler(file_handler)
 
     def __getattr__(self, key):
         return getattr(self.logger)
@@ -86,6 +108,12 @@ class FileLogger(Logger):
 
     def failure(self, message):
         self.logger.error(message)
+
+    def log_os_command(self, command):
+        self.info("[Shell Command]: {}".format(command))
+
+    def log_command_output(self, output):
+        self.logger.info(output.strip())
 
 
 class NoopLogger(Logger):
@@ -117,6 +145,12 @@ class CompositeLogger(Logger):
 
     def failure(self, message):
         self._all("failure", message)
+
+    def log_os_command(self, command):
+        self._all("log_os_command", command)
+
+    def log_command_output(self, output):
+        self._all("log_command_output", output)
 
     def _all(self, fn_name, msg):
         for logger in self.loggers:
