@@ -47,6 +47,11 @@ class EnvTest(unittest.TestCase):
         self.assert_non_empty_key(snapshot, "docker")
         docker_info = snapshot["docker"]
         self.assert_non_empty_key(docker_info, "configured")
+        self.assert_non_empty_key(docker_info, "running")
+
+        self.assert_non_empty_key(snapshot, "network")
+        network_info = snapshot["network"]
+        self.assert_non_empty_key(network_info, "connectivity_checks")
 
     def assert_non_empty_key(self, dictionary, key):
         self.assertTrue(key in dictionary, "key \"%s\" does not exist" % key)

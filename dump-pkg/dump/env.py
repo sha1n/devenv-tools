@@ -9,6 +9,7 @@ from dump.files import try_copy_file
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector
 from inspector.components.hardware import HardwareInfoCollector
+from inspector.components.network import NetworkConnectivityInfoCollector
 from inspector.components.os import OsInfoCollector
 from inspector.components.python import PythonInfoCollector
 from inspector.util.diag import timeit_if
@@ -91,10 +92,22 @@ class EnvDataCollector:
             "python": {},
             "gcloud": {},
             "docker": {},
+            "network": {}
         }
 
         data["gcloud"]["configured"] = os.path.exists("{}/.config/gcloud".format(self.user_home_dir_path))
         data["docker"]["configured"] = os.path.exists("{}/.docker".format(self.user_home_dir_path))
+        data["docker"]["running"] = os.path.exists("/var/run/docker.sock")
+
+        net_connectivity_info_collector = NetworkConnectivityInfoCollector(ctx=self.ctx)
+        results = []
+        data["network"]["connectivity_checks"] = results
+        for result in net_connectivity_info_collector.collect():
+            results.append({
+                "address": result.address,
+                "ok": result.ok,
+                "time": result.time
+            })
 
         def set_hw_info(hw_info):
             data["cpu_count"] = hw_info.cpu_count
