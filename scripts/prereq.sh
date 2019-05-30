@@ -21,6 +21,6 @@ if [[ "$PYTHON_REQUIRED_MINOR" > "$PYTHON_ACTUAL_MINOR" ]]; then
 fi
 
 echo "Installing packages..."
-pip3 install ./inspector-pkg >/dev/null 2>&1
-pip3 install ./installer-pkg >/dev/null 2>&1
-pip3 install ./dump-pkg >/dev/null 2>&1
+pip3 install --user ./inspector-pkg >/dev/null 2>&1
+pip3 install --user ./installer-pkg >/dev/null 2>&1
+pip3 install --user ./dump-pkg >/dev/null 2>&1
