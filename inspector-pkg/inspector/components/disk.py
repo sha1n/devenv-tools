@@ -1,8 +1,8 @@
 from collections import namedtuple
+from shutil import disk_usage
 
-from inspector.api.collector import Collector
 from inspector.api import context
-from inspector.util import cmd
+from inspector.api.collector import Collector
 
 DiskInfo = namedtuple(typename="DiskInfo", field_names=["filesystem", "total", "used", "free"])
 
@@ -14,11 +14,15 @@ class DiskInfoCollector(Collector):
     def collect(self):
         self.logger.info("Collecting disk information...")
 
-        disk_line = cmd.execute(["df", "-H", "/"]).split("\n")[1].split()
+        total, used, free = disk_usage("/")
 
         return DiskInfo(
-            filesystem=disk_line[0],
-            total=disk_line[1],
-            used=disk_line[2],
-            free=disk_line[3],
+            filesystem="/",
+            total="{}G".format(_b_to_gb(total)),
+            used="{}G".format(_b_to_gb(used)),
+            free="{}G".format(_b_to_gb(free)),
         )
+
+
+def _b_to_gb(value):
+    return int(value / (1024 ** 3))
