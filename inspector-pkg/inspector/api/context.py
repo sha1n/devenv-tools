@@ -41,6 +41,7 @@ class Mode(Enum):
 class Context:
 
     def __init__(self, name, dryrun=False, mode=Mode.INTERACTIVE):
+        self.name = name
         self.mode = mode
         self.dryrun = dryrun
         self.registry: Registry = Registry()
@@ -58,4 +59,5 @@ class Context:
             self.logger = NoopLogger()
 
     def __str__(self):
-        return "Context(mode={}, logger={})".format(self.mode, self.logger.__class__.__name__)
+        return "Context(name={}, mode={}, dryrun={}, logger={})".format(
+            self.name, self.mode, self.dryrun, self.logger.__class__.__name__)
