@@ -8,6 +8,7 @@ from datetime import datetime
 
 from dump.collectors.env import EnvDataCollector
 from dump.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
+from inspector.api.context import Mode
 from inspector.cli import context, run_safe
 
 user_home_dir_path = os.path.expanduser("~")
@@ -65,6 +66,8 @@ def _create_dump_archive(ctx):
     ctx.logger.info("Preparing tar archive...")
 
     os.makedirs(archive_target_dir_path, exist_ok=True)
+    if ctx.mode == Mode.DEBUG and os.path.exists(ctx.log_file_path):
+        os.system("cp {} {}".format(ctx.log_file_path, "{}/self.log".format(archive_content_dir_path)))
 
     with tarfile.open(tar_file_path, "w:gz") as tar:
         tar.add(archive_content_dir_path, arcname=os.path.basename(archive_content_dir_path))

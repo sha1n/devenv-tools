@@ -45,14 +45,15 @@ class Context:
         self.mode = mode
         self.dryrun = dryrun
         self.registry: Registry = Registry()
+        self.log_file_path = "{}.log".format(name)
 
         if mode == Mode.INTERACTIVE:
             self.logger = ConsoleLogger()
         elif mode == Mode.BACKGROUND:
-            self.logger = FileLogger(filename="{}.log".format(name), level=logging.DEBUG)
+            self.logger = FileLogger(filename=self.log_file_path, level=logging.DEBUG)
         elif mode == Mode.DEBUG:
             self.logger = CompositeLogger(
-                FileLogger(filename="{}.log".format(name), level=logging.DEBUG),
+                FileLogger(filename=self.log_file_path, level=logging.DEBUG),
                 ConsoleLogger(level=logging.DEBUG)
             )
         elif mode == Mode.SILENT:
