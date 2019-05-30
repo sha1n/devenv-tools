@@ -12,6 +12,13 @@ test:
 	make -C ./dump-pkg test
 	make -C ./inspector-pkg uninstall
 
+citest:
+	make -C ./inspector-pkg test
+	make -C ./inspector-pkg ciinstall
+	make -C ./installer-pkg test
+	make -C ./dump-pkg test
+	make -C ./inspector-pkg uninstall
+
 install:
 	make -C ./inspector-pkg install
 	make -C ./installer-pkg install
