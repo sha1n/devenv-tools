@@ -18,11 +18,12 @@ def try_execute(cmd):
 
 def capture_output(cmd, target_dir_path, file_name, ctx):
     code, stdout = try_execute(cmd)
+    cmd_string = " ".join(cmd)
 
     if code != 0:
-        ctx.logger.warn("'{}' returned code {}".format(" ".join(cmd), code))
+        ctx.logger.warn("'{}' returned code {}".format(cmd_string, code))
     else:
         target_file_path = "{}/{}".format(target_dir_path, file_name)
-        ctx.logger.log("Writing gcloud info to {}".format(target_file_path))
+        ctx.logger.log("Writing '{}' to {}".format(cmd_string, target_file_path))
         with open(target_file_path, 'w') as info_file:
             info_file.write(stdout)
