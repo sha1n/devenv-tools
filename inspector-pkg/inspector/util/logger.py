@@ -89,35 +89,36 @@ class FileLogger(Logger):
         self.logger.setLevel(level)
         self.logger.addHandler(file_handler)
 
-    def __getattr__(self, key):
-        return getattr(self.logger)
-
     def log(self, message):
         self.logger.info(message)
 
     def debug(self, message):
-        self.logger.debug(message)
+        self.logger.debug(message, exc_info=self._exc_info(message))
 
     def info(self, message):
         self.logger.info(message)
 
     def warn(self, message):
-        self.logger.warning(message)
+        self.logger.warning(message, exc_info=self._exc_info(message))
 
     def error(self, message):
-        self.logger.error(message)
+        self.logger.error(message, exc_info=self._exc_info(message))
 
     def success(self, message):
         self.logger.info(message)
 
     def failure(self, message):
-        self.logger.error(message)
+        self.logger.error(message, exc_info=self._exc_info(message))
 
     def log_os_command(self, command):
         self.info("[Shell Command]: {}".format(command))
 
     def log_command_output(self, output):
         self.logger.info(output.strip())
+
+    @staticmethod
+    def _exc_info(message):
+        return isinstance(message, BaseException)
 
 
 class NoopLogger(Logger):

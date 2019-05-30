@@ -35,5 +35,6 @@ def run_safe(ctx: Context, fn):
         logger.success("Done!")
 
     except Exception as err:
-        logger.failure("Failure! %s" % err)
+        logger.error(err)
+        logger.failure("Failure!")
         exit(1)
