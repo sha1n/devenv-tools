@@ -3,6 +3,7 @@ clean:
 	make -C ./inspector-pkg clean
 	make -C ./installer-pkg clean
 	make -C ./dump-pkg clean
+	rm *.log
 
 test:
 	make -C ./inspector-pkg test
