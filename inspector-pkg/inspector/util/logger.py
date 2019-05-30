@@ -50,7 +50,7 @@ class ConsoleLogger(Logger):
         else:
             term = "\r"
 
-        self.logger.info(msg="- \033[0;37;40m{}\033[0;0m{}".format(message, term))
+        self.logger.info(msg="{}- \033[0;37;40m{}\033[0;0m{}".format(_ERASE_LINE, message, term))
 
     def debug(self, message):
         self.logger.debug("{}- \033[0;37;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
