@@ -5,16 +5,19 @@ import platform
 import tarfile
 import tempfile
 from datetime import datetime
+import getpass
 
 from dump.collectors.env import EnvDataCollector
 from dump.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
 from inspector.api.context import Mode
 from inspector.cli import context, run_safe
 
+platform.uname()
 user_home_dir_path = os.path.expanduser("~")
 archive_target_dir_path = user_home_dir_path + "/Desktop/env_dumps"
-tar_file_path = "%s/envdump-%s.tar.gz" % (archive_target_dir_path, datetime.now().isoformat())
-archive_content_dir_path = tempfile.mkdtemp(prefix="envdmp-")
+username = getpass.getuser()
+tar_file_path = "{}/envdump-{}-{}.tar.gz".format(archive_target_dir_path, username, datetime.now().isoformat())
+archive_content_dir_path = tempfile.mkdtemp(prefix="envdmp-{}-".format(username))
 
 
 def _prepare_env_info_file(ctx):
