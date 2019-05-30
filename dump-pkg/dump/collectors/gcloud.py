@@ -1,4 +1,4 @@
-from dump.collectors.files import copytree_if, try_copy_file
+from dump.collectors.files import try_copytree_if, try_copy_file
 from inspector.util.cmd import capture_output
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
@@ -14,10 +14,11 @@ def collect_files(user_home_dir, target_dir, ctx):
 
 def _collect_logs(user_home_dir, target_dir, ctx):
     ctx.logger.log("Copying gcloud log files...")
-    copytree_if(
+    try_copytree_if(
         source_dir="{}/.config/gcloud/logs".format(user_home_dir),
         target_dir="{}/logs".format(target_dir),
-        modified_in_the_past_sec=two_week_sec
+        modified_in_the_past_sec=two_week_sec,
+        logger=ctx.logger
     )
 
 
