@@ -5,7 +5,7 @@ two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 
 
 def collect_files(user_home_dir, target_dir, ctx):
-    ctx.logger.info("Collecting GCloud files...")
+    ctx.logger.info("Collecting gcloud files...")
 
     _collect_logs(user_home_dir, target_dir, ctx)
     _collect_config(user_home_dir, target_dir, ctx)

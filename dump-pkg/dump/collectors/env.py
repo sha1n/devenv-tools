@@ -7,6 +7,7 @@ from datetime import datetime
 import dump.collectors.docker as docker
 import dump.collectors.gcloud as gcloud
 from dump.collectors.files import try_copy_file
+from dump.collectors.tools import collect_shell_tools_info_files
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector
 from inspector.components.hardware import HardwareInfoCollector
@@ -39,6 +40,10 @@ class EnvDataCollector:
         user_home_gcloud_files_dir_path = "{}/gcloud".format(env_info_target_dir_path)
         os.mkdir(user_home_gcloud_files_dir_path)
         self._copy_gcloud_files(user_home_gcloud_files_dir_path)
+
+        user_home_tools_files_dir_path = "{}/tools".format(env_info_target_dir_path)
+        os.mkdir(user_home_tools_files_dir_path)
+        collect_shell_tools_info_files(user_home_tools_files_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=5)
     def _create_snapshot_file(self, target_dir_path):
