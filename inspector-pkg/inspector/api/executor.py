@@ -54,13 +54,18 @@ class Executor:
     @staticmethod
     def _execute_command(command, ctx):
         ctx.logger.log_os_command(command)
-        code, stdout = try_execute(command.cmd)
+        ok, code, stdout = try_execute(command.cmd, ctx.logger)
 
         if not command.silent:
             ctx.logger.log_command_output(stdout)
 
-            if code != 0:
-                ctx.logger.failure("Command {} returned code {}".format(command, code))
+            if ok:
+                if code != 0:
+                    ctx.logger.failure("Command '{}' returned code {}".format(command, code))
+                else:
+                    ctx.logger.log("Command '{}' executed successfully (return code = {})".format(command, code))
+            else:
+                ctx.logger.failure("Failed to execute command '{}'".format(command))
 
     @staticmethod
     def _log_command(command, ctx):

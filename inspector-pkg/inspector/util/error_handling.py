@@ -1,6 +1,6 @@
 import functools
 
-from inspector.util.logger import ConsoleLogger, Logger, NoopLogger
+from inspector.util.logger import ConsoleLogger, Logger, NOOP_LOGGER
 
 _logger = ConsoleLogger()
 
@@ -20,7 +20,7 @@ def try_wrap(func):
     return wrapper
 
 
-def raised_to_none_wrapper(func, logger: Logger = NoopLogger()):
+def raised_to_none_wrapper(func, logger: Logger = NOOP_LOGGER):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         new_func = try_wrap(func)

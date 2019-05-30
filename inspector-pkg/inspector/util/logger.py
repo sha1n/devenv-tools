@@ -161,3 +161,6 @@ class CompositeLogger(Logger):
         for logger in self.loggers:
             fn = getattr(logger, fn_name)
             fn(msg)
+
+
+NOOP_LOGGER = NoopLogger()

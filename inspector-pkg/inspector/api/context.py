@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 
 from inspector.api.registry import Registry
-from inspector.util.logger import ConsoleLogger, FileLogger, NoopLogger, CompositeLogger
+from inspector.util.logger import ConsoleLogger, FileLogger, CompositeLogger, NOOP_LOGGER
 
 _MODE_DEBUG = "debug"
 _MODE_INTERACTIVE = "interactive"
@@ -57,7 +57,7 @@ class Context:
                 ConsoleLogger(level=logging.DEBUG)
             )
         elif mode == Mode.SILENT:
-            self.logger = NoopLogger()
+            self.logger = NOOP_LOGGER
 
     def __str__(self):
         return "Context(name={}, mode={}, dryrun={}, logger={})".format(

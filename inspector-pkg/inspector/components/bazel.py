@@ -22,7 +22,7 @@ class BazelInfoCollector(Collector):
             return None
 
         version = self._bazel_version()
-        bazelisk = BazelInfoCollector._bazelisk_exists()
+        bazelisk = self._bazelisk_exists()
         return BazelInfo(path, version, bazelisk)
 
     def _bazel_version(self):
@@ -34,9 +34,8 @@ class BazelInfoCollector(Collector):
             self.ctx.logger.warn(err)
             return None
 
-    @staticmethod
-    def _bazelisk_exists():
-        code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"])
+    def _bazelisk_exists(self):
+        _, code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"], self.logger)
 
         return code == 0 and "bazelisk" in stdout
 

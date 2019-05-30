@@ -1,5 +1,5 @@
 from dump.collectors.files import try_copy_file
-from inspector.util.cmd import capture_output
+from inspector.util.cmd import try_capture_output
 
 
 def copy_docker_files(user_home_dir_path, target_dir_path, ctx):
@@ -28,9 +28,15 @@ def _collect_config_files(target_dir_path, user_home_dir_path, ctx):
 
 def _collect_version(target_dir, ctx):
     ctx.logger.log("Collecting version info...")
-    capture_output(cmd=["docker", "version"], target_dir_path=target_dir, file_name="docker_version.txt", ctx=ctx)
+    try_capture_output(cmd=["docker", "version"],
+                       target_dir_path=target_dir,
+                       file_name="docker_version.txt",
+                       logger=ctx.logger)
 
 
 def _collect_info(target_dir, ctx):
     ctx.logger.log("Collecting docker info...")
-    capture_output(cmd=["docker", "info"], target_dir_path=target_dir, file_name="docker_info.txt", ctx=ctx)
+    try_capture_output(cmd=["docker", "info"],
+                       target_dir_path=target_dir,
+                       file_name="docker_info.txt",
+                       logger=ctx.logger)
