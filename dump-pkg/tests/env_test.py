@@ -10,7 +10,7 @@ class EnvTest(unittest.TestCase):
 
     def test_snapshot(self):
         env = EnvDataCollector(test_context(), "", "")
-        snapshot = env.snapshot()
+        snapshot = env.snapshot().data
         self.assertIsNotNone(snapshot)
         self.assert_non_empty_key(snapshot, "timestamp_utc")
         self.assert_non_empty_key(snapshot, "user")

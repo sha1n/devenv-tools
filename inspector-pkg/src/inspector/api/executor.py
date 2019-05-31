@@ -63,7 +63,7 @@ class Executor:
                 if code != 0:
                     ctx.logger.failure("Command '{}' returned code {}".format(command, code))
                 else:
-                    ctx.logger.log("Command '{}' executed successfully (return code = {})".format(command, code))
+                    ctx.logger.progress("Command '{}' executed successfully (return code = {})".format(command, code))
             else:
                 ctx.logger.failure("Failed to execute command '{}'".format(command))
 

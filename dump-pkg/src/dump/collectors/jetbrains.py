@@ -36,12 +36,12 @@ class JetBrainsProductDataCollector:
 
     @timeit_if(more_than_sec=10)
     def _copy_config_files(self, target_dir_path, user_home_dir_path):
-        self.ctx.logger.log("Collecting {} configuration files...".format(self.product_info.name))
+        self.ctx.logger.progress("Collecting {} configuration files...".format(self.product_info.name))
 
         for config_dir_path in self._collect_configuration_dir_paths(user_home_dir_path):
             dir_name = file_name_from(config_dir_path)
 
-            self.ctx.logger.log("Copying {}...".format(config_dir_path))
+            self.ctx.logger.progress("Copying {}...".format(config_dir_path))
             try_copytree(
                 source_dir=config_dir_path,
                 target_dir="{}/configs/{}".format(
@@ -53,13 +53,13 @@ class JetBrainsProductDataCollector:
 
     @timeit_if(more_than_sec=10)
     def _copy_log_files(self, target_dir_path, user_home_dir_path):
-        self.ctx.logger.log(
+        self.ctx.logger.progress(
             "Collecting {} logs... (files older than two weeks will be ignored)".format(self.product_info.name))
 
         for logs_dir_path in self._collect_log_dir_paths(user_home_dir_path):
             dir_name = file_name_from(logs_dir_path)
 
-            self.ctx.logger.log("Copying {}...".format(logs_dir_path))
+            self.ctx.logger.progress("Copying {}...".format(logs_dir_path))
             try_copytree_if(
                 source_dir=logs_dir_path,
                 target_dir="{}/logs/{}".format(target_dir_path, dir_name),
@@ -69,7 +69,7 @@ class JetBrainsProductDataCollector:
 
     @timeit_if(more_than_sec=10)
     def _copy_product_info_files(self, product_info_files, target_dir_path):
-        self.ctx.logger.log("Collecting {} product info files...".format(self.product_info.name))
+        self.ctx.logger.progress("Collecting {} product info files...".format(self.product_info.name))
 
         for file_path in product_info_files:
             version = self._read_json_property(file_path, "version")

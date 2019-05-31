@@ -77,7 +77,7 @@ def _create_dump_archive(ctx):
 
 
 def _check_prerequisites(ctx):
-    ctx.logger.log("Checking prerequisites...")
+    ctx.logger.progress("Checking prerequisites...")
     os_name = platform.system()
     if os_name != "Darwin":
         raise Exception("Unsupported operating system '%s'" % os_name)

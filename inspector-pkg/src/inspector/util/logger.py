@@ -1,6 +1,8 @@
 import logging
 import logging.handlers as handlers
 from abc import abstractmethod
+from functools import partial
+from typing import Any
 
 _ERASE_LINE = '\x1b[2K'
 
@@ -8,7 +10,7 @@ _ERASE_LINE = '\x1b[2K'
 class Logger(object):
 
     @abstractmethod
-    def log(self, message): pass
+    def progress(self, message): pass
 
     @abstractmethod
     def debug(self, message): pass
@@ -44,7 +46,7 @@ class ConsoleLogger(Logger):
         self.logger.addHandler(stream_handler)
         self.logger.setLevel(level)
 
-    def log(self, message):
+    def progress(self, message):
         if self.logger.level == logging.DEBUG:
             term = "\n"
         else:
@@ -89,7 +91,7 @@ class FileLogger(Logger):
         self.logger.setLevel(level)
         self.logger.addHandler(file_handler)
 
-    def log(self, message):
+    def progress(self, message):
         self.logger.info(message)
 
     def debug(self, message):
@@ -122,7 +124,7 @@ class FileLogger(Logger):
 
 
 class NoopLogger(Logger):
-    def __getattr__(self, key):
+    def __getattribute__(self, name: str) -> Any:
         return lambda *args, **kwrgs: None
 
 
@@ -130,8 +132,8 @@ class CompositeLogger(Logger):
     def __init__(self, *loggers: Logger):
         self.loggers = loggers
 
-    def log(self, message):
-        self._all("log", message)
+    def progress(self, message):
+        self._all("progress", message)
 
     def debug(self, message):
         self._all("debug", message)
@@ -157,10 +159,10 @@ class CompositeLogger(Logger):
     def log_command_output(self, output):
         self._all("log_command_output", output)
 
-    def _all(self, fn_name, msg):
+    def _all(self, fn_name, *args, **kwargs):
         for logger in self.loggers:
             fn = getattr(logger, fn_name)
-            fn(msg)
+            fn(*args, **kwargs)
 
 
 NOOP_LOGGER = NoopLogger()

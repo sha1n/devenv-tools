@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 
 from inspector.util.logger import NOOP_LOGGER
@@ -18,7 +19,7 @@ def try_execute(cmd, logger=NOOP_LOGGER):
 
         return True, completed_process.returncode, completed_process.stdout
     except FileNotFoundError as err:
-        logger.warn(err)
+        logger.debug(err)
         return False, -1, None
 
 
@@ -33,6 +34,12 @@ def try_capture_output(cmd, target_dir_path, file_name, logger=NOOP_LOGGER):
         logger.warn("'{}' returned code {}".format(cmd_string, code))
     else:
         target_file_path = "{}/{}".format(target_dir_path, file_name)
-        logger.log("Writing '{}' to {}".format(cmd_string, target_file_path))
+        logger.progress("Writing '{}' to {}".format(cmd_string, target_file_path))
         with open(target_file_path, 'w') as info_file:
             info_file.write(stdout)
+
+    return ok
+
+
+def command(executable_name):
+    return shutil.which(executable_name) is not None

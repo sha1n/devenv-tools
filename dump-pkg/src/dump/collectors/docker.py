@@ -1,42 +1,50 @@
-from dump.collectors.files import try_copy_file
-from inspector.util.cmd import try_capture_output
+from dump.collectors.files import try_copyfile, file_path, mkdir
+from inspector.util.cmd import try_capture_output, command
 
 
-def copy_docker_files(user_home_dir_path, target_dir_path, ctx):
-    ctx.logger.info("Collecting Docker For Mac config files...")
+def collect_docker_files(user_home_dir_path, target_dir_path, ctx):
+    if command("docker"):
+        ctx.logger.info("Collecting Docker information...")
 
-    _collect_config_files(target_dir_path, user_home_dir_path, ctx)
-    _collect_info(target_dir_path, ctx)
-    _collect_version(target_dir_path, ctx)
+        mkdir(target_dir_path)
+
+        _collect_version(target_dir_path, ctx)
+        _collect_info(target_dir_path, ctx)
+
+        if ctx.snapshot.docker_configured():
+            ctx.logger.info("Collecting Docker files...")
+            _collect_config_files(target_dir_path, user_home_dir_path, ctx)
+    else:
+        ctx.logger.warn("'docker' not installed")
 
 
 def _collect_config_files(target_dir_path, user_home_dir_path, ctx):
-    ctx.logger.log("Collecting configuration files...")
+    ctx.logger.progress("Collecting configuration files...")
 
-    settings_file_path = "{}/Library/Group Containers/group.com.docker/settings.json".format(user_home_dir_path)
-    if not try_copy_file(settings_file_path, target_dir_path):
-        ctx.logger.warn("{} file expected but not found.".format(settings_file_path))
+    source_settings_file_path = file_path(user_home_dir_path, "Library/Group Containers/group.com.docker/settings.json")
+    target_settings_file_path = file_path(target_dir_path, "settings.json")
+    try_copyfile(source_settings_file_path, target_settings_file_path)
 
-    docker_config_file_path = "{}/.docker/config.json".format(user_home_dir_path)
-    if not try_copy_file(docker_config_file_path, target_dir_path):
-        ctx.logger.warn("{} file expected but not found.".format(docker_config_file_path))
+    source_docker_config_file_path = file_path(user_home_dir_path, ".docker/config.json")
+    target_docker_config_file_path = file_path(target_dir_path, "config.json")
+    try_copyfile(source_docker_config_file_path, target_docker_config_file_path)
 
-    docker_daemon_file_path = "{}/.docker/daemon.json".format(user_home_dir_path)
-    if not try_copy_file(docker_daemon_file_path, target_dir_path):
-        ctx.logger.warn("{} file expected but not found.".format(docker_daemon_file_path))
+    source_docker_daemon_file_path = file_path(user_home_dir_path, ".docker/daemon.json")
+    target_docker_daemon_file_path = file_path(target_dir_path, "daemon.json")
+    try_copyfile(source_docker_daemon_file_path, target_docker_daemon_file_path)
 
 
 def _collect_version(target_dir, ctx):
-    ctx.logger.log("Collecting version info...")
-    try_capture_output(cmd=["docker", "version"],
-                       target_dir_path=target_dir,
-                       file_name="docker_version.txt",
-                       logger=ctx.logger)
+    ctx.logger.progress("Collecting version information...")
+    return try_capture_output(cmd=["docker", "version"],
+                              target_dir_path=target_dir,
+                              file_name="docker_version.txt",
+                              logger=ctx.logger)
 
 
 def _collect_info(target_dir, ctx):
-    ctx.logger.log("Collecting docker info...")
-    try_capture_output(cmd=["docker", "info"],
-                       target_dir_path=target_dir,
-                       file_name="docker_info.txt",
-                       logger=ctx.logger)
+    ctx.logger.progress("Collecting docker information...")
+    return try_capture_output(cmd=["docker", "info"],
+                              target_dir_path=target_dir,
+                              file_name="docker_info.txt",
+                              logger=ctx.logger)

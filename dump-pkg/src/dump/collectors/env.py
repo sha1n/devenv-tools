@@ -1,12 +1,12 @@
 import getpass
 import json
-import os
 import platform
 from datetime import datetime
 
-import dump.collectors.docker as docker
-import dump.collectors.gcloud as gcloud
-from dump.collectors.files import try_copy_file
+import dump.collectors.files as files
+from dump.collectors.docker import collect_docker_files
+from dump.collectors.gcloud import collect_gcloud_files
+from dump.collectors.bazel import collect_bazel_files
 from dump.collectors.tools import collect_shell_tools_info_files
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector
@@ -17,6 +17,20 @@ from inspector.components.python import PythonInfoCollector
 from inspector.util.diag import timeit_if
 
 
+class Snapshot:
+    def __init__(self, data):
+        self.data = data
+
+    def bazel_installed(self):
+        return "path" in self.data["bazel"]
+
+    def gcloud_configured(self):
+        return "configured" in self.data["gcloud"] and self.data["gcloud"]["configured"] is True
+
+    def docker_configured(self):
+        return "configured" in self.data["docker"] and self.data["docker"]["configured"] is True
+
+
 class EnvDataCollector:
     def __init__(self, ctx, user_home_dir_path, target_dir_path):
         self.ctx = ctx
@@ -24,55 +38,45 @@ class EnvDataCollector:
         self.target_dir_path = target_dir_path
 
     def collect(self):
-        self.ctx.logger.info("Collecting environment info...")
+        self.ctx.logger.info("Collecting environment information...")
         env_info_target_dir_path = self.target_dir_path
 
-        self._create_snapshot_file(env_info_target_dir_path)
+        self.ctx.logger.info("Collecting platform information...")
+        snapshot = self.snapshot()
+        self.ctx.snapshot = snapshot
 
-        user_home_bazel_files_dir_path = "{}/bazel".format(env_info_target_dir_path)
-        os.makedirs(user_home_bazel_files_dir_path)
-        self._copy_bazelrc_files(user_home_bazel_files_dir_path)
+        self._create_snapshot_file(snapshot, env_info_target_dir_path)
 
-        user_home_d4m_files_dir_path = "{}/docker".format(env_info_target_dir_path)
-        os.mkdir(user_home_d4m_files_dir_path)
-        self._copy_docker_config_files(user_home_d4m_files_dir_path)
+        bazel_files_dir_path = "{}/bazel".format(env_info_target_dir_path)
+        self._copy_bazelrc_files(bazel_files_dir_path)
 
-        user_home_gcloud_files_dir_path = "{}/gcloud".format(env_info_target_dir_path)
-        os.mkdir(user_home_gcloud_files_dir_path)
-        self._copy_gcloud_files(user_home_gcloud_files_dir_path)
+        docker_files_dir_path = "{}/docker".format(env_info_target_dir_path)
+        self._copy_docker_config_files(docker_files_dir_path)
 
-        user_home_tools_files_dir_path = "{}/tools".format(env_info_target_dir_path)
-        os.mkdir(user_home_tools_files_dir_path)
-        collect_shell_tools_info_files(user_home_tools_files_dir_path, self.ctx)
+        gcloud_files_dir_path = "{}/gcloud".format(env_info_target_dir_path)
+        self._copy_gcloud_files(gcloud_files_dir_path)
+
+        tools_files_dir_path = "{}/tools".format(env_info_target_dir_path)
+        collect_shell_tools_info_files(tools_files_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=5)
-    def _create_snapshot_file(self, target_dir_path):
-        self.ctx.logger.info("Collecting platform info...")
-
-        data = self.snapshot()
-
+    def _create_snapshot_file(self, snapshot, target_dir_path):
         info_file_path = target_dir_path + "/info.json"
 
         with open(info_file_path, 'w') as json_file:
-            json.dump(obj=data, fp=json_file, indent=2)
+            json.dump(obj=snapshot.data, fp=json_file, indent=2)
 
     @timeit_if(more_than_sec=3)
     def _copy_bazelrc_files(self, target_dir_path):
-        self.ctx.logger.info("Collecting Bazel config files...")
-
-        bazelrc_file_path = "%s/.bazelrc" % self.user_home_dir_path
-        bazelenv_file_path = "%s/.bazelenv" % self.user_home_dir_path
-
-        self._try_copy_file(bazelrc_file_path, target_dir_path, target_name_prefix="user_home")
-        self._try_copy_file(bazelenv_file_path, target_dir_path, target_name_prefix="user_home")
+        collect_bazel_files(self.user_home_dir_path, target_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=3)
     def _copy_docker_config_files(self, target_dir_path):
-        docker.copy_docker_files(self.user_home_dir_path, target_dir_path, self.ctx)
+        collect_docker_files(self.user_home_dir_path, target_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=3)
     def _copy_gcloud_files(self, target_dir_path):
-        gcloud.collect_files(self.user_home_dir_path, target_dir_path, self.ctx)
+        collect_gcloud_files(self.user_home_dir_path, target_dir_path, self.ctx)
 
     @timeit_if(more_than_sec=5)
     def snapshot(self):
@@ -92,9 +96,9 @@ class EnvDataCollector:
             "network": {}
         }
 
-        data["gcloud"]["configured"] = os.path.exists("{}/.config/gcloud".format(self.user_home_dir_path))
-        data["docker"]["configured"] = os.path.exists("{}/.docker".format(self.user_home_dir_path))
-        data["docker"]["server_installed"] = os.path.exists("/var/run/docker.sock")
+        data["gcloud"]["configured"] = files.path_exists("{}/.config/gcloud".format(self.user_home_dir_path))
+        data["docker"]["configured"] = files.path_exists("{}/.docker".format(self.user_home_dir_path))
+        data["docker"]["server_installed"] = files.path_exists("/var/run/docker.sock")
 
         net_connectivity_info_collector = UrlConnectivityInfoCollector(ctx=self.ctx)
         results = []
@@ -133,7 +137,7 @@ class EnvDataCollector:
 
         self._try_collect(collector=BazelInfoCollector(self.ctx),
                           action=set_bazel_info,
-                          not_found_message="Bazel not found!")
+                          not_found_message="'bazel' not installed")
 
         def set_python_info(python_info):
             data["python"]["path"] = str(python_info.path)
@@ -141,13 +145,9 @@ class EnvDataCollector:
 
         self._try_collect(collector=PythonInfoCollector(self.ctx),
                           action=set_python_info,
-                          not_found_message="Python not found!")
+                          not_found_message="'python' not installed")
 
-        return data
-
-    def _try_copy_file(self, source_file_path, target_dir_path, target_name_prefix=""):
-        if not try_copy_file(source_file_path, target_dir_path, target_name_prefix):
-            self.ctx.logger.warn("%s file expected but not found." % source_file_path)
+        return Snapshot(data)
 
     def _try_collect(self, collector, action, not_found_message="No data collected"):
         try:

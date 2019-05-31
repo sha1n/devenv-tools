@@ -23,7 +23,7 @@ class UrlConnectivityInfoCollector(Collector):
     @timeit_if(more_than_sec=1)
     def _check_connectivity(self, address):
         try:
-            self.ctx.logger.log("Checking connectivity to {}".format(address))
+            self.ctx.logger.progress("Checking connectivity to {}".format(address))
             start_time = time()
             request.urlopen(address, timeout=10)
             end_time = time()

@@ -26,7 +26,7 @@ def raised_to_none_wrapper(func, logger: Logger = NOOP_LOGGER):
         new_func = try_wrap(func)
         result, error = new_func(*args, **kwargs)
         if error is not None:
-            logger.error("Error: {}".format(error))
+            logger.warn(error)
 
         return result
 
