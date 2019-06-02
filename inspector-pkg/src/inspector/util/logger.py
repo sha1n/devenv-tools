@@ -3,7 +3,14 @@ import logging.handlers as handlers
 from abc import abstractmethod
 from typing import Any
 
-_ERASE_LINE = '\x1b[2K'
+_ERASE_LINE = '\u001b[2K'
+_WHITE = "\u001b[37m"
+_RED = "\u001b[31m"
+_GREEN = "\u001b[32m"
+_YELLOW = "\u001b[33m"
+_RESET = "\u001b[0m"
+_BOLD = "\u001b[1m"
+_REVERSE = "\u001b[7m"
 
 
 class Logger(object):
@@ -48,33 +55,35 @@ class ConsoleLogger(Logger):
     def progress(self, message):
         if self.logger.level == logging.DEBUG:
             term = "\n"
+            style = _WHITE
         else:
+            style = _REVERSE
             term = "\r"
 
-        self.logger.info(msg="{}- \033[0;37;40m{}\033[0;0m{}".format(_ERASE_LINE, message, term))
+        self.logger.info(msg="{}- {}{}{}{}".format(_ERASE_LINE, style, message, _RESET, term))
 
     def debug(self, message):
-        self.logger.debug("{}- \033[0;37;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
+        self.logger.debug("{}- {}{}\n".format(_ERASE_LINE, message, _RESET))
 
     def info(self, message):
-        self.logger.info("{}- \033[1;37;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
+        self.logger.info("{}- {}{}{}{}\n".format(_ERASE_LINE, _BOLD, _WHITE, message, _RESET))
 
     def warn(self, message):
-        self.logger.warning("{}- \033[1;33;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
+        self.logger.warning("{}- {}{}{}\n".format(_ERASE_LINE, _YELLOW, message, _RESET))
 
     def error(self, message):
-        self.logger.error("{}- \033[1;31;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
+        self.logger.error("{}- {}{}{}\n".format(_ERASE_LINE, _RED, message, _RESET))
 
     def success(self, message):
-        self.logger.info("{}- \033[0;30;42m{}\033[0;0m\n".format(_ERASE_LINE, message))
+        self.logger.info("{}- {}{}{}{}{}\n".format(_ERASE_LINE, _REVERSE, _BOLD, _GREEN, message, _RESET))
 
     def failure(self, message):
-        self.logger.error("{}- \033[1;31;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
+        self.logger.error("{}- {}{}{}{}\n".format(_ERASE_LINE, _REVERSE, _RED, message, _RESET))
 
     def command_info(self, command):
         self.logger.info(
-            msg="-\t ~ \033[1;37;40m \033[0;33;40m{}\033[0;0m\n"
-                .format(command))
+            msg="\t ~ {}{}{}{}\n"
+                .format(_REVERSE, _YELLOW, command, _RESET))
 
     def command_output(self, output):
         self.logger.info(output.strip())
