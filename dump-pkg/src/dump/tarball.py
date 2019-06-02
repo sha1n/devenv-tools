@@ -10,6 +10,7 @@ import getpass
 from dump.collectors.env import EnvDataCollector
 from dump.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
 from inspector.api.context import Mode
+from inspector.api.registry import Registry
 from inspector.cli import context, run_safe
 
 platform.uname()
@@ -98,7 +99,7 @@ def _safe(ctx, *methods):
 
 
 def tarball():
-    ctx = context(name="dump")
+    ctx = context(name="dump", registry=Registry())  # fixme shai: use executor where possible
 
     def dump():
         _check_prerequisites(ctx)

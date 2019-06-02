@@ -40,11 +40,11 @@ class Mode(Enum):
 
 class Context:
 
-    def __init__(self, name, dryrun=False, mode=Mode.INTERACTIVE):
+    def __init__(self, name, registry: Registry, dryrun=False, mode=Mode.INTERACTIVE):
         self.name = name
         self.mode = mode
         self.dryrun = dryrun
-        self.registry: Registry = Registry()
+        self.registry = registry
         self.log_file_path = "{}.log".format(name)
 
         if mode == Mode.INTERACTIVE:

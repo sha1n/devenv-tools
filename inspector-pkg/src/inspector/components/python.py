@@ -34,10 +34,12 @@ class PythonInfoValidator(Validator):
 
     def validate(self, input_data: PythonInfo, ctx: Context) -> ValidationResult:
         if input_data is None:
+            ctx.logger.warn("Python not installed!")
             return ValidationResult(input_data, Status.NOT_FOUND)
 
         if int(self.expected_ver.major) > int(input_data.version.major) \
                 or int(self.expected_ver.minor) > int(input_data.version.minor):
+            ctx.logger.warn("Python upgrade required")
             return ValidationResult(input_data, Status.UPGRADE_REQUIRED)
         else:
             return ValidationResult(input_data, Status.OK)

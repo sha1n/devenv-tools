@@ -27,6 +27,7 @@ class DiskInfoValidator(Validator):
 
     def validate(self, input_data: DiskInfo, ctx: Context) -> ValidationResult:
         if input_data is None:
+            ctx.logger.error("No disk space info!")
             return ValidationResult(input_data, Status.ERROR)
 
         free_ratio = input_data.free / input_data.total
@@ -36,6 +37,7 @@ class DiskInfoValidator(Validator):
                 input_data.filesystem,
                 free_percent)
             )
+
             return ValidationResult(input_data, Status.WARNING)
 
         return ValidationResult(input_data, Status.OK)

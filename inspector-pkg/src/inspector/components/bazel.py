@@ -42,9 +42,11 @@ class BazelInfoValidator(Validator):
 
     def validate(self, input_data: BazelInfo, ctx: Context) -> ValidationResult:
         if input_data is None:
+            ctx.logger.warn("Bazel not installed!")
             return ValidationResult(input_data, Status.NOT_FOUND)
 
         if input_data.bazelisk:
             return ValidationResult(input_data, Status.OK)
 
+        ctx.logger.warn("Bazel upgrade required")
         return ValidationResult(input_data, Status.UPGRADE_REQUIRED)

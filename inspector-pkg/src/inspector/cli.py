@@ -2,9 +2,10 @@ import argparse
 
 from inspector.api.context import Context
 from inspector.api.context import Mode
+from inspector.api.registry import Registry
 
 
-def context(name):
+def context(name, registry: Registry):
     parser = argparse.ArgumentParser(description='Takes an environment dump for support purposes.')
     parser.add_argument("-m",
                         choices=["interactive", "debug", "background", "silent"],
@@ -19,7 +20,7 @@ def context(name):
 
     args = parser.parse_args()
 
-    return Context(name=name, mode=Mode.from_str(args.mode), dryrun=args.dryrun)
+    return Context(name=name, registry=registry, mode=Mode.from_str(args.mode), dryrun=args.dryrun)
 
 
 def run_safe(ctx: Context, fn):
