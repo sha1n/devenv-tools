@@ -43,7 +43,7 @@ class Executor:
     def _exec(handle_command, ctx: Context):
         for comp_id in ctx.registry.component_ids():
             collector = ctx.registry.find_collector(comp_id)
-            data = collector.collect()
+            data = collector.collect(ctx)
 
             result = Executor._validate(comp_id, data, ctx)
             if result is not None:
@@ -55,7 +55,7 @@ class Executor:
     def _validate(comp_id, data, ctx):
         validator = ctx.registry.find_validator(comp_id)
         if validator is not None:
-            return validator.validate(data)
+            return validator.validate(data, ctx)
         else:
             ctx.logger.warn("No validator registered for {}".format(comp_id))
             return None
@@ -68,7 +68,7 @@ class Executor:
             ctx.logger.debug("No reactors registered for {}".format(comp_id))
 
         for reactor in reactors:
-            for command in reactor.react(validation_result):
+            for command in reactor.react(validation_result, ctx):
                 handle_command(command, ctx)
 
     @staticmethod

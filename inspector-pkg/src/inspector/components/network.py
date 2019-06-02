@@ -12,18 +12,17 @@ NetConnectivityInfo = namedtuple(typename="NetConnectivityInfo", field_names=["a
 
 class UrlConnectivityInfoCollector(Collector):
 
-    def __init__(self, ctx: Context):
-        super().__init__(ctx)
+    def __init__(self):
         # fixme shai: get url list from configuration
         self._addresses = ["http://www.google.com"]
 
-    def collect(self) -> List[NetConnectivityInfo]:
-        return list((self._check_connectivity(address) for address in self._addresses))
+    def collect(self, ctx: Context) -> List[NetConnectivityInfo]:
+        return list((self._check_connectivity(address, ctx) for address in self._addresses))
 
     @timeit_if(more_than_sec=1)
-    def _check_connectivity(self, address):
+    def _check_connectivity(self, address, ctx):
         try:
-            self.ctx.logger.progress("Checking connectivity to {}".format(address))
+            ctx.logger.progress("Checking connectivity to {}".format(address))
             start_time = time()
             request.urlopen(address, timeout=10)
             end_time = time()

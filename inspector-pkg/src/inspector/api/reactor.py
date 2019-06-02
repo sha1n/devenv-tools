@@ -15,9 +15,5 @@ class ReactorCommand:
 
 
 class Reactor:
-    def __init__(self, ctx: Context):
-        self.ctx = ctx
-        self.logger = ctx.logger
-
     @abstractmethod
-    def react(self, data) -> List[ReactorCommand]: pass
+    def react(self, data, ctx: Context) -> List[ReactorCommand]: pass

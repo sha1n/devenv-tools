@@ -9,23 +9,23 @@ from tests.testutil import test_context
 class BazelInfoValidatorTest(unittest.TestCase):
 
     def test_validate_no_bazelisk(self):
-        validator = BazelInfoValidator(ctx=test_context())
+        validator = BazelInfoValidator()
         bazel_info = bazel_info_with()
 
-        result = validator.validate(bazel_info)
+        result = validator.validate(bazel_info, ctx=test_context())
         self.assertEqual(Status.UPGRADE_REQUIRED, result.status)
 
     def test_validate_bazelisk(self):
-        validator = BazelInfoValidator(ctx=test_context())
+        validator = BazelInfoValidator()
         bazel_info = bazel_info_with(bazelisk=True)
 
-        result = validator.validate(bazel_info)
+        result = validator.validate(bazel_info, ctx=test_context())
         self.assertEqual(Status.OK, result.status)
 
     def test_missing_bazel_info(self):
-        validator = BazelInfoValidator(ctx=test_context())
+        validator = BazelInfoValidator()
 
-        result = validator.validate(None)
+        result = validator.validate(None, ctx=test_context())
         self.assertEqual(result.status, Status.NOT_FOUND)
 
 

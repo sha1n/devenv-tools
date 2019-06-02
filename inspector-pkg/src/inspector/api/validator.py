@@ -22,9 +22,5 @@ class ValidationResult:
 
 
 class Validator:
-    def __init__(self, ctx: Context):
-        self.ctx = ctx
-        self.logger = ctx.logger
-
     @abstractmethod
-    def validate(self, input_data) -> ValidationResult: pass
+    def validate(self, input_data, ctx: Context) -> ValidationResult: pass

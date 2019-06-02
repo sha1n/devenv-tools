@@ -10,15 +10,15 @@ from tests.testutil import test_context
 class PythonValidationInstallReactorTest(unittest.TestCase):
 
     def test_no_action_reaction(self):
-        reactor = PythonInstallReactor(test_context())
+        reactor = PythonInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.OK))
+        commands = reactor.react(validation_result_with(status=Status.OK), ctx=test_context())
         self.assertEqual(len(commands), 0)
 
     def test_install_action_reaction(self):
-        reactor = PythonInstallReactor(test_context())
+        reactor = PythonInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.NOT_FOUND))
+        commands = reactor.react(validation_result_with(status=Status.NOT_FOUND), ctx=test_context())
 
         self.assertEqual(len(commands), 1)
 
@@ -26,18 +26,18 @@ class PythonValidationInstallReactorTest(unittest.TestCase):
         self.assertIn(" install", str(install_command))
 
     def test_upgrade_action_reaction(self):
-        reactor = PythonInstallReactor(test_context())
+        reactor = PythonInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED))
+        commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED), ctx=test_context())
         self.assertEqual(len(commands), 1)
 
         upgrade_command = commands[0]
         self.assertIn(" upgrade", str(upgrade_command))
 
     def test_downgrade_action_reaction(self):
-        reactor = PythonInstallReactor(test_context())
+        reactor = PythonInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED))
+        commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED), ctx=test_context())
         self.assertEqual(len(commands), 2)
 
         uninstall_command, install_command = commands

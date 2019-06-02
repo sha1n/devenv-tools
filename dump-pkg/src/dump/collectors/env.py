@@ -100,10 +100,10 @@ class EnvDataCollector:
         data["docker"]["configured"] = files.path_exists("{}/.docker".format(self.user_home_dir_path))
         data["docker"]["server_installed"] = files.path_exists("/var/run/docker.sock")
 
-        net_connectivity_info_collector = UrlConnectivityInfoCollector(ctx=self.ctx)
+        net_connectivity_info_collector = UrlConnectivityInfoCollector()
         results = []
         data["network"]["connectivity_checks"] = results
-        for result in net_connectivity_info_collector.collect():
+        for result in net_connectivity_info_collector.collect(self.ctx):
             results.append({
                 "address": result.address,
                 "ok": result.ok,
@@ -114,7 +114,7 @@ class EnvDataCollector:
             data["cpu_count"] = hw_info.cpu_count
             data["total_ram"] = hw_info.total_ram
 
-        self._try_collect(HardwareInfoCollector(self.ctx), set_hw_info)
+        self._try_collect(HardwareInfoCollector(), set_hw_info)
 
         def set_disk_info(disk_info):
             data["disk"]["filesystem"] = disk_info.filesystem
@@ -122,20 +122,20 @@ class EnvDataCollector:
             data["disk"]["used"] = disk_info.used
             data["disk"]["free"] = disk_info.free
 
-        self._try_collect(DiskInfoCollector(self.ctx), set_disk_info)
+        self._try_collect(DiskInfoCollector(), set_disk_info)
 
         def set_os_info(os_info):
             data["os"]["name"] = os_info.name
             data["os"]["version"] = str(os_info.version)
 
-        self._try_collect(OsInfoCollector(self.ctx), set_os_info)
+        self._try_collect(OsInfoCollector(), set_os_info)
 
         def set_bazel_info(bazel_info):
             data["bazel"]["path"] = bazel_info.path
             data["bazel"]["bazelisk"] = bazel_info.bazelisk
             data["bazel"]["version"] = str(bazel_info.version)
 
-        self._try_collect(collector=BazelInfoCollector(self.ctx),
+        self._try_collect(collector=BazelInfoCollector(),
                           action=set_bazel_info,
                           not_found_message="'bazel' not installed")
 
@@ -143,7 +143,7 @@ class EnvDataCollector:
             data["python"]["path"] = str(python_info.path)
             data["python"]["version"] = str(python_info.version)
 
-        self._try_collect(collector=PythonInfoCollector(self.ctx),
+        self._try_collect(collector=PythonInfoCollector(),
                           action=set_python_info,
                           not_found_message="'python' not installed")
 
@@ -151,7 +151,7 @@ class EnvDataCollector:
 
     def _try_collect(self, collector, action, not_found_message="No data collected"):
         try:
-            result = collector.collect()
+            result = collector.collect(self.ctx)
             if result is not None:
                 action(result)
             else:

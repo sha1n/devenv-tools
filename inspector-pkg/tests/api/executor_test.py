@@ -22,10 +22,10 @@ class ExecutorTest(unittest.TestCase):
         handler = RecordingHandler()
 
         executor = Executor()
-        collector = MockCollector("data", ctx)
-        validator = MockValidator(result=validation_result_with("data"), ctx=ctx)
+        collector = MockCollector("data")
+        validator = MockValidator(result=validation_result_with("data"))
         reactor_command = ReactorCommand(cmd=["do", "nothing"])
-        reactor = MockReactor(ctx, reactor_command)
+        reactor = MockReactor(reactor_command)
 
         ctx.registry.register_collector("id", collector)
         ctx.registry.register_validator("id", validator)
@@ -43,10 +43,10 @@ class ExecutorTest(unittest.TestCase):
         handler = RecordingHandler()
 
         executor = Executor()
-        reactor = MockReactor(ctx)
+        reactor = MockReactor()
 
-        ctx.registry.register_collector("id", MockCollector("data", ctx))
-        ctx.registry.register_validator("id", MockValidator(result=validation_result_with("data"), ctx=ctx))
+        ctx.registry.register_collector("id", MockCollector("data"))
+        ctx.registry.register_validator("id", MockValidator(result=validation_result_with("data")))
         ctx.registry.register_reactor("id", reactor)
 
         executor.execute(ctx, get_handler=handler.get)
@@ -59,9 +59,9 @@ class ExecutorTest(unittest.TestCase):
         handler = RecordingHandler(fail=True)
 
         executor = Executor()
-        collector = MockCollector("data", ctx=ctx)
-        validator = MockValidator(result=validation_result_with("data"), ctx=ctx)
-        reactor = MockReactor(ctx, ReactorCommand(cmd=["do", "nothing"]))
+        collector = MockCollector("data")
+        validator = MockValidator(result=validation_result_with("data"))
+        reactor = MockReactor(ctx)
 
         ctx.registry.register_collector("id", collector)
         ctx.registry.register_validator("id", validator)
@@ -82,8 +82,8 @@ class ExecutorTest(unittest.TestCase):
         handler = RecordingHandler(fail=True)
 
         executor = Executor()
-        collector1 = MockCollector("comp1_data", ctx)
-        collector2 = MockCollector("comp2_data", ctx)
+        collector1 = MockCollector("comp1_data")
+        collector2 = MockCollector("comp2_data")
 
         ctx.registry.register_collector("comp_1", collector1)
         ctx.registry.register_collector("comp_2", collector2)
@@ -97,8 +97,8 @@ class ExecutorTest(unittest.TestCase):
         ctx = test_context()
 
         executor = Executor()
-        collector = MockCollector("data", ctx)
-        validator = MockValidator(result=validation_result_with("data", Status.NOT_FOUND), ctx=ctx)
+        collector = MockCollector("data")
+        validator = MockValidator(result=validation_result_with("data"))
 
         ctx.registry.register_collector("id", collector)
         ctx.registry.register_validator("id", validator)
@@ -112,7 +112,7 @@ class ExecutorTest(unittest.TestCase):
         ctx = test_context()
 
         executor = Executor()
-        collector = MockCollector("data", ctx)
+        collector = MockCollector("data")
 
         ctx.registry.register_collector("id", collector)
 
@@ -122,23 +122,21 @@ class ExecutorTest(unittest.TestCase):
 
 
 class MockCollector(Collector):
-    def __init__(self, result, ctx: Context):
-        super().__init__(ctx)
+    def __init__(self, result):
         self.result = result
         self.called = False
 
-    def collect(self) -> object:
+    def collect(self, ctx: Context) -> object:
         self.called = True
         return self.result
 
 
 class MockValidator(Validator):
-    def __init__(self, result: ValidationResult, ctx: Context):
-        super().__init__(ctx)
+    def __init__(self, result: ValidationResult):
         self.result = result
         self.called = False
 
-    def validate(self, input_data) -> ValidationResult:
+    def validate(self, input_data, ctx: Context) -> ValidationResult:
         self.called = True
         if input_data == self.result.input_data:
             return self.result
@@ -147,12 +145,11 @@ class MockValidator(Validator):
 
 
 class MockReactor(Reactor):
-    def __init__(self, ctx, *commands):
-        super().__init__(ctx)
+    def __init__(self, *commands):
         self.commands = commands
         self.called = False
 
-    def react(self, data):
+    def react(self, data, ctx: Context):
         self.called = True
         return self.commands
 

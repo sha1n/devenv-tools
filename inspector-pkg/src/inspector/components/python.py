@@ -11,12 +11,11 @@ PythonInfo = namedtuple(typename="PythonInfo", field_names=["path", "version"])
 
 
 class PythonInfoCollector(Collector):
-    def __init__(self, ctx: Context, binary_name="python"):
-        super().__init__(ctx)
+    def __init__(self, binary_name="python"):
         self.binary_name = binary_name
 
-    def collect(self):
-        self.logger.info("Collecting Python binary information for {}...".format(self.binary_name))
+    def collect(self, ctx: Context):
+        ctx.logger.info("Collecting Python binary information for {}...".format(self.binary_name))
         path = shutil.which(self.binary_name)
 
         if path is None:
@@ -30,11 +29,10 @@ class PythonInfoCollector(Collector):
 
 
 class PythonInfoValidator(Validator):
-    def __init__(self, expected_ver: SemVer, ctx: Context):
-        super().__init__(ctx)
+    def __init__(self, expected_ver: SemVer):
         self.expected_ver = expected_ver
 
-    def validate(self, input_data: PythonInfo) -> ValidationResult:
+    def validate(self, input_data: PythonInfo, ctx: Context) -> ValidationResult:
         if input_data is None:
             return ValidationResult(input_data, Status.NOT_FOUND)
 

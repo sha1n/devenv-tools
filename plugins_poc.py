@@ -30,7 +30,7 @@ def register_plugins(ctx: Context):
 
     for module in plugin_modules:
         comp_id = module.component_id()
-        for instance in module.objects(ctx):
+        for instance in module.objects():
             if Collector in instance.__class__.__bases__:
                 info("Registering Collector plugin {} for component {}".format(instance, comp_id))
                 registry.register_collector(comp_id, instance)

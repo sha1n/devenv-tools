@@ -4,12 +4,11 @@ from inspector.api.validator import ValidationResult, Status
 
 
 class PythonInstallReactor(Reactor):
-    def __init__(self, ctx: Context, formula="python"):
-        super().__init__(ctx)
+    def __init__(self, formula="python"):
         self.formula = formula
 
-    def react(self, data: ValidationResult):
-        self.ctx.logger.info("Detected Python version: {} - {}!".format(data.input_data.version, data.status.name))
+    def react(self, data: ValidationResult, ctx: Context):
+        ctx.logger.info("Detected Python version: {} - {}!".format(data.input_data.version, data.status.name))
 
         commands = []
         if data.status == Status.NOT_FOUND:

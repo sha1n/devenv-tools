@@ -8,15 +8,15 @@ from tests.testutil import test_context
 class DiskInfoValidatorTest(unittest.TestCase):
 
     def test_validate_no_data(self):
-        validator = HardwareInfoValidator(ctx=test_context())
+        validator = HardwareInfoValidator()
 
-        result = validator.validate(None)
+        result = validator.validate(None, ctx=test_context())
         self.assertEqual(Status.ERROR, result.status)
 
     def test_validate_ok(self):
-        validator = HardwareInfoValidator(ctx=test_context())
+        validator = HardwareInfoValidator()
 
-        result = validator.validate(HardwareInfo(cpu_count=1, total_ram=1))
+        result = validator.validate(HardwareInfo(cpu_count=1, total_ram=1), ctx=test_context())
         self.assertEqual(Status.OK, result.status)
 
 

@@ -12,39 +12,35 @@ BazelInfo = namedtuple(typename="BazelInfo", field_names=["path", "version", "ba
 
 
 class BazelInfoCollector(Collector):
-    def __init__(self, ctx: Context):
-        super().__init__(ctx)
 
-    def collect(self):
-        self.logger.info("Collecting Bazel binary information...")
+    def collect(self, ctx: Context):
+        ctx.logger.info("Collecting Bazel binary information...")
         path = shutil.which("bazel")
         if path is None:
             return None
 
-        version = self._bazel_version()
-        bazelisk = self._bazelisk_exists()
+        version = self._bazel_version(ctx)
+        bazelisk = self._bazelisk_exists(ctx)
         return BazelInfo(path, version, bazelisk)
 
-    def _bazel_version(self):
+    def _bazel_version(self, ctx):
         try:
             version = cmd.execute(["bazel", "version", "--gnu_format=true"]).split("\n")[1].split()[1]
             major, minor, patch = version.split(".")
             return SemVer(major, minor, patch)
         except Exception as err:
-            self.ctx.logger.warn(err)
+            ctx.logger.warn(err)
             return None
 
-    def _bazelisk_exists(self):
-        _, code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"], self.logger)
+    def _bazelisk_exists(self, ctx):
+        _, code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"], ctx.logger)
 
         return code == 0 and "bazelisk" in stdout
 
 
 class BazelInfoValidator(Validator):
-    def __init__(self, ctx: Context):
-        super().__init__(ctx)
 
-    def validate(self, input_data: BazelInfo) -> ValidationResult:
+    def validate(self, input_data: BazelInfo, ctx: Context) -> ValidationResult:
         if input_data is None:
             return ValidationResult(input_data, Status.NOT_FOUND)
 
