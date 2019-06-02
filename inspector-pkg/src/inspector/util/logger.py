@@ -1,7 +1,6 @@
 import logging
 import logging.handlers as handlers
 from abc import abstractmethod
-from functools import partial
 from typing import Any
 
 _ERASE_LINE = '\x1b[2K'
@@ -31,10 +30,10 @@ class Logger(object):
     def failure(self, message): pass
 
     @abstractmethod
-    def log_os_command(self, command): pass
+    def command_info(self, command): pass
 
     @abstractmethod
-    def log_command_output(self, output): pass
+    def command_output(self, output): pass
 
 
 class ConsoleLogger(Logger):
@@ -72,13 +71,13 @@ class ConsoleLogger(Logger):
     def failure(self, message):
         self.logger.error("{}- \033[1;31;40m{}\033[0;0m\n".format(_ERASE_LINE, message))
 
-    def log_os_command(self, command):
+    def command_info(self, command):
         self.logger.info(
             msg="-\t ~ \033[1;37;40m \033[0;33;40m{}\033[0;0m\n"
                 .format(command))
 
-    def log_command_output(self, output):
-        self.logger.info(output)
+    def command_output(self, output):
+        self.logger.info(output.strip())
 
 
 class FileLogger(Logger):
@@ -112,10 +111,10 @@ class FileLogger(Logger):
     def failure(self, message):
         self.logger.error(message, exc_info=self._exc_info(message))
 
-    def log_os_command(self, command):
-        self.info("[Shell Command]: {}".format(command))
+    def command_info(self, command):
+        self.info("[Command]: {}".format(command))
 
-    def log_command_output(self, output):
+    def command_output(self, output):
         self.logger.info(output.strip())
 
     @staticmethod
@@ -153,11 +152,11 @@ class CompositeLogger(Logger):
     def failure(self, message):
         self._all("failure", message)
 
-    def log_os_command(self, command):
-        self._all("log_os_command", command)
+    def command_info(self, command):
+        self._all("command_info", command)
 
-    def log_command_output(self, output):
-        self._all("log_command_output", output)
+    def command_output(self, output):
+        self._all("command_output", output)
 
     def _all(self, fn_name, *args, **kwargs):
         for logger in self.loggers:
