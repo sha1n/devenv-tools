@@ -25,7 +25,8 @@ class BazelInfoCollector(Collector):
 
     def _bazel_version(self, ctx):
         try:
-            version = cmd.execute(["bazel", "version", "--gnu_format=true"]).split("\n")[1].split()[1]
+            lines = cmd.execute(["bazel", "version", "--gnu_format=true"]).split("\n")
+            version = lines[len(lines) - 2].split()[1]
             major, minor, patch = version.split(".")
             return SemVer(major, minor, patch)
         except Exception as err:
