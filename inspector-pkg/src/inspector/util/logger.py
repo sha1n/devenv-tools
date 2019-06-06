@@ -60,7 +60,7 @@ class ConsoleLogger(Logger):
             style = _REVERSE
             term = "\r"
 
-        self.logger.info(msg="{}- {}{}{}{}".format(_ERASE_LINE, style, message, _RESET, term))
+        self.logger.info("{}- {}{}{}{}".format(_ERASE_LINE, style, message, _RESET, term))
 
     def debug(self, message):
         self.logger.debug("{}- {}{}\n".format(_ERASE_LINE, message, _RESET))
@@ -81,12 +81,10 @@ class ConsoleLogger(Logger):
         self.logger.error("{}- {}{}{}{}\n".format(_ERASE_LINE, _REVERSE, _RED, message, _RESET))
 
     def command_info(self, command):
-        self.logger.info(
-            msg="\t ~ {}{}{}{}\n"
-                .format(_REVERSE, _YELLOW, command, _RESET))
+        self.logger.info("{}\t~ {}{}{}{}\n".format(_ERASE_LINE, _REVERSE, _YELLOW, command, _RESET))
 
     def command_output(self, output):
-        self.logger.info(output.strip())
+        self.logger.info("{}{}\n".format(_ERASE_LINE, output.strip()))
 
 
 class FileLogger(Logger):
@@ -100,7 +98,7 @@ class FileLogger(Logger):
         self.logger.addHandler(file_handler)
 
     def progress(self, message):
-        self.logger.info(message)
+        self.logger.debug(message)
 
     def debug(self, message):
         self.logger.debug(message, exc_info=self._exc_info(message))
