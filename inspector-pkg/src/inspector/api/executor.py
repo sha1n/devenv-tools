@@ -70,23 +70,3 @@ class Executor:
         for reactor in reactors:
             for command in reactor.react(validation_result, ctx):
                 handle_command(command, ctx)
-
-    @staticmethod
-    def _execute_command(command, ctx):
-        ctx.logger.command_info(command)
-        ok, code, stdout = try_execute(command.cmd, ctx.logger)
-
-        if not command.silent:
-            ctx.logger.command_output(stdout)
-
-            if ok:
-                if code != 0:
-                    ctx.logger.failure("Command '{}' returned code {}".format(command, code))
-                else:
-                    ctx.logger.progress("Command '{}' executed successfully (return code = {})".format(command, code))
-            else:
-                ctx.logger.failure("Failed to execute command '{}'".format(command))
-
-    @staticmethod
-    def _log_command(command, ctx):
-        ctx.logger.info("\t~ {}".format(command))
