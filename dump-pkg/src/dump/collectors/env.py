@@ -1,6 +1,7 @@
 import getpass
 import json
 import platform
+import os
 from datetime import datetime
 
 import dump.collectors.files as files
@@ -134,6 +135,7 @@ class EnvDataCollector:
             data["bazel"]["path"] = bazel_info.path
             data["bazel"]["bazelisk"] = bazel_info.bazelisk
             data["bazel"]["version"] = str(bazel_info.version)
+            data["bazel"]["env.USE_BAZEL_VERSION"] = os.environ.get("USE_BAZEL_VERSION", "N/A")
 
         self._try_collect(collector=BazelInfoCollector(),
                           action=set_bazel_info,

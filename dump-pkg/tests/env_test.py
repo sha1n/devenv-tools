@@ -28,6 +28,7 @@ class EnvTest(unittest.TestCase):
         self.assert_non_empty_key(bazel_info, "path")
         self.assert_non_empty_key(bazel_info, "bazelisk")
         self.assert_non_empty_key(bazel_info, "version")
+        self.assert_non_empty_key(bazel_info, "env.USE_BAZEL_VERSION")
 
         self.assert_non_empty_key(snapshot, "python")
         python_info = snapshot["python"]
