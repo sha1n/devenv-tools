@@ -11,7 +11,12 @@ def collect_shell_tools_info_files(target_dir, ctx):
     _collect_info(["brew", "--config"], target_dir, "brew_config.txt", ctx)
     _collect_info(["bash", "--version"], target_dir, "bash_version.txt", ctx)
     _collect_info(["gcc", "--version"], target_dir, "gcc_version.txt", ctx)
+    _collect_info(["clang", "--version"], target_dir, "clang_version.txt", ctx)
     _collect_info(["tar", "--version"], target_dir, "tar_version.txt", ctx)
+    _collect_info(["java", "-version"], target_dir, "java_version.txt", ctx)
+    _collect_info(["mvn", "--version"], target_dir, "mvn_version.txt", ctx)
+    _collect_info(["xcode-select", "-p"], target_dir, "xcode_select.txt", ctx)
+    _collect_info(["env"], target_dir, "env.txt", ctx)
 
 
 def _collect_info(cmd, target_dir, file_name, ctx):
