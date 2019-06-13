@@ -26,5 +26,6 @@ def _installer_context():
     registry.register_reactor(inspector.BAZEL_COMP_ID, BazelInstallReactor())
 
     registry.register_reactor(inspector.PYTHON_COMP_ID, PythonInstallReactor())
+    registry.register_reactor(inspector.PYTHON3_COMP_ID, PythonInstallReactor(formula="python3"))
 
     return ctx

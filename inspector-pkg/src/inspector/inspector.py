@@ -13,6 +13,7 @@ DISK_COMP_ID = "disk space"
 NET_COMP_ID = "network connectivity"
 BAZEL_COMP_ID = "bazel"
 PYTHON_COMP_ID = "python"
+PYTHON3_COMP_ID = "python3"
 
 
 def inspect():
@@ -50,5 +51,8 @@ def create_component_registry() -> Registry:
 
     registry.register_collector(PYTHON_COMP_ID, PythonInfoCollector())
     registry.register_validator(PYTHON_COMP_ID, PythonInfoValidator(expected_ver=SemVer("2", "7", "0")))
+
+    registry.register_collector(PYTHON3_COMP_ID, PythonInfoCollector(binary_name="python3"))
+    registry.register_validator(PYTHON3_COMP_ID, PythonInfoValidator(expected_ver=SemVer("3", "0", "0")))
 
     return registry
