@@ -2,6 +2,10 @@
 
 # macos-devenv-dump-poc
 
+## Prerequisites
+ - [Homebew](https://brew.sh/)
+
+
 Use the following command to create an environment dump tar archive:
 
 `curl https://raw.githubusercontent.com/sha1n/macos-devenv-dump-poc/master/standalone.sh | bash`
