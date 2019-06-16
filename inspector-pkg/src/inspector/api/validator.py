@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from dataclasses import dataclass
 from enum import Enum
 
 from inspector.api.context import Context
@@ -14,7 +13,6 @@ class Status(Enum):
     DOWNGRADE_REQUIRED = 5
 
 
-@dataclass
 class ValidationResult:
     def __init__(self, input_data, status: Status):
         self.input_data = input_data

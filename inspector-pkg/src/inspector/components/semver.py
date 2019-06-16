@@ -1,7 +1,3 @@
-from dataclasses import dataclass
-
-
-@dataclass
 class SemVer:
     def __init__(self, major, minor, patch):
         self.major = major

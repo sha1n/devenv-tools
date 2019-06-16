@@ -1,4 +1,4 @@
-from inspector import inspector
+from inspector import app
 from inspector.api.executor import Executor
 from inspector.cli import run_safe, context
 from installer.components.bazel import BazelInstallReactor
@@ -20,12 +20,12 @@ def install():
 
 
 def _installer_context():
-    registry = inspector.create_component_registry()
+    registry = app.create_component_registry()
     ctx = context("installer", registry)
 
-    registry.register_reactor(inspector.BAZEL_COMP_ID, BazelInstallReactor())
+    registry.register_reactor(app.BAZEL_COMP_ID, BazelInstallReactor())
 
-    registry.register_reactor(inspector.PYTHON_COMP_ID, PythonInstallReactor())
-    registry.register_reactor(inspector.PYTHON3_COMP_ID, PythonInstallReactor(formula="python3"))
+    registry.register_reactor(app.PYTHON_COMP_ID, PythonInstallReactor())
+    registry.register_reactor(app.PYTHON3_COMP_ID, PythonInstallReactor(formula="python3"))
 
     return ctx
