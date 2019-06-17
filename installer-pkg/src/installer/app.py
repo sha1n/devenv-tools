@@ -3,6 +3,7 @@ from inspector.api.executor import Executor
 from inspector.cli import run_safe, context
 from installer.components.bazel import BazelInstallReactor
 from installer.components.python import PythonInstallReactor
+from installer.components.xcode import XcodeInstallReactor
 
 
 def install():
@@ -27,5 +28,6 @@ def _installer_context():
 
     registry.register_reactor(app.PYTHON_COMP_ID, PythonInstallReactor())
     registry.register_reactor(app.PYTHON3_COMP_ID, PythonInstallReactor(formula="python3"))
+    registry.register_reactor(app.XCODE_COMP_ID, XcodeInstallReactor())
 
     return ctx

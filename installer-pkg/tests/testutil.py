@@ -3,7 +3,9 @@ from inspector.api.context import Context, Mode
 from inspector.api.registry import Registry
 
 
-def test_context() -> Context:
-    mode = Mode.from_str(os.environ.get('INSPECTOR_TEST_MODE', str(Mode.SILENT)))
+def test_context(mode=None) -> Context:
+    resolved_mode = mode
+    if resolved_mode is None:
+        resolved_mode = Mode.from_str(os.environ.get('INSPECTOR_TEST_MODE', str(Mode.SILENT)))
 
-    return Context(name="test", mode=mode, dryrun=True, registry=Registry())
+    return Context(name="test", mode=resolved_mode, dryrun=True, registry=Registry())

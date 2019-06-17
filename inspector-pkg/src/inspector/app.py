@@ -7,6 +7,7 @@ from inspector.components.hardware import HardwareInfoValidator, HardwareInfoCol
 from inspector.components.network import UrlConnectivityInfoCollector, UrlConnectivityInfoValidator
 from inspector.components.python import PythonInfoCollector, PythonInfoValidator
 from inspector.components.semver import SemVer
+from inspector.components.xcode import XcodeInfoCollector, XcodeInfoValidator
 
 HARDWARE_COMP_ID = "hardware config"
 DISK_COMP_ID = "disk space"
@@ -14,6 +15,7 @@ NET_COMP_ID = "network connectivity"
 BAZEL_COMP_ID = "bazel"
 PYTHON_COMP_ID = "python"
 PYTHON3_COMP_ID = "python3"
+XCODE_COMP_ID = "xcode"
 
 
 def inspect():
@@ -54,5 +56,8 @@ def create_component_registry() -> Registry:
 
     registry.register_collector(PYTHON3_COMP_ID, PythonInfoCollector(binary_name="python3"))
     registry.register_validator(PYTHON3_COMP_ID, PythonInfoValidator(expected_ver=SemVer("3", "0", "0")))
+
+    registry.register_collector(XCODE_COMP_ID, XcodeInfoCollector())
+    registry.register_validator(XCODE_COMP_ID, XcodeInfoValidator())
 
     return registry
