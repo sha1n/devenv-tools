@@ -11,9 +11,6 @@ fi
 function onexit() {
   echo
   echo "Cleaning up..."
-    pip3 uninstall -y workstation-support-dump-sha1n >/dev/null 2>&1
-    pip3 uninstall -y workstation-installer-sha1n >/dev/null 2>&1
-    pip3 uninstall -y workstation-inspector-dump-sha1n >/dev/null 2>&1
   rm -rf "$TMP_DIR"
 }
 
@@ -32,5 +29,6 @@ cd ${CLONE_DIR}
 source ./scripts/prereq.sh
 
 echo "Executing..."
-echo
-python3 -m dump $@
+
+source run dump $@
+
