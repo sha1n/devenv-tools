@@ -11,7 +11,7 @@ XcodeInfo = namedtuple(typename="XcodeInfo", field_names=["path"])
 class XcodeInfoCollector(Collector):
 
     def collect(self, ctx: Context):
-        ctx.logger.info("Collecting Xcode installation information...")
+        ctx.logger.progress("Collecting Xcode installation information...")
         path = self._xcode_path(ctx)
 
         if path is not None:

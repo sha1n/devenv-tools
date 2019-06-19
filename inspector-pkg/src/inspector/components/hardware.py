@@ -12,7 +12,7 @@ HardwareInfo = namedtuple(typename="HardwareInfo", field_names=["cpu_count", "to
 class HardwareInfoCollector(Collector):
 
     def collect(self, ctx: Context):
-        ctx.logger.info("Collecting hardware information...")
+        ctx.logger.progress("Collecting hardware information...")
         cpu_count = multiprocessing.cpu_count()
         total_ram = _total_ram()
         return HardwareInfo(cpu_count, total_ram)

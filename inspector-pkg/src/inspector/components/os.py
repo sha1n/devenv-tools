@@ -11,7 +11,7 @@ OsInfo = namedtuple(typename="OsInfo", field_names=["name", "version"])
 class OsInfoCollector(Collector):
 
     def collect(self, ctx: Context):
-        ctx.logger.info("Collecting OS information...")
+        ctx.logger.progress("Collecting OS information...")
         name = platform.system()
         major, minor, patch = platform.mac_ver()[0].split(".")
         return OsInfo(name, SemVer(major, minor, patch))

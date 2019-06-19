@@ -11,7 +11,7 @@ DiskInfo = namedtuple(typename="DiskInfo", field_names=["filesystem", "total", "
 class DiskInfoCollector(Collector):
 
     def collect(self, ctx: Context):
-        ctx.logger.info("Collecting disk information...")
+        ctx.logger.progress("Collecting disk information...")
 
         total, used, free = disk_usage("/")
 

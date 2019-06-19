@@ -18,7 +18,7 @@ class UrlConnectivityInfoCollector(Collector):
         self._addresses = ["http://www.google.com"]
 
     def collect(self, ctx: Context) -> List[NetConnectivityInfo]:
-        ctx.logger.info("Checking network connectivity...")
+        ctx.logger.progress("Checking network connectivity...")
         return list((self._check_connectivity(address, ctx) for address in self._addresses))
 
     @timeit_if(more_than_sec=1)

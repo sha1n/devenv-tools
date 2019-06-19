@@ -14,7 +14,7 @@ BazelInfo = namedtuple(typename="BazelInfo", field_names=["path", "version", "ba
 class BazelInfoCollector(Collector):
 
     def collect(self, ctx: Context):
-        ctx.logger.info("Collecting Bazel binary information...")
+        ctx.logger.progress("Collecting Bazel binary information...")
         path = shutil.which("bazel")
         if path is None:
             return None
