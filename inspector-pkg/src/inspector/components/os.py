@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
-from inspector.components.semver import SemVer
+from inspector.api.semver import SemVer
 
 OsInfo = namedtuple(typename="OsInfo", field_names=["name", "version"])
 

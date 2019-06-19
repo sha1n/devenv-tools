@@ -2,7 +2,7 @@ import unittest
 
 from inspector.api.validator import ValidationResult, Status
 from inspector.components.bazel import BazelInfo
-from inspector.components.semver import SemVer
+from inspector.api.semver import SemVer
 from installer.components.bazel import BazelInstallReactor
 from tests.testutil import test_context
 

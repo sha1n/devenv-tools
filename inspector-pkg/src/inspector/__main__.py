@@ -1,3 +1,3 @@
-from inspector.app import inspect
+import inspector.app as inspector
 
-inspect()
+inspector.run()

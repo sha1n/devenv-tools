@@ -1,48 +1,44 @@
 import unittest
 
+from inspector.api.semver import SemVer
 from inspector.api.validator import ValidationResult, Status
 from inspector.components.python import PythonInfo
-from inspector.api.semver import SemVer
-from installer.components.python import PythonInstallReactor
+from installer.components.python import Python3InstallReactor
 from tests.testutil import test_context
 
 
-class PythonValidationInstallReactorTest(unittest.TestCase):
+class Python3InstallReactorTest(unittest.TestCase):
 
     def test_no_action_reaction(self):
-        reactor = PythonInstallReactor()
+        reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.OK), ctx=test_context())
-        self.assertEqual(len(commands), 0)
+        self.assertEqual(0, len(commands))
 
     def test_install_action_reaction(self):
-        reactor = PythonInstallReactor()
+        reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.NOT_FOUND), ctx=test_context())
 
-        self.assertEqual(len(commands), 1)
+        self.assertEqual(2, len(commands))
 
-        install_command = commands[0]
-        self.assertIn(" install", str(install_command))
+        download_command = commands[0]
+        self.assertIn("curl -s", str(download_command))
+
+        install_command = commands[1]
+        self.assertIn("sudo installer", str(install_command))
 
     def test_upgrade_action_reaction(self):
-        reactor = PythonInstallReactor()
+        reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED), ctx=test_context())
-        self.assertEqual(len(commands), 1)
-
-        upgrade_command = commands[0]
-        self.assertIn(" upgrade", str(upgrade_command))
+        self.assertEqual(0, len(commands))
 
     def test_downgrade_action_reaction(self):
-        reactor = PythonInstallReactor()
+        reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED), ctx=test_context())
-        self.assertEqual(len(commands), 2)
-
-        uninstall_command, install_command = commands
-        self.assertIn(" uninstall", str(uninstall_command))
-        self.assertIn(" install", str(install_command))
+        self.assertEqual(0, len(commands))
 
 
 def validation_result_with(status: Status):

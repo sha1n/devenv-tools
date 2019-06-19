@@ -1,13 +1,13 @@
 import getpass
 import json
-import platform
 import os
+import platform
 from datetime import datetime
 
 import dump.collectors.files as files
+from dump.collectors.bazel import collect_bazel_files
 from dump.collectors.docker import collect_docker_files
 from dump.collectors.gcloud import collect_gcloud_files
-from dump.collectors.bazel import collect_bazel_files
 from dump.collectors.tools import collect_shell_tools_info_files
 from inspector.components.bazel import BazelInfoCollector
 from inspector.components.disk import DiskInfoCollector

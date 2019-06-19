@@ -1,10 +1,10 @@
 import shutil
 from collections import namedtuple
 
-from inspector.api.context import Context
 from inspector.api.collector import Collector
+from inspector.api.context import Context
+from inspector.api.semver import SemVer
 from inspector.api.validator import Validator, ValidationResult, Status
-from inspector.components.semver import SemVer
 from inspector.util import cmd
 
 PythonInfo = namedtuple(typename="PythonInfo", field_names=["path", "version"])
@@ -15,7 +15,7 @@ class PythonInfoCollector(Collector):
         self.binary_name = binary_name
 
     def collect(self, ctx: Context):
-        ctx.logger.info("Collecting Python binary information for {}...".format(self.binary_name))
+        ctx.logger.progress("Collecting Python binary information for {}...".format(self.binary_name))
         path = shutil.which(self.binary_name)
 
         if path is None:
@@ -39,9 +39,30 @@ class PythonInfoValidator(Validator):
 
         if int(self.expected_ver.major) > int(input_data.version.major) \
                 or int(self.expected_ver.minor) > int(input_data.version.minor):
-            ctx.logger.warn("Python upgrade required")
+            ctx.logger.warn(
+                "Python upgrade required! Expected: {}, actual: {}".format(self.expected_ver, input_data.version)
+            )
             return ValidationResult(input_data, Status.UPGRADE_REQUIRED)
         else:
             return ValidationResult(input_data, Status.OK)
 
 
+class PythonInfoStrictValidator(Validator):
+    def __init__(self, expected_ver: SemVer, strict=False):
+        self.expected_ver = expected_ver
+        self.strict = strict
+
+    def validate(self, input_data: PythonInfo, ctx: Context) -> ValidationResult:
+        if input_data is None:
+            ctx.logger.warn("Python not installed!")
+            return ValidationResult(input_data, Status.NOT_FOUND)
+
+        if self.expected_ver != input_data.version:
+            ctx.logger.warn(
+                "Incompatible Python version! Expected: {}, actual: {}".format(self.expected_ver, input_data.version)
+            )
+
+            return ValidationResult(input_data, Status.NOT_FOUND)
+
+        else:
+            return ValidationResult(input_data, Status.OK)

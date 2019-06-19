@@ -1,3 +1,3 @@
-from installer.app import install
+import installer.app as installer
 
-install()
+installer.run()

@@ -4,7 +4,7 @@ from collections import namedtuple
 from inspector.api.collector import Collector
 from inspector.api.context import Context
 from inspector.api.validator import ValidationResult, Status, Validator
-from inspector.components.semver import SemVer
+from inspector.api.semver import SemVer
 from inspector.util import cmd
 from inspector.util.cmd import try_execute
 

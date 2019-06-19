@@ -1,6 +1,22 @@
 from inspector.api.context import Context
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import ValidationResult, Status
+from installer.components.macospkg import download_and_install_commands_for
+
+
+class Python3InstallReactor(Reactor):
+
+    def react(self, data: ValidationResult, ctx: Context):
+
+        commands = []
+        if data.status == Status.NOT_FOUND:
+            commands = download_and_install_commands_for(
+                "https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg"  # fixme shai: to config
+            )
+        else:
+            ctx.logger.info("Detected Python 3 version: {} - {}!".format(data.input_data.version, data.status.name))
+
+        return commands
 
 
 class PythonInstallReactor(Reactor):

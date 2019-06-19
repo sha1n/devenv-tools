@@ -1,6 +1,11 @@
+from collections import namedtuple
+
 from inspector.api.context import Context
 from inspector.api.reactor import ReactorCommand
+from inspector.api.validator import Status
 from inspector.util.cmd import try_execute
+
+ExecutionSummary = namedtuple(typename="ExecutionSummary", field_names=["problem_count", "total_count"])
 
 
 def _command_handler_for(ctx):
@@ -16,7 +21,8 @@ def _execute_command(command: ReactorCommand, ctx: Context):
     ok, code, stdout = try_execute(command.cmd, logger)
 
     if not command.silent:
-        logger.command_output(stdout)
+        if stdout != "":
+            logger.command_output(stdout)
 
         if ok:
             if code != 0:
@@ -37,19 +43,26 @@ _DEFAULT_CMD_HANDLER_PROVIDER = _command_handler_for
 class Executor:
 
     def execute(self, ctx: Context, get_handler=_DEFAULT_CMD_HANDLER_PROVIDER):
-        Executor._exec(get_handler(ctx), ctx)
+        return Executor._exec(get_handler(ctx), ctx)
 
     @staticmethod
     def _exec(handle_command, ctx: Context):
+        total = 0
+        problems = 0
         for comp_id in ctx.registry.component_ids():
             collector = ctx.registry.find_collector(comp_id)
             data = collector.collect(ctx)
 
             result = Executor._validate(comp_id, data, ctx)
+            total += 1
             if result is not None:
+                if result.status != Status.OK:
+                    problems += 1
                 Executor._react(comp_id, result, handle_command, ctx)
             else:
                 ctx.logger.warn("{} validator produced no result!".format(comp_id))
+
+        return ExecutionSummary(total_count=total, problem_count=problems)
 
     @staticmethod
     def _validate(comp_id, data, ctx):

@@ -1,12 +1,12 @@
 from inspector.api.executor import Executor
 from inspector.api.registry import Registry
+from inspector.api.semver import SemVer
 from inspector.cli import run_safe, context
 from inspector.components.bazel import BazelInfoCollector, BazelInfoValidator
 from inspector.components.disk import DiskInfoCollector, DiskInfoValidator
 from inspector.components.hardware import HardwareInfoValidator, HardwareInfoCollector
 from inspector.components.network import UrlConnectivityInfoCollector, UrlConnectivityInfoValidator
-from inspector.components.python import PythonInfoCollector, PythonInfoValidator
-from inspector.components.semver import SemVer
+from inspector.components.python import PythonInfoCollector, PythonInfoValidator, PythonInfoStrictValidator
 from inspector.components.xcode import XcodeInfoCollector, XcodeInfoValidator
 
 HARDWARE_COMP_ID = "hardware config"
@@ -18,18 +18,28 @@ PYTHON3_COMP_ID = "python3"
 XCODE_COMP_ID = "xcode"
 
 
-def inspect():
-    ctx = _inspector_context()
+def run_embedded(ctx):
     executor = Executor()
 
     def execute():
-        ctx.logger.info("Starting the inspector...")
+        summary = executor.execute(ctx)
 
-        executor.execute(ctx)
+        if summary.problem_count == 0:
+            ctx.logger.success("No problems detected!")
 
-        ctx.logger.info("Inspector finished.")
+        return summary
 
-    run_safe(ctx, execute)
+    return run_safe(ctx, execute)
+
+
+def run():
+    ctx = _inspector_context()
+
+    ctx.logger.info("Starting the inspector...")
+    issue_count = run_embedded(ctx)
+    ctx.logger.info("Inspector finished.")
+
+    return issue_count
 
 
 def _inspector_context():
@@ -48,6 +58,9 @@ def create_component_registry() -> Registry:
     registry.register_collector(DISK_COMP_ID, DiskInfoCollector())
     registry.register_validator(DISK_COMP_ID, DiskInfoValidator())
 
+    registry.register_collector(XCODE_COMP_ID, XcodeInfoCollector())
+    registry.register_validator(XCODE_COMP_ID, XcodeInfoValidator())
+
     registry.register_collector(BAZEL_COMP_ID, BazelInfoCollector())
     registry.register_validator(BAZEL_COMP_ID, BazelInfoValidator())
 
@@ -55,9 +68,6 @@ def create_component_registry() -> Registry:
     registry.register_validator(PYTHON_COMP_ID, PythonInfoValidator(expected_ver=SemVer("2", "7", "0")))
 
     registry.register_collector(PYTHON3_COMP_ID, PythonInfoCollector(binary_name="python3"))
-    registry.register_validator(PYTHON3_COMP_ID, PythonInfoValidator(expected_ver=SemVer("3", "0", "0")))
-
-    registry.register_collector(XCODE_COMP_ID, XcodeInfoCollector())
-    registry.register_validator(XCODE_COMP_ID, XcodeInfoValidator())
+    registry.register_validator(PYTHON3_COMP_ID, PythonInfoStrictValidator(expected_ver=SemVer("3", "6", "8")))
 
     return registry

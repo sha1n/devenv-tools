@@ -2,11 +2,9 @@ import unittest
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
-from inspector.api.executor import Executor
+from inspector.api.executor import Executor, ExecutionSummary
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import Validator, ValidationResult, Status
-from inspector.components.bazel import BazelInfo
-from inspector.components.semver import SemVer
 from tests.testutil import test_context
 
 
@@ -15,7 +13,7 @@ class ExecutorTest(unittest.TestCase):
     def test_empty(self):
         executor = Executor()
 
-        self.assertIsNone(executor.execute(test_context()))
+        self.assertEqual(ExecutionSummary(0, 0), executor.execute(test_context()))
 
     def test_basic(self):
         ctx = test_context()
@@ -31,7 +29,10 @@ class ExecutorTest(unittest.TestCase):
         ctx.registry.register_validator("id", validator)
         ctx.registry.register_reactor("id", reactor)
 
-        executor.execute(ctx, get_handler=handler.get)
+        self.assertEqual(
+            ExecutionSummary(total_count=1, problem_count=1),
+            executor.execute(ctx, get_handler=handler.get)
+        )
 
         self.assertTrue(collector.called)
         self.assertTrue(validator.called)
@@ -49,7 +50,10 @@ class ExecutorTest(unittest.TestCase):
         ctx.registry.register_validator("id", MockValidator(result=validation_result_with("data")))
         ctx.registry.register_reactor("id", reactor)
 
-        executor.execute(ctx, get_handler=handler.get)
+        self.assertEqual(
+            ExecutionSummary(total_count=1, problem_count=1),
+            executor.execute(ctx, get_handler=handler.get)
+        )
 
         self.assertTrue(reactor.called)
         self.assertEqual(0, len(handler.recorded))
@@ -88,7 +92,10 @@ class ExecutorTest(unittest.TestCase):
         ctx.registry.register_collector("comp_1", collector1)
         ctx.registry.register_collector("comp_2", collector2)
 
-        executor.execute(ctx, get_handler=handler.get)
+        self.assertEqual(
+            ExecutionSummary(total_count=2, problem_count=0),
+            executor.execute(ctx, get_handler=handler.get)
+        )
 
         self.assertTrue(collector1.called)
         self.assertTrue(collector2.called)
@@ -103,7 +110,7 @@ class ExecutorTest(unittest.TestCase):
         ctx.registry.register_collector("id", collector)
         ctx.registry.register_validator("id", validator)
 
-        executor.execute(ctx)
+        self.assertEqual(ExecutionSummary(total_count=1, problem_count=1), executor.execute(ctx))
 
         self.assertTrue(collector.called)
         self.assertTrue(validator.called)
@@ -116,7 +123,7 @@ class ExecutorTest(unittest.TestCase):
 
         ctx.registry.register_collector("id", collector)
 
-        executor.execute(ctx)
+        self.assertEqual(ExecutionSummary(total_count=1, problem_count=0), executor.execute(ctx))
 
         self.assertTrue(collector.called)
 
@@ -171,15 +178,7 @@ class RecordingHandler:
         return self.handle
 
 
-def bazel_info_with(major="1", minor="24", patch="0"):
-    return BazelInfo("/", "/", SemVer(major, minor, patch))
-
-
-def expected_version(major="1", minor="24", patch="0"):
-    return SemVer(major, minor, patch)
-
-
-def validation_result_with(data, status: Status=Status.NOT_FOUND):
+def validation_result_with(data, status: Status = Status.NOT_FOUND):
     return ValidationResult(data, status)
 
 

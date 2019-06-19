@@ -12,7 +12,7 @@ def context(name, registry: Registry):
                         dest="mode",
                         default="interactive",
                         help="one of [ interactive | background ]")
-    parser.add_argument("--dryrun",
+    parser.add_argument("--dry-run",
                         default=False,
                         dest="dryrun",
                         action="store_true",
@@ -26,16 +26,13 @@ def context(name, registry: Registry):
 def run_safe(ctx: Context, fn):
     logger = ctx.logger
     if ctx.dryrun:
-        logger.info("*** DRY RUN ***")
+        logger.debug("*** DRY RUN ***")
 
-    logger.info("Running in {} mode".format(str(ctx.mode)))
+    logger.progress("Running in {} mode".format(str(ctx.mode)))
 
     try:
-        fn()
-
-        logger.success("Done!")
-
+        return fn()
     except Exception as err:
         logger.error(err)
-        logger.failure("Failure!")
+        logger.failure("Unexpected error - exiting :(")
         exit(1)
