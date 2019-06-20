@@ -1,9 +1,11 @@
 from inspector.api.context import Context
+from inspector.api.platformcompatibility import macos
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import ValidationResult, Status
 from installer.components.macospkg import download_and_install_commands_for
 
 
+@macos
 class Python3InstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):
@@ -19,6 +21,7 @@ class Python3InstallReactor(Reactor):
         return commands
 
 
+@macos
 class PythonInstallReactor(Reactor):
     def __init__(self, formula="python"):
         self.formula = formula

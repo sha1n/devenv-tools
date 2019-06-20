@@ -2,12 +2,14 @@ from collections import namedtuple
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
+from inspector.api.platformcompatibility import macos
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.util.cmd import try_execute
 
 XcodeInfo = namedtuple(typename="XcodeInfo", field_names=["path"])
 
 
+@macos
 class XcodeInfoCollector(Collector):
 
     def collect(self, ctx: Context):
@@ -26,9 +28,10 @@ class XcodeInfoCollector(Collector):
             ctx.logger.warn("xcode-select returned code '{}'".format(code))
             return None
 
-        return output
+        return output.strip()
 
 
+@macos
 class XcodeInfoValidator(Validator):
 
     def validate(self, input_data: XcodeInfo, ctx: Context) -> ValidationResult:

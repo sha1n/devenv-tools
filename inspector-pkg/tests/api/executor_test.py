@@ -10,12 +10,12 @@ from tests.testutil import test_context
 
 class ExecutorTest(unittest.TestCase):
 
-    def test_empty(self):
+    def test_empty_execute(self):
         executor = Executor()
 
         self.assertEqual(ExecutionSummary(0, 0), executor.execute(test_context()))
 
-    def test_basic(self):
+    def test_basic_execute(self):
         ctx = test_context()
         handler = RecordingHandler()
 
@@ -39,7 +39,7 @@ class ExecutorTest(unittest.TestCase):
         self.assertTrue(reactor.called)
         self.assertEqual(reactor_command, handler.recorded[0])
 
-    def test_flow_with_empty_reactor(self):
+    def test_execute_flow_with_empty_reactor(self):
         ctx = test_context()
         handler = RecordingHandler()
 
@@ -58,7 +58,7 @@ class ExecutorTest(unittest.TestCase):
         self.assertTrue(reactor.called)
         self.assertEqual(0, len(handler.recorded))
 
-    def test_flow_with_command_failure(self):
+    def test_execute_flow_with_command_failure(self):
         ctx = test_context()
         handler = RecordingHandler(fail=True)
 
@@ -81,7 +81,7 @@ class ExecutorTest(unittest.TestCase):
         self.assertTrue(validator.called)
         self.assertTrue(reactor.called)
 
-    def test_flow_with_multiple_components(self):
+    def test_execute_flow_with_multiple_components(self):
         ctx = test_context()
         handler = RecordingHandler(fail=True)
 
@@ -100,7 +100,7 @@ class ExecutorTest(unittest.TestCase):
         self.assertTrue(collector1.called)
         self.assertTrue(collector2.called)
 
-    def test_validation_only(self):
+    def test_execute_validation_only(self):
         ctx = test_context()
 
         executor = Executor()
@@ -115,7 +115,7 @@ class ExecutorTest(unittest.TestCase):
         self.assertTrue(collector.called)
         self.assertTrue(validator.called)
 
-    def test_collection_only(self):
+    def test_execute_collection_only(self):
         ctx = test_context()
 
         executor = Executor()
@@ -126,6 +126,26 @@ class ExecutorTest(unittest.TestCase):
         self.assertEqual(ExecutionSummary(total_count=1, problem_count=0), executor.execute(ctx))
 
         self.assertTrue(collector.called)
+
+    def test_no_execution_done_by_plan(self):
+        ctx = test_context()
+        ctx.plan = True
+
+        executor = Executor()
+        collector = MockCollector("data")
+        validator = MockValidator(result=validation_result_with("data"))
+        reactor_command = ReactorCommand(cmd=["do", "nothing"])
+        reactor = MockReactor(reactor_command)
+
+        ctx.registry.register_collector("id", collector)
+        ctx.registry.register_validator("id", validator)
+        ctx.registry.register_reactor("id", reactor)
+
+        executor.plan(ctx)
+
+        self.assertFalse(collector.called)
+        self.assertFalse(validator.called)
+        self.assertFalse(reactor.called)
 
 
 class MockCollector(Collector):

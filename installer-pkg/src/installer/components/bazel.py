@@ -1,8 +1,10 @@
 from inspector.api.context import Context
+from inspector.api.platformcompatibility import macos
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import ValidationResult, Status
 
 
+@macos
 class BazelInstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):

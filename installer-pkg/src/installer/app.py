@@ -1,47 +1,51 @@
 from inspector import app as inspector
 from inspector.api.executor import Executor
-from inspector.cli import run_safe, context
+from inspector.api.registry import Registry
+
+from inspector.cliapp import CliAppRunner, parse_context
 from installer.components.bazel import BazelInstallReactor
 from installer.components.python import PythonInstallReactor
 from installer.components.xcode import XcodeInstallReactor
 
 
-def run():
-    ctx = _installer_context()
-    executor = Executor()
-
-    def execute():
-        ctx.logger.info("Starting the installer...")
-
-        verify_changes(executor.execute(ctx))
-
-        ctx.logger.info("Installer finished.")
-
-    def verify_changes(summary):
-        if summary.problem_count > 0:
-            ctx.logger.info("Inspecting components again to verify changes...")
-            if inspector.run_embedded(_inspection_context()).problem_count > 0:
-                ctx.logger.failure("Some issues could not be resolved. Please report this issue!")
-        else:
-            ctx.logger.success("No problems detected!")
-
-    run_safe(ctx, execute)
-
-
-def _inspection_context():
-    registry = inspector.create_component_registry()
-    ctx = context("installer", registry)
-
-    return ctx
-
-
-def _installer_context():
-    ctx = _inspection_context()
-    registry = ctx.registry
+def register_components(registry: Registry):
+    inspector.register_components(registry)
 
     registry.register_reactor(inspector.BAZEL_COMP_ID, BazelInstallReactor())
     registry.register_reactor(inspector.PYTHON_COMP_ID, PythonInstallReactor())
     # registry.register_reactor(inspector.PYTHON3_COMP_ID, Python3InstallReactor())
     registry.register_reactor(inspector.XCODE_COMP_ID, XcodeInstallReactor())
 
+
+def _inspection_context():
+    registry = Registry()
+    inspector.register_components(registry)
+    ctx = parse_context(name="installer", registry=registry)
+
     return ctx
+
+
+def run_embedded(ctx):
+    executor = Executor()
+
+    def execute():
+        summary = executor.execute(ctx)
+
+        if summary.problem_count > 0:
+            verify_changes()
+        else:
+            ctx.logger.success("No problems detected!")
+
+        return summary
+
+    def verify_changes():
+        ctx.logger.info("Inspecting components again to verify changes...")
+        if inspector.run_embedded(_inspection_context()).problem_count > 0:
+            ctx.logger.failure("Some issues could not be resolved. Please report this issue!")
+
+    return execute()
+
+
+def run():
+    runner = CliAppRunner(name="installer", register_components=register_components, run=run_embedded)
+    return runner.run()

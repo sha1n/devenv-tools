@@ -16,6 +16,7 @@ def collect_shell_tools_info_files(target_dir, ctx):
     _collect_info(["java", "-version"], target_dir, "java_version.txt", ctx)
     _collect_info(["mvn", "--version"], target_dir, "mvn_version.txt", ctx)
     _collect_info(["xcode-select", "-p"], target_dir, "xcode_select.txt", ctx)
+    _collect_info(["softwareupdate", "-l"], target_dir, "softwareupdate_l.txt", ctx)
     _collect_info(["env"], target_dir, "env.txt", ctx)
 
 

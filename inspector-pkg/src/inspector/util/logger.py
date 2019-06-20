@@ -135,7 +135,7 @@ class NoopLogger(Logger):
 
 
 class CompositeLogger(Logger):
-    def __init__(self, *loggers: Logger):
+    def __init__(self, loggers):
         self.loggers = loggers
 
     def progress(self, message):

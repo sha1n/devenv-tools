@@ -3,7 +3,7 @@ import os
 from collections import namedtuple
 from os import listdir
 
-from dump.collectors.files import try_copytree_if, try_copytree, file_name_from, try_copyfile
+from dump.collectors.files import try_copytree_if, try_copytree, file_name_from, try_copyfile, path_exists
 from inspector.api.context import Context
 from inspector.util.diag import timeit_if
 
@@ -72,18 +72,22 @@ class JetBrainsProductDataCollector:
         self.ctx.logger.progress("Collecting {} product info files...".format(self.product_info.name))
 
         for file_path in product_info_files:
-            version = self._read_json_property(file_path, "version")
-            code = self._read_json_property(file_path, "productCode")
-            try_copyfile(
-                source_file=file_path,
-                target_file="{}/{}-{}-{}-product-info.json".format(
-                    target_dir_path,
-                    self.product_info.name,
-                    code,
-                    version
-                ),
-                logger=self.ctx.logger
-            )
+            if path_exists(file_path):
+                version = self._read_json_property(file_path, "version")
+                code = self._read_json_property(file_path, "productCode")
+                try_copyfile(
+                    source_file=file_path,
+                    target_file="{}/{}-{}-{}-product-info.json".format(
+                        target_dir_path,
+                        self.product_info.name,
+                        code,
+                        version
+                    ),
+                    logger=self.ctx.logger
+                )
+
+            else:
+                self.ctx.logger.debug("File '{}' doesn't exist - skipping".format(file_path))
 
     def _collect_product_info_file_paths(self):
         candidates = listdir("/Applications")

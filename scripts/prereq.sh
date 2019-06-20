@@ -3,7 +3,7 @@
 set -e
 
 PYTHON_REQUIRED_MAJOR="3"
-PYTHON_REQUIRED_MINOR="7"
+PYTHON_REQUIRED_MINOR="6"
 
 if ! command -v python3 &>/dev/null; then
     echo "Python $PYTHON_REQUIRED_MAJOR.x is required to run this program..."

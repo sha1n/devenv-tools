@@ -1,17 +1,14 @@
-#!/bin/python
-
+import getpass
 import os
 import platform
 import tarfile
 import tempfile
 from datetime import datetime
-import getpass
 
 from dump.collectors.env import EnvDataCollector
 from dump.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
-from inspector.api.context import Mode
 from inspector.api.registry import Registry
-from inspector.cli import context, run_safe
+from inspector.cliapp import parse_context, run_safe
 
 platform.uname()
 user_home_dir_path = os.path.expanduser("~")
@@ -70,7 +67,7 @@ def _create_dump_archive(ctx):
     ctx.logger.info("Preparing tar archive...")
 
     os.makedirs(archive_target_dir_path, exist_ok=True)
-    if ctx.mode == Mode.DEBUG and os.path.exists(ctx.log_file_path):
+    if ctx.log_file_path is not None and os.path.exists(ctx.log_file_path):
         os.system("cp {} {}".format(ctx.log_file_path, "{}/self.log".format(archive_content_dir_path)))
 
     with tarfile.open(tar_file_path, "w:gz") as tar:
@@ -99,9 +96,9 @@ def _safe(ctx, *methods):
 
 
 def tarball():
-    ctx = context(name="dump", registry=Registry())  # fixme shai: use executor where possible
+    ctx = parse_context(name="dump", registry=Registry())  # fixme shai: use executor where possible
 
-    def dump():
+    def dump(ctx):
         _check_prerequisites(ctx)
 
         _safe(

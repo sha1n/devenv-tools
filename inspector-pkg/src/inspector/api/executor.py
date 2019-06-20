@@ -45,6 +45,29 @@ class Executor:
     def execute(self, ctx: Context, get_handler=_DEFAULT_CMD_HANDLER_PROVIDER):
         return Executor._exec(get_handler(ctx), ctx)
 
+    def plan(self, ctx: Context):
+        index = 0
+
+        for comp_id in ctx.registry.component_ids():
+            collector = ctx.registry.find_collector(comp_id)
+
+            index += 1
+            ctx.logger.info("{}\t --> {}".format(index, type(collector).__name__))
+            validator = ctx.registry.find_validator(comp_id)
+            if validator is not None:
+                index += 1
+                ctx.logger.info("{}\t\t --> {}".format(index, type(validator).__name__))
+
+                reactors = ctx.registry.find_reactors(comp_id)
+                if len(reactors) == 0:
+                    ctx.logger.debug("No reactors registered for {}".format(comp_id))
+
+                for reactor in ctx.registry.find_reactors(comp_id):
+                    index += 1
+                    ctx.logger.info("{}\t\t\t --> {}".format(index, type(reactor).__name__))
+            else:
+                ctx.logger.debug("No validator registered for {}".format(comp_id))
+
     @staticmethod
     def _exec(handle_command, ctx: Context):
         total = 0

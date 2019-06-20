@@ -3,12 +3,14 @@ from collections import namedtuple
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
+from inspector.api.platformcompatibility import macos
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.util import cmd
 
 HardwareInfo = namedtuple(typename="HardwareInfo", field_names=["cpu_count", "total_ram"])
 
 
+@macos  # remove after fixing ram calculation method
 class HardwareInfoCollector(Collector):
 
     def collect(self, ctx: Context):
@@ -33,6 +35,6 @@ class HardwareInfoValidator(Validator):
         return ValidationResult(input_data, Status.OK)
 
 
-def _total_ram():
+def _total_ram():  # fixme shai: replace with a linux compatible code and remove the annotation
     raw_total_ram = cmd.execute(["sysctl", "hw.memsize"]).split(":")[1].strip()
     return int(int(raw_total_ram) / (1024 * 1000 * 1024))

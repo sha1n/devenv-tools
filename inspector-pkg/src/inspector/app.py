@@ -1,7 +1,7 @@
 from inspector.api.executor import Executor
 from inspector.api.registry import Registry
 from inspector.api.semver import SemVer
-from inspector.cli import run_safe, context
+from inspector.cliapp import CliAppRunner
 from inspector.components.bazel import BazelInfoCollector, BazelInfoValidator
 from inspector.components.disk import DiskInfoCollector, DiskInfoValidator
 from inspector.components.hardware import HardwareInfoValidator, HardwareInfoCollector
@@ -18,37 +18,7 @@ PYTHON3_COMP_ID = "python3"
 XCODE_COMP_ID = "xcode"
 
 
-def run_embedded(ctx):
-    executor = Executor()
-
-    def execute():
-        summary = executor.execute(ctx)
-
-        if summary.problem_count == 0:
-            ctx.logger.success("No problems detected!")
-
-        return summary
-
-    return run_safe(ctx, execute)
-
-
-def run():
-    ctx = _inspector_context()
-
-    ctx.logger.info("Starting the inspector...")
-    issue_count = run_embedded(ctx)
-    ctx.logger.info("Inspector finished.")
-
-    return issue_count
-
-
-def _inspector_context():
-    return context("inspector", create_component_registry())
-
-
-def create_component_registry() -> Registry:
-    registry = Registry()
-
+def register_components(registry: Registry):
     registry.register_collector(NET_COMP_ID, UrlConnectivityInfoCollector())
     registry.register_validator(NET_COMP_ID, UrlConnectivityInfoValidator())
 
@@ -70,4 +40,24 @@ def create_component_registry() -> Registry:
     registry.register_collector(PYTHON3_COMP_ID, PythonInfoCollector(binary_name="python3"))
     registry.register_validator(PYTHON3_COMP_ID, PythonInfoStrictValidator(expected_ver=SemVer("3", "6", "8")))
 
-    return registry
+
+def run_embedded(ctx):
+    executor = Executor()
+
+    def execute():
+        summary = executor.execute(ctx)
+
+        if summary.problem_count == 0:
+            ctx.logger.success("No problems detected!")
+
+        return summary
+
+    return execute()
+
+
+def run():
+    runner = CliAppRunner(name="inspector", register_components=register_components, run=run_embedded)
+
+    issues_count = runner.run()
+
+    return issues_count

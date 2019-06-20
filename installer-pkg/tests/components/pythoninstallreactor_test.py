@@ -1,13 +1,13 @@
 import unittest
 
+from inspector.api.semver import SemVer
 from inspector.api.validator import ValidationResult, Status
 from inspector.components.python import PythonInfo
-from inspector.api.semver import SemVer
 from installer.components.python import PythonInstallReactor
 from tests.testutil import test_context
 
 
-class PythonValidationInstallReactorTest(unittest.TestCase):
+class PythonInstallReactorTest(unittest.TestCase):
 
     def test_no_action_reaction(self):
         reactor = PythonInstallReactor()

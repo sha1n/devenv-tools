@@ -6,3 +6,9 @@ class SemVer:
 
     def __str__(self):
         return "{}.{}.{}".format(self.major, self.minor, self.patch)
+
+    def __eq__(self, other):
+        if not isinstance(other, SemVer):
+            return False
+
+        return self.major == other.major and self.minor == other.minor and self.patch == other.patch
