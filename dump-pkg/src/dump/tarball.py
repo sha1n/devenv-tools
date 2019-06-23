@@ -98,18 +98,20 @@ def _safe(ctx, *methods):
 def tarball():
     ctx = parse_context(name="dump", registry=Registry())  # fixme shai: use executor where possible
 
-    def dump(ctx):
-        _check_prerequisites(ctx)
+    def dump(context):
+        _check_prerequisites(context)
 
         _safe(
-            ctx,
+            context,
             _prepare_env_info_file,
             _prepare_intellij_info_files,
             _prepare_goland_info_files,
             _prepare_pycharm_info_files,
         )
-
-        _create_dump_archive(ctx)
-        os.system("open -R %s" % tar_file_path)
+        if not ctx.dryrun:
+            _create_dump_archive(context)
+            os.system("open -R %s" % tar_file_path)
+        else:
+            ctx.logger.info("Dry-run mode: archive creation skipped!")
 
     run_safe(ctx, dump)
