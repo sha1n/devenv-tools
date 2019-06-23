@@ -3,6 +3,7 @@ from inspector.api.registry import Registry
 from inspector.api.semver import SemVer
 from inspector.cliapp import CliAppRunner
 from inspector.components.bazel import BazelInfoCollector, BazelInfoValidator
+from inspector.components.brew import HomebrewCollector, HomebrewValidator
 from inspector.components.disk import DiskInfoCollector, DiskInfoValidator
 from inspector.components.hardware import HardwareInfoValidator, HardwareInfoCollector
 from inspector.components.network import UrlConnectivityInfoCollector, UrlConnectivityInfoValidator
@@ -12,6 +13,7 @@ from inspector.components.xcode import XcodeInfoCollector, XcodeInfoValidator
 HARDWARE_COMP_ID = "hardware config"
 DISK_COMP_ID = "disk space"
 NET_COMP_ID = "network connectivity"
+BREW_COMP_ID = "homebrew"
 BAZEL_COMP_ID = "bazel"
 PYTHON_COMP_ID = "python"
 PYTHON3_COMP_ID = "python3"
@@ -27,6 +29,9 @@ def register_components(registry: Registry):
 
     registry.register_collector(DISK_COMP_ID, DiskInfoCollector())
     registry.register_validator(DISK_COMP_ID, DiskInfoValidator())
+
+    registry.register_collector(BREW_COMP_ID, HomebrewCollector())
+    registry.register_validator(BREW_COMP_ID, HomebrewValidator())
 
     registry.register_collector(XCODE_COMP_ID, XcodeInfoCollector())
     registry.register_validator(XCODE_COMP_ID, XcodeInfoValidator())

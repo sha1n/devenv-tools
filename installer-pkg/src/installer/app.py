@@ -4,6 +4,7 @@ from inspector.api.registry import Registry
 
 from inspector.cliapp import CliAppRunner, parse_context
 from installer.components.bazel import BazelInstallReactor
+from installer.components.brew import HomebrewInstallReactor
 from installer.components.python import PythonInstallReactor
 from installer.components.xcode import XcodeInstallReactor
 
@@ -11,6 +12,7 @@ from installer.components.xcode import XcodeInstallReactor
 def register_components(registry: Registry):
     inspector.register_components(registry)
 
+    registry.register_reactor(inspector.BREW_COMP_ID, HomebrewInstallReactor())
     registry.register_reactor(inspector.BAZEL_COMP_ID, BazelInstallReactor())
     registry.register_reactor(inspector.PYTHON_COMP_ID, PythonInstallReactor())
     # registry.register_reactor(inspector.PYTHON3_COMP_ID, Python3InstallReactor())
