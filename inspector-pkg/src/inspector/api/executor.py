@@ -1,9 +1,10 @@
+import subprocess
 from collections import namedtuple
 
 from inspector.api.context import Context
 from inspector.api.reactor import ReactorCommand
 from inspector.api.validator import Status
-from inspector.util.cmd import try_execute
+from inspector.util.cmd import stream_output
 
 ExecutionSummary = namedtuple(typename="ExecutionSummary", field_names=["problem_count", "total_count"])
 
@@ -18,19 +19,21 @@ def _command_handler_for(ctx):
 def _execute_command(command: ReactorCommand, ctx: Context):
     logger = ctx.logger
     logger.command_info(command)
-    ok, code, stdout = try_execute(command.cmd, logger)
 
-    if not command.silent:
-        if stdout != "":
-            logger.command_output(stdout)
+    try:
+        for line in stream_output(command.cmd):
+            if not command.silent:
+                ctx.logger.command_output(line)
 
-        if ok:
-            if code != 0:
-                logger.failure("Command '{}' returned code {}".format(command, code))
-            else:
-                logger.progress("Command '{}' executed successfully (return code = {})".format(command, code))
-        else:
-            logger.failure("Failed to execute command '{}'".format(command))
+        logger.progress("Command '{}' executed successfully".format(command))
+    except subprocess.CalledProcessError as err:
+        logger.debug(err)
+        if not command.silent:
+            logger.failure("Command '{}' returned code {}".format(command, err.returncode))
+    except FileNotFoundError as err:
+        logger.debug(err)
+        if not command.silent:
+            logger.failure("Failed to execute command '{}' - {}".format(command, err))
 
 
 def _log_command(command: ReactorCommand, ctx: Context):

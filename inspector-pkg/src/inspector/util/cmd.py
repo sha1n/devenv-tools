@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import shutil
 import subprocess
 
@@ -43,3 +45,15 @@ def try_capture_output(cmd, target_dir_path, file_name, logger=NOOP_LOGGER):
 
 def command(executable_name):
     return shutil.which(executable_name) is not None
+
+
+def stream_output(cmd):
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    for stdout_line in iter(popen.stdout.readline, ""):
+        yield stdout_line
+
+    popen.stdout.close()
+
+    return_code = popen.wait()
+    if return_code != 0:
+        raise subprocess.CalledProcessError(return_code, cmd)
