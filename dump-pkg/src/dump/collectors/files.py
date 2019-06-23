@@ -1,5 +1,6 @@
-import os
 import time
+
+import os
 from shutil import copytree, copyfile
 
 from inspector.util.error_handling import raised_to_none_wrapper
@@ -27,10 +28,12 @@ def copytree_if(source_dir, target_dir, modified_in_the_past_sec):
 
 
 def try_copyfile(source_file, target_file, logger=NOOP_LOGGER):
+    logger.progress("Trying to copy '{}' to '{}'".format(source_file, target_file))
     raised_to_none_wrapper(copyfile, logger)(source_file, target_file)
 
 
 def try_copytree(source_dir, target_dir, logger=NOOP_LOGGER):
+    logger.progress("Trying to copy '{}' to '{}'".format(source_dir, target_dir))
     raised_to_none_wrapper(copytree, logger)(source_dir, target_dir)
 
 
