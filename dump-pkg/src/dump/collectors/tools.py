@@ -9,6 +9,7 @@ def collect_shell_tools_info_files(target_dir, ctx):
     mkdir(target_dir)
 
     _collect_info(["brew", "--config"], target_dir, "brew_config.txt", ctx)
+    _collect_info(["brew", "doctor", "--debug"], target_dir, "brew_doctor_debug.txt", ctx)
     _collect_info(["bash", "--version"], target_dir, "bash_version.txt", ctx)
     _collect_info(["gcc", "--version"], target_dir, "gcc_version.txt", ctx)
     _collect_info(["clang", "--version"], target_dir, "clang_version.txt", ctx)
