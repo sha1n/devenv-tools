@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
-from inspector.api.platformcompatibility import macos
+from inspector.api.annotations import macos
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.util.cmd import try_execute
 

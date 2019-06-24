@@ -2,7 +2,7 @@ import argparse
 import json
 
 from inspector.api.context import Context, Mode
-from inspector.api.executor import Executor
+from inspector.api.executor import ExecPlanExecutor
 from inspector.api.registry import Registry
 
 
@@ -20,7 +20,7 @@ class CliAppRunner:
         ctx.logger.info("Starting {}.".format(self.name))
         _print_header(ctx)
 
-        if ctx.plan:
+        if ctx.flags.plan:
             _run_safe_execution_plan(ctx)
         else:
             run_safe(ctx, self._do_run)
@@ -31,9 +31,9 @@ class CliAppRunner:
 def _print_header(ctx):
     logger = ctx.logger
 
-    if ctx.plan:
+    if ctx.flags.plan:
         logger.info("Running in plan mode. No changes will be applied to the system.")
-    elif ctx.dryrun:
+    elif ctx.flags.dryrun:
         logger.info("Running in dry-run mode. No changes will be applied to the system.")
 
     logger.debug("Execution context = {}".format(ctx))
@@ -64,6 +64,11 @@ def parse_context(name, registry: Registry):
                         dest="debug",
                         action="store_true",
                         help="logs debug information")
+    parser.add_argument("--experimental", "-e",
+                        default=False,
+                        dest="experimental",
+                        action="store_true",
+                        help="turns on experimental features")
     parser.add_argument("--log-file",
                         dest="log_file",
                         help="log file path")
@@ -81,7 +86,8 @@ def parse_context(name, registry: Registry):
         debug=args.debug,
         log_file=args.log_file,
         plan=args.plan,
-        dryrun=args.dryrun
+        dryrun=args.dryrun,
+        experimental=args.experimental,
     )
 
 
@@ -95,4 +101,4 @@ def run_safe(ctx: Context, fn):
 
 
 def _run_safe_execution_plan(ctx: Context):
-    run_safe(ctx, Executor().plan)
+    run_safe(ctx, ExecPlanExecutor().execute)

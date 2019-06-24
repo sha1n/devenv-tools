@@ -1,6 +1,7 @@
 import subprocess
 from collections import namedtuple
 
+from inspector.api.annotations import is_experimental, stringify, is_compatible_with_current_platform
 from inspector.api.context import Context
 from inspector.api.reactor import ReactorCommand
 from inspector.api.validator import Status
@@ -10,7 +11,7 @@ ExecutionSummary = namedtuple(typename="ExecutionSummary", field_names=["problem
 
 
 def _command_handler_for(ctx):
-    if ctx.dryrun:
+    if ctx.flags.dryrun:
         return _log_command
     else:
         return _execute_command
@@ -43,69 +44,89 @@ def _log_command(command: ReactorCommand, ctx: Context):
 _DEFAULT_CMD_HANDLER_PROVIDER = _command_handler_for
 
 
-class Executor:
-
-    def execute(self, ctx: Context, get_handler=_DEFAULT_CMD_HANDLER_PROVIDER):
-        return Executor._exec(get_handler(ctx), ctx)
-
-    def plan(self, ctx: Context):
+class ExecPlanExecutor:
+    def execute(self, ctx: Context):
         index = 0
 
         for comp_id in ctx.registry.component_ids():
-            collector = ctx.registry.find_collector(comp_id)
+            collector = _handler_or_none(ctx.registry.find_collector(comp_id), ctx)
 
-            index += 1
-            ctx.logger.info("{}\t --> {}".format(index, type(collector).__name__))
-            validator = ctx.registry.find_validator(comp_id)
-            if validator is not None:
+            if collector is not None:
                 index += 1
-                ctx.logger.info("{}\t\t --> {}".format(index, type(validator).__name__))
-
-                reactors = ctx.registry.find_reactors(comp_id)
-                if len(reactors) == 0:
-                    ctx.logger.debug("No reactors registered for {}".format(comp_id))
-
-                for reactor in ctx.registry.find_reactors(comp_id):
+                ctx.logger.info("{}\t --> {}".format(index, stringify(collector)))
+                validator = _handler_or_none(ctx.registry.find_validator(comp_id), ctx)
+                if validator is not None:
                     index += 1
-                    ctx.logger.info("{}\t\t\t --> {}".format(index, type(reactor).__name__))
-            else:
-                ctx.logger.debug("No validator registered for {}".format(comp_id))
+                    ctx.logger.info("{}\t\t --> {}".format(index, stringify(validator)))
 
-    @staticmethod
-    def _exec(handle_command, ctx: Context):
+                    reactors = ctx.registry.find_reactors(comp_id)
+                    if len(reactors) == 0:
+                        ctx.logger.debug("No reactors registered for {}".format(comp_id))
+
+                    effective_reactors = (reactor for reactor in reactors if _handler_or_none(reactor, ctx) is not None)
+                    for reactor in effective_reactors:
+                        index += 1
+                        ctx.logger.info("{}\t\t\t --> {}".format(index, stringify(reactor)))
+                else:
+                    ctx.logger.debug("No validator registered for {}".format(comp_id))
+
+
+class Executor:
+
+    def execute(self, ctx: Context, get_handler=_DEFAULT_CMD_HANDLER_PROVIDER):
+        return self._exec(get_handler(ctx), ctx)
+
+    def _exec(self, handle_command, ctx: Context):
         total = 0
         problems = 0
         for comp_id in ctx.registry.component_ids():
-            collector = ctx.registry.find_collector(comp_id)
-            data = collector.collect(ctx)
+            collector = _handler_or_none(ctx.registry.find_collector(comp_id), ctx)
+            if collector is not None:
+                data = collector.collect(ctx)
 
-            result = Executor._validate(comp_id, data, ctx)
-            total += 1
-            if result is not None:
-                if result.status != Status.OK:
-                    problems += 1
-                Executor._react(comp_id, result, handle_command, ctx)
-            else:
-                ctx.logger.warn("{} validator produced no result!".format(comp_id))
+                result = self._validate(comp_id, data, ctx)
+                total += 1
+                if result is not None:
+                    if result.status != Status.OK:
+                        problems += 1
+                    self._react(comp_id, result, handle_command, ctx)
+                else:
+                    ctx.logger.warn("{} validator produced no result!".format(comp_id))
 
         return ExecutionSummary(total_count=total, problem_count=problems)
 
-    @staticmethod
-    def _validate(comp_id, data, ctx):
-        validator = ctx.registry.find_validator(comp_id)
+    def _validate(self, comp_id, data, ctx):
+        validator = _handler_or_none(ctx.registry.find_validator(comp_id), ctx)
         if validator is not None:
             return validator.validate(data, ctx)
         else:
-            ctx.logger.warn("No validator registered for {}".format(comp_id))
+            ctx.logger.warn("No validator is registered for {}".format(comp_id))
             return None
 
-    @staticmethod
-    def _react(comp_id, validation_result, handle_command, ctx):
+    def _react(self, comp_id, validation_result, handle_command, ctx):
         reactors = ctx.registry.find_reactors(comp_id)
 
         if len(reactors) == 0:
             ctx.logger.debug("No reactors registered for {}".format(comp_id))
 
-        for reactor in reactors:
+        effective_reactors = list(
+            reactor for reactor in reactors if _handler_or_none(reactor, ctx) is not None
+        )
+
+        for reactor in effective_reactors:
             for command in reactor.react(validation_result, ctx):
                 handle_command(command, ctx)
+
+
+def _handler_or_none(handler, ctx):
+    if is_experimental(handler):
+        if not ctx.flags.experimental:
+            ctx.logger.debug("{} - filtered out, because 'experimental' flag is off!".format(stringify(handler)))
+            return None
+
+    if not is_compatible_with_current_platform(handler):
+        ctx.logger.debug("{} - filtered out, because it is not compatible with the current platform!"
+                         .format(stringify(handler)))
+        return None
+
+    return handler

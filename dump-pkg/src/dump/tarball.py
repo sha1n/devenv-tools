@@ -108,7 +108,7 @@ def tarball():
             _prepare_goland_info_files,
             _prepare_pycharm_info_files,
         )
-        if not ctx.dryrun:
+        if not ctx.flags.dryrun:
             _create_dump_archive(context)
             os.system("open -R %s" % tar_file_path)
         else:

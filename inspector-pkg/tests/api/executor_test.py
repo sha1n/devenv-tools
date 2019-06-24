@@ -1,8 +1,9 @@
 import unittest
 
+from inspector.api.annotations import experimental, CURRENT_PLATFORM, Platform, compatible_with
 from inspector.api.collector import Collector
 from inspector.api.context import Context
-from inspector.api.executor import Executor, ExecutionSummary
+from inspector.api.executor import Executor, ExecutionSummary, ExecPlanExecutor
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import Validator, ValidationResult, Status
 from tests.testutil import test_context
@@ -127,11 +128,53 @@ class ExecutorTest(unittest.TestCase):
 
         self.assertTrue(collector.called)
 
-    def test_no_execution_done_by_plan(self):
+    def test_experimental_component_not_executed(self):
         ctx = test_context()
-        ctx.plan = True
+        ctx.flags.experimental = False
 
         executor = Executor()
+        collector = ExperimentalMockCollector()
+
+        ctx.registry.register_collector("id", collector)
+
+        executor.execute(ctx)
+
+        self.assertFalse(collector.called)
+
+    def test_experimental_component_executed_when_experimental_flag_is_on(self):
+        ctx = test_context()
+        ctx.flags.experimental = True
+
+        executor = Executor()
+        collector = ExperimentalMockCollector()
+
+        ctx.registry.register_collector("id", collector)
+
+        executor.execute(ctx)
+
+        self.assertTrue(collector.called)
+
+    def test_platform_incompatible_component_not_executed(self):
+        ctx = test_context()
+        ctx.flags.experimental = False
+
+        executor = Executor()
+        collector = PlatformInCompatible()
+
+        ctx.registry.register_collector("id", collector)
+
+        executor.execute(ctx)
+
+        self.assertFalse(collector.called)
+
+
+class ExecPlanExecutorTest(unittest.TestCase):
+
+    def test_no_execution_done(self):
+        ctx = test_context()
+        ctx.flags.plan = True
+
+        executor = ExecPlanExecutor()
         collector = MockCollector("data")
         validator = MockValidator(result=validation_result_with("data"))
         reactor_command = ReactorCommand(cmd=["do", "nothing"])
@@ -141,11 +184,18 @@ class ExecutorTest(unittest.TestCase):
         ctx.registry.register_validator("id", validator)
         ctx.registry.register_reactor("id", reactor)
 
-        executor.plan(ctx)
+        executor.execute(ctx)
 
         self.assertFalse(collector.called)
         self.assertFalse(validator.called)
         self.assertFalse(reactor.called)
+
+
+def not_the_current_platform():
+    if CURRENT_PLATFORM == Platform.MACOS:
+        return Platform.LINUX
+    else:
+        return Platform.MACOS
 
 
 class MockCollector(Collector):
@@ -156,6 +206,18 @@ class MockCollector(Collector):
     def collect(self, ctx: Context) -> object:
         self.called = True
         return self.result
+
+
+@compatible_with(not_the_current_platform())
+class PlatformInCompatible(MockCollector):
+    def __init__(self):
+        super().__init__("data")
+
+
+@experimental
+class ExperimentalMockCollector(MockCollector):
+    def __init__(self):
+        super().__init__("data")
 
 
 class MockValidator(Validator):
