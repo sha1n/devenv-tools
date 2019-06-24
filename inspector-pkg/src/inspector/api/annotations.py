@@ -61,6 +61,19 @@ def is_compatible_with_current_platform(obj):
 
 
 #
+# Generic flag decorator
+#
+
+def flag_with(name: str, value: bool):
+    def deco(c):
+        setattr(c, name, value)
+
+        return c
+
+    return deco
+
+
+#
 # experimental feature decorator.
 #
 
@@ -72,17 +85,30 @@ def experimental(cls):
     A decorator designed to be used on component classes to mark them as experimental. Experimental features need to be
     enabled explicitly.
     """
-
-    def deco(c):
-        setattr(c, _EXPERIMENTAL_ATTR_NAME, True)
-
-        return c
-
-    return deco(cls)
+    return flag_with(_EXPERIMENTAL_ATTR_NAME, True)(cls)
 
 
 def is_experimental(obj):
     return hasattr(obj, _EXPERIMENTAL_ATTR_NAME) and obj.__getattribute__(_EXPERIMENTAL_ATTR_NAME) is True
+
+
+#
+# interactive feature decorator.
+#
+
+_INTERACTIVE_ATTR_NAME = "___interactive_"
+
+
+def interactive(cls):
+    """
+    A decorator designed to be used on component classes to mark them as interactive. Components marked with this
+    decorator, will only be executed in interactive mode.
+    """
+    return flag_with(_INTERACTIVE_ATTR_NAME, True)(cls)
+
+
+def is_interactive(obj):
+    return hasattr(obj, _INTERACTIVE_ATTR_NAME) and obj.__getattribute__(_INTERACTIVE_ATTR_NAME) is True
 
 
 #
@@ -92,6 +118,9 @@ def stringify(obj):
     flags = []
     if is_experimental(obj):
         flags.append("experimental")
+
+    if is_interactive(obj):
+        flags.append("interactive")
 
     target_platform = getattr(obj, _TARGET_PLATFORM_ATTR_NAME, None)
     if target_platform is not None:

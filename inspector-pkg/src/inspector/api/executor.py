@@ -1,8 +1,8 @@
 import subprocess
 from collections import namedtuple
 
-from inspector.api.annotations import is_experimental, stringify, is_compatible_with_current_platform
-from inspector.api.context import Context
+from inspector.api.annotations import is_experimental, stringify, is_compatible_with_current_platform, is_interactive
+from inspector.api.context import Context, Mode
 from inspector.api.reactor import ReactorCommand
 from inspector.api.validator import Status
 from inspector.util.cmd import stream_output
@@ -122,6 +122,11 @@ def _handler_or_none(handler, ctx):
     if is_experimental(handler):
         if not ctx.flags.experimental:
             ctx.logger.debug("{} - filtered out, because 'experimental' flag is off!".format(stringify(handler)))
+            return None
+
+    if is_interactive(handler):
+        if ctx.mode != Mode.INTERACTIVE:
+            ctx.logger.warn("{} - filtered out, because it requires interactive mode!".format(stringify(handler)))
             return None
 
     if not is_compatible_with_current_platform(handler):

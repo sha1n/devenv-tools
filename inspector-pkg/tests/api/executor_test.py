@@ -1,8 +1,8 @@
 import unittest
 
-from inspector.api.annotations import experimental, CURRENT_PLATFORM, Platform, compatible_with
+from inspector.api.annotations import experimental, CURRENT_PLATFORM, Platform, compatible_with, interactive
 from inspector.api.collector import Collector
-from inspector.api.context import Context
+from inspector.api.context import Context, Mode
 from inspector.api.executor import Executor, ExecutionSummary, ExecPlanExecutor
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import Validator, ValidationResult, Status
@@ -66,7 +66,7 @@ class ExecutorTest(unittest.TestCase):
         executor = Executor()
         collector = MockCollector("data")
         validator = MockValidator(result=validation_result_with("data"))
-        reactor = MockReactor(ctx)
+        reactor = MockReactor("whatever")
 
         ctx.registry.register_collector("id", collector)
         ctx.registry.register_validator("id", validator)
@@ -156,10 +156,21 @@ class ExecutorTest(unittest.TestCase):
 
     def test_platform_incompatible_component_not_executed(self):
         ctx = test_context()
-        ctx.flags.experimental = False
 
         executor = Executor()
         collector = PlatformInCompatible()
+
+        ctx.registry.register_collector("id", collector)
+
+        executor.execute(ctx)
+
+        self.assertFalse(collector.called)
+
+    def test_interactive_component_not_executed_in_non_interactive_mode(self):
+        ctx = test_context(mode=Mode.BACKGROUND)
+
+        executor = Executor()
+        collector = InteractiveMockCollector()
 
         ctx.registry.register_collector("id", collector)
 
@@ -216,6 +227,12 @@ class PlatformInCompatible(MockCollector):
 
 @experimental
 class ExperimentalMockCollector(MockCollector):
+    def __init__(self):
+        super().__init__("data")
+
+
+@interactive
+class InteractiveMockCollector(MockCollector):
     def __init__(self):
         super().__init__("data")
 
