@@ -1,15 +1,28 @@
-[![Build Status](https://travis-ci.org/sha1n/macos-devenv-dump-poc.svg?branch=master)](https://travis-ci.org/sha1n/macos-devenv-dump-poc)
+[![Build Status](https://travis-ci.org/sha1n/devenv-tools.svg?branch=master)](https://travis-ci.org/sha1n/devenv-tools)
 
-# macos-devenv-dump-poc
+# devenv-tools
 
-## Prerequisites
- - [Homebew](https://brew.sh/)
+## Running Tools From Source
+
+```bash
+./run <module-name> [options]
+```
+
+Examples:
+```bash
+
+# dump tool
+./run dump
+
+# installer
+./run installer --help
 
 
-Use the following command to create an environment dump tar archive:
+# inspector
+./run inspector --help
 
-`curl https://raw.githubusercontent.com/sha1n/macos-devenv-dump-poc/master/standalone.sh | bash`
+```
 
-Or in 'debug' mode using:
+## Running Tools from Any Workstation
 
-`curl https://raw.githubusercontent.com/sha1n/macos-devenv-dump-poc/master/standalone.sh | bash -s -- -m=debug`
+`curl https://raw.githubusercontent.com/sha1n/devenv-tools/master/standalone.sh | bash -s -- <module-name> [options]`
