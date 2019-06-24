@@ -1,11 +1,12 @@
 from inspector.api.context import Context
-from inspector.api.annotations import macos
+from inspector.api.annotations import macos, experimental
 from inspector.api.reactor import Reactor, ReactorCommand
 from inspector.api.validator import ValidationResult, Status
 from installer.components.macosutil import download_and_install_commands_for
 
 
 @macos
+@experimental
 class Python3InstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):
