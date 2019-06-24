@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 
+from inspector.api.config import load
 from inspector.api.platformcompatibility import CURRENT_PLATFORM
 from inspector.api.registry import Registry
 from inspector.util.logger import ConsoleLogger, FileLogger, CompositeLogger
@@ -36,6 +37,7 @@ class Context:
     def __init__(self,
                  name,
                  registry: Registry,
+                 config_file=None,
                  debug=False,
                  log_file=None,
                  plan=False,
@@ -49,6 +51,7 @@ class Context:
         self.dryrun = dryrun
         self.registry = registry
         self.platform = CURRENT_PLATFORM
+        self.config = load(config_file)
 
         loggers = []
         log_level = logging.DEBUG if debug else logging.INFO
@@ -62,6 +65,15 @@ class Context:
         self.logger = CompositeLogger(loggers)
 
     def __str__(self):
-        return "Context(name={}, mode={}, debug={}, log_file_path={}, plan={}, dryrun={}, logger={})".format(
-            self.name, self.mode, self.debug, self.log_file_path, self.plan, self.dryrun,
-            self.logger.__class__.__name__)
+        return "Context(name={name}, mode={mode}, debug={debug}, log_file_path={log_file_path}, plan={plan}, " \
+               "dryrun={dry_run}, logger={logger_class}, config={config_json})" \
+            .format(
+            name=self.name,
+            mode=self.mode,
+            debug=self.debug,
+            log_file_path=self.log_file_path,
+            plan=self.plan,
+            dry_run=self.dryrun,
+            logger_class=self.logger.__class__.__name__,
+            config_json=self.config,
+        )

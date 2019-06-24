@@ -1,4 +1,5 @@
 import argparse
+import json
 
 from inspector.api.context import Context, Mode
 from inspector.api.executor import Executor
@@ -17,7 +18,7 @@ class CliAppRunner:
         self._register_components(ctx.registry)
 
         ctx.logger.info("Starting {}.".format(self.name))
-        self._print_header(ctx)
+        _print_header(ctx)
 
         if ctx.plan:
             _run_safe_execution_plan(ctx)
@@ -26,16 +27,19 @@ class CliAppRunner:
 
         ctx.logger.info("{} finished.".format(self.name.capitalize()))
 
-    def _print_header(self, ctx):
-        logger = ctx.logger
 
-        if ctx.plan:
-            logger.info("Running in plan mode. No changes will be applied to the system.")
-        elif ctx.dryrun:
-            logger.info("Running in dry-run mode. No changes will be applied to the system.")
+def _print_header(ctx):
+    logger = ctx.logger
 
-        logger.debug("Execution context = {}".format(ctx))
-        logger.debug("Running in {} mode".format(str(ctx.mode)))
+    if ctx.plan:
+        logger.info("Running in plan mode. No changes will be applied to the system.")
+    elif ctx.dryrun:
+        logger.info("Running in dry-run mode. No changes will be applied to the system.")
+
+    logger.debug("Execution context = {}".format(ctx))
+    logger.debug("Configuration = {}".format(json.dumps(ctx.config, indent=2)))
+
+    logger.debug("Running in {} mode".format(str(ctx.mode)))
 
 
 def parse_context(name, registry: Registry):
@@ -63,11 +67,15 @@ def parse_context(name, registry: Registry):
     parser.add_argument("--log-file",
                         dest="log_file",
                         help="log file path")
+    parser.add_argument("--config",
+                        dest="config_file",
+                        help="JSON config file path")
 
     args = parser.parse_args()
 
     return Context(
         name=name,
+        config_file=args.config_file,
         registry=registry,
         mode=Mode.from_str(args.mode),
         debug=args.debug,

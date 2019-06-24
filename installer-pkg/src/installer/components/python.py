@@ -12,9 +12,7 @@ class Python3InstallReactor(Reactor):
 
         commands = []
         if data.status == Status.NOT_FOUND:
-            commands = download_and_install_commands_for(
-                "https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg"  # fixme shai: to config
-            )
+            commands = download_and_install_commands_for(ctx.config["installer"]["python"]["macos_package_url"])
         else:
             ctx.logger.info("Detected Python 3 version: {} - {}!".format(data.input_data.version, data.status.name))
 

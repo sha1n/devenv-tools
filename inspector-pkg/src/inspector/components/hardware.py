@@ -26,10 +26,12 @@ class HardwareInfoValidator(Validator):
         if input_data is None:
             return ValidationResult(input_data, Status.ERROR)
 
-        if input_data.cpu_count < 8:  # fixme shai: to config
+        minimum_cpu_count = ctx.config["hardware"]["minimum_cpu_count"]
+        if input_data.cpu_count < minimum_cpu_count:
             ctx.logger.warn("If you are using Bazel regularly, {} CPUs is suboptimal".format(input_data.cpu_count))
 
-        if input_data.total_ram < 16:  # fixme shai: to config
+        minimum_total_ram_gb = ctx.config["hardware"]["minimum_total_ram_gb"]
+        if input_data.total_ram < minimum_total_ram_gb:
             ctx.logger.warn("If you are using Bazel regularly, {}G RAM is suboptimal".format(input_data.total_ram))
 
         return ValidationResult(input_data, Status.OK)

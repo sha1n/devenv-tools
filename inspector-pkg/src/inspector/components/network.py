@@ -8,29 +8,48 @@ from inspector.api.context import Context
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.util.diag import timeit_if
 
-NetConnectivityInfo = namedtuple(typename="NetConnectivityInfo", field_names=["address", "ok", "time"])
+NetConnectivityInfo = namedtuple(typename="NetConnectivityInfo", field_names=["address", "ok", "time", "message"])
+Spec = namedtuple(typename="Spec", field_names=["address", "failure_message"])
 
 
 class UrlConnectivityInfoCollector(Collector):
 
-    def __init__(self):
-        # fixme shai: get url list from configuration
-        self._addresses = ["http://www.google.com"]
-
     def collect(self, ctx: Context) -> List[NetConnectivityInfo]:
+        specs = self._collect_specs(ctx)
         ctx.logger.progress("Checking network connectivity...")
-        return list((self._check_connectivity(address, ctx) for address in self._addresses))
+        return list((self._check_connectivity(spec, ctx) for spec in specs))
 
-    @timeit_if(more_than_sec=1)
-    def _check_connectivity(self, address, ctx):
+    @timeit_if(more_than_sec=3)
+    def _check_connectivity(self, spec, ctx):
+        start_time = time()
+        end_time = 0
+
+        def elapsed():
+            return end_time - start_time
+
         try:
-            ctx.logger.progress("Checking connectivity to {}".format(address))
-            start_time = time()
+            address = spec.address
+            ctx.logger.progress("Checking connectivity to {}".format(spec.address))
+
             request.urlopen(address, timeout=10)
             end_time = time()
-            return NetConnectivityInfo(address=address, ok=True, time=end_time - start_time)
+            return NetConnectivityInfo(address=address, ok=True, time=elapsed(), message=None)
+
+        except request.HTTPError as error:
+            if error.code < 400 or error.code > 499:
+                return NetConnectivityInfo(address=spec.address, ok=False, time=elapsed(), message=spec.failure_message)
+            else:
+                return NetConnectivityInfo(address=spec.address, ok=True, time=elapsed(), message=None)
+
         except request.URLError:
-            return None
+            return NetConnectivityInfo(address=spec.address, ok=False, time=elapsed(), message=spec.failure_message)
+
+    def _collect_specs(self, ctx):
+        specs = []
+        for raw_spec in ctx.config["network"]["check_specs"]:
+            specs.append(Spec(raw_spec["address"], raw_spec["failure_message"]))
+
+        return specs
 
 
 class UrlConnectivityInfoValidator(Validator):
@@ -40,8 +59,14 @@ class UrlConnectivityInfoValidator(Validator):
             return ValidationResult(input_data, Status.ERROR)
 
         for check in input_data:
-            if check.time > 1:
+            if check.ok:
+                if check.time > 2:
+                    ctx.logger.warn(
+                        "Network connectivity check to {} took {} seconds".format(check.address, check.time)
+                    )
+            else:
                 ctx.logger.warn(
-                    "Network connectivity check to {} took over {} seconds".format(check.address, check.time))
+                    "Network connectivity check to {} failed! Error: {}".format(check.address, check.message)
+                )
 
         return ValidationResult(input_data, Status.OK)
