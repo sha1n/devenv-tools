@@ -9,6 +9,8 @@ from inspector.util import cmd
 from inspector.util.cmd import try_execute
 
 BazelInfo = namedtuple(typename="BazelInfo", field_names=["path", "version", "bazelisk"])
+BazelInfo.__str__ = lambda self: "BazelInfo(path={}, version={}, bazelisk={})" \
+    .format(self.path, self.version, self.bazelisk)
 
 
 class BazelInfoCollector(Collector):
