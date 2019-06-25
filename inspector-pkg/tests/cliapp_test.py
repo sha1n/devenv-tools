@@ -13,7 +13,7 @@ class CliAppRunnerTest(unittest.TestCase):
         name = str(uuid.uuid4())
         comp_id = str(uuid.uuid4())
         probe = Probe(comp_id)
-        runner = CliAppRunner(name, probe.register_comps, probe.run)
+        runner = CliAppRunner(name, "", probe.register_comps, probe.run)
 
         runner.run()
 

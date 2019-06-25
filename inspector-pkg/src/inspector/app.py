@@ -72,7 +72,11 @@ def run_embedded(ctx):
 
 
 def run():
-    runner = CliAppRunner(name="inspector", register_components=register_components, run=run_embedded)
+    runner = CliAppRunner(name="inspector",
+                          description="Inspects your environment components and prints out status messages in case "
+                                      "issues are detected",
+                          register_components=register_components,
+                          run=run_embedded)
 
     issues_count = runner.run()
 

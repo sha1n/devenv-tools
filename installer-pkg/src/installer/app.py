@@ -49,5 +49,9 @@ def run_embedded(ctx):
 
 
 def run():
-    runner = CliAppRunner(name="installer", register_components=register_components, run=run_embedded)
+    runner = CliAppRunner(name="installer",
+                          description="Inspects your environment components and attempts to install or upgrade "
+                                      "components that require changes",
+                          register_components=register_components,
+                          run=run_embedded)
     return runner.run()

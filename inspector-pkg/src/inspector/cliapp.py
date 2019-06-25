@@ -7,13 +7,14 @@ from inspector.api.registry import Registry
 
 
 class CliAppRunner:
-    def __init__(self, name, register_components, run):
+    def __init__(self, name, description, register_components, run):
         self.name = name
+        self.description = description
         self._register_components = register_components
         self._do_run = run
 
     def run(self):
-        ctx = parse_context(self.name, Registry())
+        ctx = parse_context(name=self.name, registry=Registry(), description=self.description)
 
         self._register_components(ctx.registry)
 
@@ -38,32 +39,33 @@ def _print_header(ctx):
 
     logger.debug("Execution context = {}".format(ctx))
     logger.debug("Configuration = {}".format(json.dumps(ctx.config, indent=2)))
-
     logger.debug("Running in {} mode".format(str(ctx.mode)))
 
 
-def parse_context(name, registry: Registry):
-    parser = argparse.ArgumentParser(description='Takes an environment dump for support purposes.')
+def parse_context(name, registry: Registry, description=""):
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--mode", "-m",
                         choices=["interactive", "background"],
                         dest="mode",
                         default="interactive",
-                        help="one of [ interactive | background ]")
+                        help="one of [ interactive | background ]. "
+                             "Note that some actions cannot be executed in non-interactive mode")
     parser.add_argument("--dry-run",
                         default=False,
                         dest="dryrun",
                         action="store_true",
-                        help="runs in dry run mode")
+                        help="runs in dry run mode. In that mode actions that modify your environment will not be "
+                             "executed")
     parser.add_argument("--plan", "-p",
                         default=False,
                         dest="plan",
                         action="store_true",
-                        help="prints out an execution plan")
+                        help="prints out an execution plan (takes into account your platform and program flags)")
     parser.add_argument("--debug", "-d",
                         default=False,
                         dest="debug",
                         action="store_true",
-                        help="logs debug information")
+                        help="logs debug information to the console")
     parser.add_argument("--experimental", "-e",
                         default=False,
                         dest="experimental",
@@ -71,10 +73,10 @@ def parse_context(name, registry: Registry):
                         help="turns on experimental features")
     parser.add_argument("--log-file",
                         dest="log_file",
-                        help="log file path")
+                        help="absolute path to optional log file")
     parser.add_argument("--config",
                         dest="config_file",
-                        help="JSON config file path")
+                        help="optional JSON config file path")
 
     args = parser.parse_args()
 

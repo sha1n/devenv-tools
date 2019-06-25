@@ -96,7 +96,10 @@ def _safe(ctx, *methods):
 
 
 def tarball():
-    ctx = parse_context(name="dump", registry=Registry())  # fixme shai: use executor where possible
+    ctx = parse_context(name="dump",
+                        registry=Registry(),
+                        description="Collects environment information and packs it all into a tar archive for support "
+                                    "purposes.")  # fixme shai: use executor where possible
 
     def dump(context):
         _check_prerequisites(context)
