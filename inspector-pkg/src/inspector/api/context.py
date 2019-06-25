@@ -59,7 +59,7 @@ class Context:
             loggers.append(ConsoleLogger(level=log_level))
 
         if log_file is not None:
-            loggers.append(FileLogger(filename=self.log_file_path, level=log_level))
+            loggers.append(FileLogger(filename=self.log_file_path, level=logging.DEBUG))
 
         self.logger = CompositeLogger(loggers)
 
