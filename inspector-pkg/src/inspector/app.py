@@ -3,9 +3,10 @@ from inspector.api.registry import Registry
 from inspector.api.semver import SemVer
 from inspector.cliapp import CliAppRunner
 from inspector.components.bazel import BazelInfoCollector, BazelInfoValidator
-from inspector.components.brew import HomebrewCollector, HomebrewValidator
+from inspector.components.brew import HomebrewCommandCollectorValidator
 from inspector.components.debugreactor import DebugReactor
 from inspector.components.disk import DiskInfoCollector, DiskInfoValidator
+from inspector.components.gcloud import GCloudCommandCollectorValidator
 from inspector.components.hardware import HardwareInfoValidator, HardwareInfoCollector
 from inspector.components.network import UrlConnectivityInfoCollector, UrlConnectivityInfoValidator
 from inspector.components.python import PythonInfoCollector, PythonInfoValidator, PythonInfoStrictValidator
@@ -19,6 +20,7 @@ BAZEL_COMP_ID = "bazel"
 PYTHON_COMP_ID = "python"
 PYTHON3_COMP_ID = "python3"
 XCODE_COMP_ID = "xcode"
+GCLOUD_COMP_ID = "gcloud"
 
 
 def register_components(registry: Registry):
@@ -36,8 +38,8 @@ def register_components(registry: Registry):
     registry.register_validator(DISK_COMP_ID, DiskInfoValidator())
     registry.register_reactor(DISK_COMP_ID, log_reactor)
 
-    registry.register_collector(BREW_COMP_ID, HomebrewCollector())
-    registry.register_validator(BREW_COMP_ID, HomebrewValidator())
+    registry.register_collector(BREW_COMP_ID, HomebrewCommandCollectorValidator())
+    registry.register_validator(BREW_COMP_ID, HomebrewCommandCollectorValidator())
     registry.register_reactor(BREW_COMP_ID, log_reactor)
 
     registry.register_collector(XCODE_COMP_ID, XcodeInfoCollector())
@@ -55,6 +57,10 @@ def register_components(registry: Registry):
     registry.register_collector(PYTHON3_COMP_ID, PythonInfoCollector(binary_name="python3"))
     registry.register_validator(PYTHON3_COMP_ID, PythonInfoStrictValidator(expected_ver=SemVer("3", "6", "8")))
     registry.register_reactor(PYTHON3_COMP_ID, log_reactor)
+
+    registry.register_collector(GCLOUD_COMP_ID, GCloudCommandCollectorValidator())
+    registry.register_validator(GCLOUD_COMP_ID, GCloudCommandCollectorValidator())
+    registry.register_reactor(GCLOUD_COMP_ID, log_reactor)
 
 
 def run_embedded(ctx):
