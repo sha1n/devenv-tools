@@ -51,6 +51,7 @@ class Context:
         self.platform = CURRENT_PLATFORM
         self.config = load(config_file)
         self._set_flags(debug, dryrun, experimental, plan)
+        self._user_inputs = {}
 
         loggers = []
         log_level = logging.DEBUG if debug else logging.INFO
@@ -72,17 +73,28 @@ class Context:
 
         self.flags = flags
 
+    def user_input(self, key, prompt):
+        assert self.mode == Mode.INTERACTIVE, "Cannot ask for user input in non-interactive mode!"
+
+        existing_value = self._user_inputs.get(key, None)
+        if existing_value is not None:
+            return existing_value
+        else:
+            entered_value = input(prompt)
+            self._user_inputs[key] = entered_value
+            return entered_value
+
     def __str__(self):
         return "Context(name={name}, mode={mode}, flags={flags}, log_file_path={log_file_path}, " \
                "logger={logger_class}, config={config_json})" \
             .format(
-            name=self.name,
-            mode=self.mode,
-            log_file_path=self.log_file_path,
-            logger_class=self.logger.__class__.__name__,
-            flags=str(self.flags),
-            config_json=self.config,
-        )
+                name=self.name,
+                mode=self.mode,
+                log_file_path=self.log_file_path,
+                logger_class=self.logger.__class__.__name__,
+                flags=str(self.flags),
+                config_json=self.config,
+            )
 
 
 class Flags(object):
