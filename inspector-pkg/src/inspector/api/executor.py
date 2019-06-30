@@ -48,7 +48,7 @@ class ExecPlanExecutor:
     def execute(self, ctx: Context):
         index = 0
 
-        for comp_id in ctx.registry.component_ids():
+        for comp_id in _effective_component_ids(ctx):
             collector = _handler_or_none(ctx.registry.find_collector(comp_id), ctx)
 
             if collector is not None:
@@ -79,7 +79,7 @@ class Executor:
     def _exec(self, handle_command, ctx: Context):
         total = 0
         problems = 0
-        for comp_id in ctx.registry.component_ids():
+        for comp_id in _effective_component_ids(ctx):
             collector = _handler_or_none(ctx.registry.find_collector(comp_id), ctx)
             if collector is not None:
                 data = collector.collect(ctx)
@@ -135,3 +135,10 @@ def _handler_or_none(handler, ctx):
         return None
 
     return handler
+
+
+def _effective_component_ids(ctx):
+    if ctx.components is None:
+        return ctx.registry.component_ids()
+    else:
+        return ctx.components

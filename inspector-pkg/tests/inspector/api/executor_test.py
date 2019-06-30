@@ -178,6 +178,25 @@ class ExecutorTest(unittest.TestCase):
 
         self.assertFalse(collector.called)
 
+    def test_filtered_component_list(self):
+        ctx = test_context(mode=Mode.BACKGROUND)
+        ctx.components = ["id1", "id3"]
+
+        executor = Executor()
+        collector1 = MockCollector("data")
+        collector2 = MockCollector("data")
+        collector3 = MockCollector("data")
+
+        ctx.registry.register_collector("id1", collector1)
+        ctx.registry.register_collector("id2", collector2)
+        ctx.registry.register_collector("id3", collector3)
+
+        executor.execute(ctx)
+
+        self.assertTrue(collector1.called)
+        self.assertFalse(collector2.called)
+        self.assertTrue(collector3.called)
+
 
 class ExecPlanExecutorTest(unittest.TestCase):
 

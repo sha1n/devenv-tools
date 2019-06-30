@@ -42,7 +42,8 @@ class Context:
                  plan=False,
                  dryrun=False,
                  log_file=None,
-                 mode=Mode.INTERACTIVE):
+                 mode=Mode.INTERACTIVE,
+                 components=None):
         self.name = name
         self.mode = mode
         self.log_file_path = log_file
@@ -50,6 +51,7 @@ class Context:
         self.registry = registry
         self.platform = CURRENT_PLATFORM
         self.config = load(config_file)
+        self.components = components
         self._set_flags(debug, dryrun, experimental, plan)
         self._user_inputs = {}
 

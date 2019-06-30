@@ -16,9 +16,9 @@ from inspector.components.network import UrlConnectivityInfoCollector, UrlConnec
 from inspector.components.python import PythonInfoCollector, PythonInfoValidator, PythonInfoStrictValidator
 from inspector.components.xcode import XcodeInfoCollector, XcodeInfoValidator
 
-HARDWARE_COMP_ID = "hardware config"
-DISK_COMP_ID = "disk space"
-NET_COMP_ID = "network connectivity"
+HARDWARE_COMP_ID = "hardware-config"
+DISK_COMP_ID = "disk-space"
+NET_COMP_ID = "network-connectivity"
 BREW_COMP_ID = "homebrew"
 BAZEL_COMP_ID = "bazel"
 PYTHON_COMP_ID = "python"
@@ -134,8 +134,18 @@ def parse_context(name, registry: Registry, description=""):
     parser.add_argument("--config",
                         dest="config_file",
                         help="optional JSON config file path")
+    parser.add_argument("--components",
+                        default=None,
+                        dest="components",
+                        help="optional comma separated list of component names. Supported components are: {}"
+                        .format(list(registry.component_ids())))
 
     args = parser.parse_args()
+
+    if args.components is not None:
+        components = (comp.strip() for comp in args.components.split(","))
+    else:
+        components = None
 
     return Context(
         name=name,
@@ -147,4 +157,5 @@ def parse_context(name, registry: Registry, description=""):
         plan=args.plan,
         dryrun=args.dryrun,
         experimental=args.experimental,
+        components=components
     )

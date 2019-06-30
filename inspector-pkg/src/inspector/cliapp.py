@@ -14,9 +14,10 @@ class CliAppRunner:
         self.parse_context = parse_context
 
     def run(self):
-        ctx = self.parse_context(name=self.name, registry=Registry(), description=self.description)
+        registry = Registry()
+        self._register_components(registry)
 
-        self._register_components(ctx.registry)
+        ctx = self.parse_context(name=self.name, registry=registry, description=self.description)
 
         ctx.logger.info("Starting {}.".format(self.name))
         _print_header(ctx)
