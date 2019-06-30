@@ -1,9 +1,9 @@
 import logging
 from enum import Enum
 
-from inspector.api.annotations import CURRENT_PLATFORM
 from inspector.api.config import load
 from inspector.api.registry import Registry
+from inspector.api.tags import CURRENT_PLATFORM
 from inspector.util.logger import ConsoleLogger, FileLogger, CompositeLogger
 
 _MODE_INTERACTIVE = "interactive"
@@ -73,7 +73,16 @@ class Context:
 
         self.flags = flags
 
-    def user_input(self, key, prompt):
+    def get_or_request_user_input(self, key, prompt):
+        """
+        Requests the user for input using the specified prompt message and stores the entered value in memory for
+        possible subsequent requests with the same key.
+
+        :param key: a unique identifier of the requested data.
+        will be used to cache the data for a possible subsequent requests
+        :param prompt: message to be displayed to the user in case the requested data is not already cached
+        """
+
         assert self.mode == Mode.INTERACTIVE, "Cannot ask for user input in non-interactive mode!"
 
         existing_value = self._user_inputs.get(key, None)

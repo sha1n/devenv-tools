@@ -4,6 +4,7 @@ from collections import namedtuple
 from inspector.api.collector import Collector
 from inspector.api.context import Context
 from inspector.api.semver import SemVer
+from inspector.api.tags import macos
 from inspector.api.validator import ValidationResult, Status, Validator
 from inspector.util import cmd
 from inspector.util.cmd import try_execute
@@ -13,6 +14,7 @@ BazelInfo.__str__ = lambda self: "BazelInfo(path={}, version={}, bazelisk={})" \
     .format(self.path, self.version, self.bazelisk)
 
 
+@macos
 class BazelInfoCollector(Collector):
 
     def collect(self, ctx: Context):
@@ -36,7 +38,7 @@ class BazelInfoCollector(Collector):
             return None
 
     def _bazelisk_exists(self, ctx):
-        _, code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"], ctx.logger)
+        _, code, stdout = try_execute(["brew", "ls", "-1", "bazelisk"], logger=ctx.logger)
 
         return code == 0 and "bazelisk" in stdout
 

@@ -10,7 +10,7 @@ class InstallerSanityTestTest(unittest.TestCase):
     def test_dry_run_sanity(self):
         context = test_context()
         context.registry = _inspection_context().registry
-        context.dryrun = True
+        context.flags.dryrun = True
 
         summary = run_embedded(context)
 

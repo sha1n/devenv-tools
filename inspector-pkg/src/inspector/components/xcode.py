@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
-from inspector.api.annotations import macos
+from inspector.api.tags import macos
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.util.cmd import try_execute
 
@@ -22,7 +22,7 @@ class XcodeInfoCollector(Collector):
             return None
 
     def _xcode_path(self, ctx):
-        ok, code, output = try_execute(["xcode-select", "-p"], ctx)
+        ok, code, output = try_execute(["xcode-select", "-p"], logger=ctx)
 
         if ok and code != 0:
             ctx.logger.warn("xcode-select returned code '{}'".format(code))

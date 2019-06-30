@@ -1,3 +1,6 @@
+import argparse
+
+from inspector.api.context import Context, Mode
 from inspector.api.executor import Executor
 from inspector.api.registry import Registry
 from inspector.api.semver import SemVer
@@ -6,7 +9,8 @@ from inspector.components.bazel import BazelInfoCollector, BazelInfoValidator
 from inspector.components.brew import HomebrewCommandCollectorValidator
 from inspector.components.debugreactor import DebugReactor
 from inspector.components.disk import DiskInfoCollector, DiskInfoValidator
-from inspector.components.gcloud import GCloudCommandCollectorValidator
+from inspector.components.gcloud import GCloudCommandCollectorValidator, GCloudConfigCollector, \
+    GCloudConfigValidator
 from inspector.components.hardware import HardwareInfoValidator, HardwareInfoCollector
 from inspector.components.network import UrlConnectivityInfoCollector, UrlConnectivityInfoValidator
 from inspector.components.python import PythonInfoCollector, PythonInfoValidator, PythonInfoStrictValidator
@@ -21,6 +25,7 @@ PYTHON_COMP_ID = "python"
 PYTHON3_COMP_ID = "python3"
 XCODE_COMP_ID = "xcode"
 GCLOUD_COMP_ID = "gcloud"
+GCLOUD_CONFIG_COMP_ID = "gcloud-config"
 
 
 def register_components(registry: Registry):
@@ -62,6 +67,10 @@ def register_components(registry: Registry):
     registry.register_validator(GCLOUD_COMP_ID, GCloudCommandCollectorValidator())
     registry.register_reactor(GCLOUD_COMP_ID, log_reactor)
 
+    registry.register_collector(GCLOUD_CONFIG_COMP_ID, GCloudConfigCollector())
+    registry.register_validator(GCLOUD_CONFIG_COMP_ID, GCloudConfigValidator())
+    registry.register_reactor(GCLOUD_CONFIG_COMP_ID, log_reactor)
+
 
 def run_embedded(ctx):
     executor = Executor()
@@ -82,8 +91,60 @@ def run():
                           description="Inspects your environment components and prints out status messages in case "
                                       "issues are detected",
                           register_components=register_components,
+                          parse_context=parse_context,
                           run=run_embedded)
 
     issues_count = runner.run()
 
     return issues_count
+
+
+def parse_context(name, registry: Registry, description=""):
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("--mode", "-m",
+                        choices=["interactive", "background"],
+                        dest="mode",
+                        default="interactive",
+                        help="one of [ interactive | background ]. "
+                             "Note that some actions cannot be executed in non-interactive mode")
+    parser.add_argument("--dry-run",
+                        default=False,
+                        dest="dryrun",
+                        action="store_true",
+                        help="runs in dry run mode. In that mode actions that modify your environment will not be "
+                             "executed")
+    parser.add_argument("--plan", "-p",
+                        default=False,
+                        dest="plan",
+                        action="store_true",
+                        help="prints out an execution plan (takes into account your platform and program flags)")
+    parser.add_argument("--debug", "-d",
+                        default=False,
+                        dest="debug",
+                        action="store_true",
+                        help="logs debug information to the console")
+    parser.add_argument("--experimental", "-e",
+                        default=False,
+                        dest="experimental",
+                        action="store_true",
+                        help="turns on experimental features")
+    parser.add_argument("--log-file",
+                        dest="log_file",
+                        help="absolute path to optional log file")
+    parser.add_argument("--config",
+                        dest="config_file",
+                        help="optional JSON config file path")
+
+    args = parser.parse_args()
+
+    return Context(
+        name=name,
+        config_file=args.config_file,
+        registry=registry,
+        mode=Mode.from_str(args.mode),
+        debug=args.debug,
+        log_file=args.log_file,
+        plan=args.plan,
+        dryrun=args.dryrun,
+        experimental=args.experimental,
+    )

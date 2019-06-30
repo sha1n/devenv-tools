@@ -10,6 +10,7 @@ from inspector.util import cmd
 PythonInfo = namedtuple(typename="PythonInfo", field_names=["path", "version"])
 PythonInfo.__str__ = lambda self: "PythonInfo(path={}, version={})".format(self.path, self.version)
 
+
 class PythonInfoCollector(Collector):
     def __init__(self, binary_name="python"):
         self.binary_name = binary_name

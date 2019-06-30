@@ -1,11 +1,11 @@
 import subprocess
 from collections import namedtuple
 
-from inspector.api.annotations import is_experimental, stringify, is_compatible_with_current_platform, is_interactive
 from inspector.api.context import Context, Mode
 from inspector.api.reactor import ReactorCommand
+from inspector.api.tags import is_experimental, stringify, is_interactive, is_compatible_with_current_platform
 from inspector.api.validator import Status
-from inspector.util.cmd import stream_output
+from inspector.util.cmd import execute_with_streamed_output
 
 ExecutionSummary = namedtuple(typename="ExecutionSummary", field_names=["problem_count", "total_count"])
 
@@ -22,7 +22,7 @@ def _execute_command(command: ReactorCommand, ctx: Context):
     logger.command_info(command)
 
     try:
-        for line in stream_output(command.cmd):
+        for line in execute_with_streamed_output(command.resolve(ctx)):
             if not command.silent:
                 ctx.logger.command_output(line)
 
@@ -53,11 +53,11 @@ class ExecPlanExecutor:
 
             if collector is not None:
                 index += 1
-                ctx.logger.info("{}\t --> {}".format(index, stringify(collector)))
+                ctx.logger.info("{} --> {}".format(index, stringify(collector)))
                 validator = _handler_or_none(ctx.registry.find_validator(comp_id), ctx)
                 if validator is not None:
                     index += 1
-                    ctx.logger.info("{}\t\t --> {}".format(index, stringify(validator)))
+                    ctx.logger.info("{}\t --> {}".format(index, stringify(validator)))
 
                     reactors = ctx.registry.find_reactors(comp_id)
                     if len(reactors) == 0:
@@ -66,7 +66,7 @@ class ExecPlanExecutor:
                     effective_reactors = (reactor for reactor in reactors if _handler_or_none(reactor, ctx) is not None)
                     for reactor in effective_reactors:
                         index += 1
-                        ctx.logger.info("{}\t\t\t --> {}".format(index, stringify(reactor)))
+                        ctx.logger.info("{}\t\t --> {}".format(index, stringify(reactor)))
                 else:
                     ctx.logger.debug("No validator registered for {}".format(comp_id))
 

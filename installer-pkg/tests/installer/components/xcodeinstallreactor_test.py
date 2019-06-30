@@ -1,5 +1,6 @@
 import unittest
 
+from inspector.api.context import Mode
 from inspector.api.validator import ValidationResult, Status
 from inspector.components.xcode import XcodeInfo
 from installer.components.xcode import XcodeInstallReactor
@@ -11,20 +12,12 @@ class XcodeValidationInstallReactorTest(unittest.TestCase):
     def test_ok_reaction(self):
         reactor = XcodeInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.OK), ctx=test_context())
-        self.assertEqual(0, len(commands))
-
-    def test_not_found_in_non_interactive_mode_reaction(self):
-        reactor = XcodeInstallReactor()
-
-        commands = reactor.react(validation_result_with(status=Status.NOT_FOUND), ctx=test_context())
-
+        commands = reactor.react(validation_result_with(status=Status.OK), ctx=interactive_context())
         self.assertEqual(0, len(commands))
 
     def test_not_found_reaction(self):
         reactor = XcodeInstallReactor()
 
-        from inspector.api.context import Mode
         commands = reactor.react(validation_result_with(status=Status.NOT_FOUND),
                                  ctx=test_context(mode=Mode.INTERACTIVE))
 
@@ -36,14 +29,18 @@ class XcodeValidationInstallReactorTest(unittest.TestCase):
     def test_upgrade_reaction(self):
         reactor = XcodeInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED), ctx=test_context())
+        commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED), ctx=interactive_context())
         self.assertEqual(0, len(commands))
 
     def test_downgrade_reaction(self):
         reactor = XcodeInstallReactor()
 
-        commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED), ctx=test_context())
+        commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED), ctx=interactive_context())
         self.assertEqual(0, len(commands))
+
+
+def interactive_context():
+    return test_context(mode=Mode.INTERACTIVE)
 
 
 def validation_result_with(status: Status):

@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from inspector.api.collector import Collector
 from inspector.api.context import Context
-from inspector.api.annotations import macos
+from inspector.api.tags import macos
 from inspector.api.validator import Validator, ValidationResult, Status
 from inspector.util import cmd
 

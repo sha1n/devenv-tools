@@ -1,4 +1,4 @@
-from inspector.api.annotations import macos
+from inspector.api.tags import macos
 from inspector.components.command import command_collector, command_validator
 
 

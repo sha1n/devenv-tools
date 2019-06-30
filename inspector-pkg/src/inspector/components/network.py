@@ -22,17 +22,15 @@ class UrlConnectivityInfoCollector(Collector):
     @timeit_if(more_than_sec=3)
     def _check_connectivity(self, spec, ctx):
         start_time = time()
-        end_time = 0
 
         def elapsed():
-            return end_time - start_time
+            return time() - start_time
 
         try:
             address = spec.address
             ctx.logger.progress("Checking connectivity to {}".format(spec.address))
 
             request.urlopen(address, timeout=10)
-            end_time = time()
             return NetConnectivityInfo(address=address, ok=True, time=elapsed(), message=None)
 
         except request.HTTPError as error:
@@ -46,8 +44,10 @@ class UrlConnectivityInfoCollector(Collector):
 
     def _collect_specs(self, ctx):
         specs = []
-        for raw_spec in ctx.config["network"]["check_specs"]:
-            specs.append(Spec(raw_spec["address"], raw_spec["failure_message"]))
+        if ctx.config.get("network", None) is not None and \
+                ctx.config.get("network").get("check_specs", None) is not None:
+            for raw_spec in ctx.config["network"]["check_specs"]:
+                specs.append(Spec(raw_spec["address"], raw_spec["failure_message"]))
 
         return specs
 

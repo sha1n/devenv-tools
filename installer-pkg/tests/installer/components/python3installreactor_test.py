@@ -9,13 +9,13 @@ from tests.testutil import test_context
 
 class Python3InstallReactorTest(unittest.TestCase):
 
-    def test_no_action_reaction(self):
+    def test_reaction_to_status_ok(self):
         reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.OK), ctx=test_context())
         self.assertEqual(0, len(commands))
 
-    def test_install_action_reaction(self):
+    def test_reaction_to_not_found(self):
         reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.NOT_FOUND), ctx=test_context())
@@ -31,13 +31,13 @@ class Python3InstallReactorTest(unittest.TestCase):
         install_command = commands[2]
         self.assertIn("/Install Certificates.command", str(install_command))
 
-    def test_upgrade_action_reaction(self):
+    def test_reaction_to_upgrade_required(self):
         reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED), ctx=test_context())
         self.assertEqual(0, len(commands))
 
-    def test_downgrade_action_reaction(self):
+    def test_reaction_to_downgrade_required(self):
         reactor = Python3InstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED), ctx=test_context())

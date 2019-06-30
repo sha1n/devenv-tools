@@ -1,6 +1,5 @@
-import time
-
 import os
+import time
 from shutil import copytree, copyfile
 
 from inspector.util.error_handling import raised_to_none_wrapper

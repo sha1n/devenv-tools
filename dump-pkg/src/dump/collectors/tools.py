@@ -1,6 +1,6 @@
 from dump.collectors.files import mkdir
 
-from inspector.util.cmd import try_capture_output, command
+from inspector.util.cmd import try_capture_output, is_command
 
 
 def collect_shell_tools_info_files(target_dir, ctx):
@@ -23,7 +23,7 @@ def collect_shell_tools_info_files(target_dir, ctx):
 
 def _collect_info(cmd, target_dir, file_name, ctx):
     executable_name = cmd[0]
-    if command(executable_name):
+    if is_command(executable_name):
         try_capture_output(
             cmd=cmd,
             target_dir_path=target_dir,

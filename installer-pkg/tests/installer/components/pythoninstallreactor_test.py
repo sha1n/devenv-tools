@@ -9,13 +9,13 @@ from tests.testutil import test_context
 
 class PythonInstallReactorTest(unittest.TestCase):
 
-    def test_no_action_reaction(self):
+    def test_reaction_to_status_ok(self):
         reactor = PythonInstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.OK), ctx=test_context())
         self.assertEqual(len(commands), 0)
 
-    def test_install_action_reaction(self):
+    def test_reaction_to_not_found(self):
         reactor = PythonInstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.NOT_FOUND), ctx=test_context())
@@ -25,7 +25,7 @@ class PythonInstallReactorTest(unittest.TestCase):
         install_command = commands[0]
         self.assertIn(" install", str(install_command))
 
-    def test_upgrade_action_reaction(self):
+    def test_reaction_to_upgrade_required(self):
         reactor = PythonInstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.UPGRADE_REQUIRED), ctx=test_context())
@@ -34,7 +34,7 @@ class PythonInstallReactorTest(unittest.TestCase):
         upgrade_command = commands[0]
         self.assertIn(" upgrade", str(upgrade_command))
 
-    def test_downgrade_action_reaction(self):
+    def test_reaction_to_downgrade_required(self):
         reactor = PythonInstallReactor()
 
         commands = reactor.react(validation_result_with(status=Status.DOWNGRADE_REQUIRED), ctx=test_context())

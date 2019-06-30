@@ -1,6 +1,6 @@
 from inspector.api.context import Context
-from inspector.api.annotations import macos, experimental, interactive
 from inspector.api.reactor import Reactor, ReactorCommand
+from inspector.api.tags import macos, experimental, interactive
 from inspector.api.validator import ValidationResult, Status
 from installer.components.macosutil import download_and_install_commands_for
 
@@ -16,18 +16,20 @@ class Python3InstallReactor(Reactor):
         if data.status == Status.NOT_FOUND:
             commands = download_and_install_commands_for(ctx.config["installer"]["python"]["macos_package_url"])
         else:
-            ctx.logger.info("Detected Python 3 version: {} - {}!".format(data.input_data.version, data.status.name))
+            ctx.logger.info("Python 3 already installed! Detected version: {} - {}!"
+                            .format(data.input_data.version, data.status.name))
 
         return commands
 
 
 @macos
 class PythonInstallReactor(Reactor):
-    def __init__(self, formula="python"):
+    def __init__(self, formula="python2"):
         self.formula = formula
 
     def react(self, data: ValidationResult, ctx: Context):
-        ctx.logger.info("Detected Python version: {} - {}!".format(data.input_data.version, data.status.name))
+        ctx.logger.info("Python already installed! Detected version: {} - {}!"
+                        .format(data.input_data.version, data.status.name))
 
         commands = []
         if data.status == Status.NOT_FOUND:

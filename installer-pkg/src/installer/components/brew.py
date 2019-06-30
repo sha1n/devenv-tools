@@ -1,6 +1,6 @@
 from inspector.api.context import Context
-from inspector.api.annotations import macos, interactive
 from inspector.api.reactor import Reactor, ReactorCommand
+from inspector.api.tags import macos, interactive
 from inspector.api.validator import ValidationResult, Status
 from installer.components.macosutil import download_command_for
 
@@ -19,6 +19,6 @@ class HomebrewInstallReactor(Reactor):
             commands.append(download_command)
             commands.append(ReactorCommand(cmd=["ruby", "--", file_path]))
         else:
-            ctx.logger.info("Homebrew installed")
+            ctx.logger.info("Homebrew already installed")
 
         return commands

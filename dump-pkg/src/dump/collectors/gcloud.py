@@ -1,5 +1,5 @@
 from dump.collectors.files import try_copytree_if, try_copyfile, file_path, mkdir
-from inspector.util.cmd import try_capture_output, command
+from inspector.util.cmd import try_capture_output, is_command
 
 two_week_sec = 14 * 24 * 60 * 60  # days * hours * minutes * seconds
 
@@ -39,9 +39,13 @@ def _collect_config(user_home_dir, target_dir, ctx):
 
 
 def _collect_info(target_dir, ctx):
-    if command("gcloud"):
+    if is_command("gcloud"):
         try_capture_output(
             cmd=["gcloud", "info"],
+            additional_env={
+                "LANG": "en_US.UTF-8",
+                "LC_ALL": "en_US.UTF-8",
+            },
             target_dir_path=target_dir,
             file_name="gcloud_info.txt",
             logger=ctx.logger

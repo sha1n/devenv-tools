@@ -1,10 +1,10 @@
 import unittest
 
-from inspector.api.annotations import experimental, CURRENT_PLATFORM, Platform, compatible_with, interactive
 from inspector.api.collector import Collector
 from inspector.api.context import Context, Mode
 from inspector.api.executor import Executor, ExecutionSummary, ExecPlanExecutor
 from inspector.api.reactor import Reactor, ReactorCommand
+from inspector.api.tags import experimental, CURRENT_PLATFORM, Platform, target_platform, interactive
 from inspector.api.validator import Validator, ValidationResult, Status
 from tests.testutil import test_context
 
@@ -219,7 +219,7 @@ class MockCollector(Collector):
         return self.result
 
 
-@compatible_with(not_the_current_platform())
+@target_platform(not_the_current_platform())
 class PlatformInCompatible(MockCollector):
     def __init__(self):
         super().__init__("data")

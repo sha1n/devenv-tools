@@ -1,19 +1,27 @@
 import unittest
 import uuid
 
+from inspector.api.context import Context, Mode
 from inspector.api.semver import SemVer
 from inspector.cliapp import CliAppRunner
 from inspector.components.bazel import BazelInfo
 
 
-@unittest.skip  # argv passed by testing executing env screw the args parser
 class CliAppRunnerTest(unittest.TestCase):
 
     def test_contract(self):
         name = str(uuid.uuid4())
         comp_id = str(uuid.uuid4())
         probe = Probe(comp_id)
-        runner = CliAppRunner(name, "", probe.register_comps, probe.run)
+
+        # noinspection PyShadowingNames,PyUnusedLocal
+        def parse_context(name, registry, description):
+            return Context(name, registry, mode=Mode.BACKGROUND)
+
+        runner = CliAppRunner(name, "",
+                              register_components=probe.register_comps,
+                              parse_context=parse_context,
+                              run=probe.run)
 
         runner.run()
 

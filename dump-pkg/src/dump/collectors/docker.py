@@ -1,9 +1,9 @@
 from dump.collectors.files import try_copyfile, file_path, mkdir
-from inspector.util.cmd import try_capture_output, command
+from inspector.util.cmd import try_capture_output, is_command
 
 
 def collect_docker_files(user_home_dir_path, target_dir_path, ctx):
-    if command("docker"):
+    if is_command("docker"):
         ctx.logger.info("Collecting Docker information...")
 
         mkdir(target_dir_path)
