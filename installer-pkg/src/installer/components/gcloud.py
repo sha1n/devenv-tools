@@ -29,13 +29,15 @@ class GCloudConfigInstallReactor(Reactor):
 
         commands = []
         if data.status == Status.NOT_FOUND:
-            ctx.logger.info("Going to configure gcloud authentication...")
+            ctx.logger.info("Going to configure missing gcloud authentication...")
 
-            email_input = UserInput(key="gcloud_email", prompt="\nPlease enter your GCloud email address: ")
+            if not data.input_data.docker_ok:
+                commands.append(ReactorCommand(cmd=["gcloud", "auth", "configure-docker", "--quiet"]))
 
-            commands.append(ReactorCommand(cmd=["gcloud", "auth", "configure-docker"]))
-            commands.append(ReactorCommand(cmd=["gcloud", "auth", "login", email_input]))
-            commands.append(ReactorCommand(cmd=["gcloud", "auth", "application-default", "login"]))
+            if not data.input_data.auth_ok:
+                email_input = UserInput(key="gcloud_email", prompt="\nPlease enter your GCloud email address: ")
+                commands.append(ReactorCommand(cmd=["gcloud", "auth", "login", email_input]))
+                commands.append(ReactorCommand(cmd=["gcloud", "auth", "application-default", "login"]))
 
         else:
             ctx.logger.info("Gcloud authentication already configured")

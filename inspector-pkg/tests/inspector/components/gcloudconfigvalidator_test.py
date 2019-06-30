@@ -16,8 +16,29 @@ class GCloudConfigValidatorTest(unittest.TestCase):
     def test_validate_ok(self):
         validator = GCloudConfigValidator()
 
-        result = validator.validate(GCloudConfig(account="gcloud@test.com", auth_ok=True), ctx=test_context())
+        result = validator.validate(
+            input_data=GCloudConfig(account="gcloud@test.com", auth_ok=True, docker_ok=True),
+            ctx=test_context()
+        )
         self.assertEqual(Status.OK, result.status)
+
+    def test_validate_docker_not_ok(self):
+        validator = GCloudConfigValidator()
+
+        result = validator.validate(
+            GCloudConfig(account="gcloud@test.com", auth_ok=True, docker_ok=False),
+            ctx=test_context()
+        )
+        self.assertEqual(Status.NOT_FOUND, result.status)
+
+    def test_validate_auth_not_ok(self):
+        validator = GCloudConfigValidator()
+
+        result = validator.validate(
+            GCloudConfig(account="gcloud@test.com", auth_ok=False, docker_ok=True),
+            ctx=test_context()
+        )
+        self.assertEqual(Status.NOT_FOUND, result.status)
 
 
 if __name__ == '__main__':
