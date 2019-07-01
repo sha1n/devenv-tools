@@ -21,7 +21,7 @@ DISK_COMP_ID = "disk-space"
 NET_COMP_ID = "network-connectivity"
 BREW_COMP_ID = "homebrew"
 BAZEL_COMP_ID = "bazel"
-PYTHON_COMP_ID = "python"
+PYTHON_COMP_ID = "python2"
 PYTHON3_COMP_ID = "python3"
 XCODE_COMP_ID = "xcode"
 GCLOUD_COMP_ID = "gcloud"
@@ -143,7 +143,7 @@ def parse_context(name, registry: Registry, description=""):
     args = parser.parse_args()
 
     if args.components is not None:
-        components = (comp.strip() for comp in args.components.split(","))
+        components = [comp.strip() for comp in args.components.split(",")]
     else:
         components = None
 

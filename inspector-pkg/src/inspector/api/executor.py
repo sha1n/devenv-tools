@@ -155,11 +155,16 @@ class ExecutionGraph:
         for comp_id in comp_ids:
             self._add_component(comp_id)
 
+        if ctx.flags.debug:
+            self.ctx.logger.debug("Resolved execution order: {}".format(list(self.topologically_ordered_comp_ids())))
+
     def _add_deps(self, dependencies, comp_id):
         for dep in dependencies:
-            self.ctx.logger.progress("Adding dependency: {} -> {}".format(comp_id, dep))
             self.graph.add_node(dep)
-            self.graph.add_edge(dep, comp_id)
+
+            if not self.graph.has_edge(dep, comp_id):
+                self.ctx.logger.progress("Adding dependency: {} -> {}".format(comp_id, dep))
+                self.graph.add_edge(dep, comp_id)
 
             if not is_directed_acyclic_graph(self.graph):
                 raise CyclicDependencyError("Dependency {} -> {} forms a cycle!".format(comp_id, dep))
@@ -168,10 +173,13 @@ class ExecutionGraph:
 
     def _effective_component_ids(self):
         if self.ctx.components is None:
-            return self.ctx.registry.component_ids()
+            all_components = self.ctx.registry.component_ids()
+            self.ctx.logger.debug("No components have been explicitly specified. Will execute all: {}"
+                                  .format(", ".join(all_components)))
+            return all_components
         else:
-            requested = list(self.ctx.components)
-            self.ctx.logger.progress("Requested components: {}".format(requested))
+            requested = self.ctx.components
+            self.ctx.logger.info("Requested components: {}".format(", ".join(requested)))
             return requested
 
     def _add_component(self, comp_id):
@@ -179,7 +187,7 @@ class ExecutionGraph:
 
         if not self.ctx.registry.component_ids().__contains__(comp_id):
             raise MissingDependencyError("No component with id '{}' is registered! "
-                                         "You might need to add '--experimental' or '-e'")
+                                         "You might need to add '--experimental' or '-e'".format(comp_id))
 
         self._add_deps(prerequisites_of(self.ctx.registry.find_collector(comp_id)), comp_id)
         self._add_deps(prerequisites_of(self.ctx.registry.find_validator(comp_id)), comp_id)
