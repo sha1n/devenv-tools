@@ -1,7 +1,7 @@
 import unittest
 
-from inspector.api.validator import Status
-from inspector.components.hardware import HardwareInfoValidator, HardwareInfo
+from shminspector.api.validator import Status
+from shminspector.components.hardware import HardwareInfoValidator, HardwareInfo
 from tests.testutil import test_context
 
 

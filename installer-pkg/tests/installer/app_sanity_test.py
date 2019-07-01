@@ -1,6 +1,6 @@
 import unittest
 
-from installer.app import run_embedded, _inspection_context
+from shminstaller.app import run_embedded, _inspection_context
 from tests.testutil import test_context
 
 

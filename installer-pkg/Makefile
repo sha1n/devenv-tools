@@ -11,4 +11,11 @@ install:
 	pip3 install --user .
 
 uninstall:
-	pip3 uninstall -y workstation-install-sha1n
+	pip3 uninstall -y shminstaller
+
+release:
+	python3 -m pip install --user --upgrade setuptools wheel
+	python3 setup.py sdist bdist_wheel
+	python3 -m pip install --user --upgrade twine
+	python3 -m twine upload --verbose dist/*
+

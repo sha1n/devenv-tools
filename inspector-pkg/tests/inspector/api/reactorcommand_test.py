@@ -2,9 +2,9 @@ import unittest
 from unittest import mock
 from uuid import uuid4
 
-from inspector.api.context import Mode
-from inspector.api.reactor import ReactorCommand, UserInput
-from inspector.api.validator import ValidationResult, Status
+from shminspector.api.context import Mode
+from shminspector.api.reactor import ReactorCommand, UserInput
+from shminspector.api.validator import ValidationResult, Status
 from tests.testutil import test_context
 
 expected_user_input = str(uuid4())

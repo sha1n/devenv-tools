@@ -1,9 +1,9 @@
 import unittest
 
-from inspector.api.semver import SemVer
-from inspector.api.validator import ValidationResult, Status
-from inspector.components.bazel import BazelInfo
-from installer.components.bazel import BazelInstallReactor
+from shminspector.api.semver import SemVer
+from shminspector.api.validator import ValidationResult, Status
+from shminspector.components.bazel import BazelInfo
+from shminstaller.components.bazel import BazelInstallReactor
 from tests.testutil import test_context
 
 

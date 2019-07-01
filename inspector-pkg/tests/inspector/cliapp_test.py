@@ -1,10 +1,10 @@
 import unittest
 import uuid
 
-from inspector.api.context import Context, Mode
-from inspector.api.semver import SemVer
-from inspector.cliapp import CliAppRunner
-from inspector.components.bazel import BazelInfo
+from shminspector.api.context import Context, Mode
+from shminspector.api.semver import SemVer
+from shminspector.cliapp import CliAppRunner
+from shminspector.components.bazel import BazelInfo
 
 
 class CliAppRunnerTest(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 
-from inspector.api.validator import Status
-from inspector.components.disk import DiskInfoValidator, DiskInfo
+from shminspector.api.validator import Status
+from shminspector.components.disk import DiskInfoValidator, DiskInfo
 from tests.testutil import test_context
 
 

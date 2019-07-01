@@ -1,9 +1,9 @@
 import unittest
 
-from inspector.api.context import Mode
-from inspector.api.validator import ValidationResult, Status
-from inspector.components.gcloud import GCloudConfig
-from installer.components.gcloud import GCloudConfigInstallReactor
+from shminspector.api.context import Mode
+from shminspector.api.validator import ValidationResult, Status
+from shminspector.components.gcloud import GCloudConfig
+from shminstaller.components.gcloud import GCloudConfigInstallReactor
 from tests.testutil import test_context
 
 

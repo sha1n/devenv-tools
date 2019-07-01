@@ -4,7 +4,7 @@ from os.path import splitext
 
 from setuptools import setup, find_packages
 
-PKG_NAME = "workstation-install-sha1n"
+PKG_NAME = "shminstaller"
 PKG_VERSION = "0.0.1"
 
 with open("README.md", "r") as fh:
@@ -28,7 +28,7 @@ setup(
         "Operating System :: MacOS",
     ],
     install_requires=[
-        'workstation-inspector-sha1n>=0.0.1',
+        'shminspector>=0.0.1',
         'networkx>=2.2,<3',
     ],
     test_suite="tests"

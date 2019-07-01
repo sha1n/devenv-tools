@@ -1,7 +1,7 @@
 import unittest
 from uuid import uuid4
 
-from inspector.api.tags import experimental, is_experimental, is_interactive, interactive, tags, has_tag, tags_of, \
+from shminspector.api.tags import experimental, is_experimental, is_interactive, interactive, tags, has_tag, tags_of, \
     _platform_tag_name_for, Platform, CURRENT_PLATFORM, target_platform, linux, \
     is_compatible_with_current_platform, prerequisites, prerequisites_of
 

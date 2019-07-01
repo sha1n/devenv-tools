@@ -1,11 +1,11 @@
 import unittest
 
-from inspector.api.collector import Collector
-from inspector.api.context import Context, Mode
-from inspector.api.executor import Executor, ExecutionSummary, ExecPlanExecutor
-from inspector.api.reactor import Reactor, ReactorCommand
-from inspector.api.tags import experimental, CURRENT_PLATFORM, Platform, target_platform, interactive
-from inspector.api.validator import Validator, ValidationResult, Status
+from shminspector.api.collector import Collector
+from shminspector.api.context import Context, Mode
+from shminspector.api.executor import Executor, ExecutionSummary, ExecPlanExecutor
+from shminspector.api.reactor import Reactor, ReactorCommand
+from shminspector.api.tags import experimental, CURRENT_PLATFORM, Platform, target_platform, interactive
+from shminspector.api.validator import Validator, ValidationResult, Status
 from tests.testutil import test_context
 
 

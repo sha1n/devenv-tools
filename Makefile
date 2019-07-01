@@ -34,3 +34,9 @@ run-dump:
 
 run-installer:
 	python3 -m installer -m=debug --dryrun
+
+
+release:
+	make -C ./inspector-pkg release
+	make -C ./installer-pkg release
+	make -C ./dump-pkg release

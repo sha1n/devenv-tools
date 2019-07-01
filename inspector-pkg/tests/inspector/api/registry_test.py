@@ -1,6 +1,6 @@
 import unittest
 
-from inspector.api.registry import Registry
+from shminspector.api.registry import Registry
 
 
 class RegistryTest(unittest.TestCase):

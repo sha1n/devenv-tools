@@ -1,6 +1,6 @@
 import unittest
 
-from inspector.components.network import UrlConnectivityInfoCollector
+from shminspector.components.network import UrlConnectivityInfoCollector
 from tests.testutil import test_context
 
 

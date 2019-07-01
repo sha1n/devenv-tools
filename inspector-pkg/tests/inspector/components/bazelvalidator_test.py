@@ -1,8 +1,8 @@
 import unittest
 
-from inspector.api.semver import SemVer
-from inspector.api.validator import Status
-from inspector.components.bazel import BazelInfo, BazelInfoValidator
+from shminspector.api.semver import SemVer
+from shminspector.api.validator import Status
+from shminspector.components.bazel import BazelInfo, BazelInfoValidator
 from tests.testutil import test_context
 
 

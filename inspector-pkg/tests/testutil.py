@@ -1,7 +1,7 @@
 import os
 
-from inspector.api.context import Context, Mode
-from inspector.api.registry import Registry
+from shminspector.api.context import Context, Mode
+from shminspector.api.registry import Registry
 
 
 def test_context(mode=Mode.BACKGROUND) -> Context:

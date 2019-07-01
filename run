@@ -9,6 +9,6 @@ export PYTHONPATH=${SCRIPT_DIR}/inspector-pkg/src:${SCRIPT_DIR}/installer-pkg/sr
 # Expected script args are the installed python module name followed by the program arguments.
 #
 # Example:
-#   ~ run dump -m=debug
+#   ~ run dumpshmamp -m=debug
 #
 python3 -m $@

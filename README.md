@@ -12,17 +12,17 @@ Examples:
 ```bash
 
 # dump tool
-./run dump
+./run dumpshmamp
 
 # installer
-./run installer --help
-
-
-# inspector
-./run inspector --help
+./run shminstaller --help
 
 ```
 
 ## Running Tools from Any Workstation
 
 `curl https://raw.githubusercontent.com/sha1n/devenv-tools/master/standalone.sh | bash -s -- <module-name> [options]`
+
+
+## Installing 
+See individual module README files. 

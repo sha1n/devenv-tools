@@ -1,7 +1,7 @@
 import unittest
 
-from inspector.api.executor import ExecutionGraph, CyclicDependencyError, MissingDependencyError
-from inspector.api.tags import prerequisites
+from shminspector.api.executor import ExecutionGraph, CyclicDependencyError, MissingDependencyError
+from shminspector.api.tags import prerequisites
 from tests.testutil import test_context
 
 

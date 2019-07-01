@@ -2,8 +2,8 @@ import unittest
 from unittest import mock
 from uuid import uuid4
 
-from inspector.api.context import Context, Mode
-from inspector.api.registry import Registry
+from shminspector.api.context import Context, Mode
+from shminspector.api.registry import Registry
 
 random_user_input = uuid4()
 

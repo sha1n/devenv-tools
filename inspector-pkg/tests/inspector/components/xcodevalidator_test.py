@@ -1,7 +1,7 @@
 import unittest
 
-from inspector.api.validator import Status
-from inspector.components.xcode import XcodeInfo, XcodeInfoValidator
+from shminspector.api.validator import Status
+from shminspector.components.xcode import XcodeInfo, XcodeInfoValidator
 from tests.testutil import test_context
 
 

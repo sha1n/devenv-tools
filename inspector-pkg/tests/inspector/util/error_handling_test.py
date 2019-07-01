@@ -1,6 +1,6 @@
 import unittest
 
-from inspector.util.error_handling import try_wrap, raised_to_none_wrapper
+from shminspector.util.error_handling import try_wrap, raised_to_none_wrapper
 
 
 class ErrorsTest(unittest.TestCase):

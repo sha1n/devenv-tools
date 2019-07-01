@@ -1,9 +1,9 @@
 import unittest
 
-from inspector.api.context import Mode
-from inspector.api.validator import ValidationResult, Status
-from inspector.components.xcode import XcodeInfo
-from installer.components.xcode import XcodeInstallReactor
+from shminspector.api.context import Mode
+from shminspector.api.validator import ValidationResult, Status
+from shminspector.components.xcode import XcodeInfo
+from shminstaller.components.xcode import XcodeInstallReactor
 from tests.testutil import test_context
 
 

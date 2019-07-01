@@ -1,7 +1,7 @@
 import unittest
 
-from inspector.api.validator import Status
-from inspector.components.gcloud import GCloudConfigValidator, GCloudConfig
+from shminspector.api.validator import Status
+from shminspector.components.gcloud import GCloudConfigValidator, GCloudConfig
 from tests.testutil import test_context
 
 

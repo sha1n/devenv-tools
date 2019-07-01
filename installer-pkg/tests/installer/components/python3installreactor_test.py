@@ -1,9 +1,9 @@
 import unittest
 
-from inspector.api.semver import SemVer
-from inspector.api.validator import ValidationResult, Status
-from inspector.components.python import PythonInfo
-from installer.components.python import Python3InstallReactor
+from shminspector.api.semver import SemVer
+from shminspector.api.validator import ValidationResult, Status
+from shminspector.components.python import PythonInfo
+from shminstaller.components.python import Python3InstallReactor
 from tests.testutil import test_context
 
 
