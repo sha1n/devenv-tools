@@ -1,28 +1,34 @@
 [![Build Status](https://travis-ci.org/sha1n/devenv-tools.svg?branch=master)](https://travis-ci.org/sha1n/devenv-tools)
 
 # devenv-tools
+This repository contains tools for development workstation configuration management.
 
-## Running Tools From Source
+## Tools
 
+### Installer 
+The installer (package name 'shminstaller') is a Python 3 package that provides a CLI for inspecting current workstation 
+state, installing missing components and configuring specific tools.
+
+#### How To Install
 ```bash
-./run <module-name> [options]
+pip3 install --user shminstaller
 ```
 
-Examples:
+#### How To Run
 ```bash
+python3 -m shminstaller
+``` 
 
-# dump tool
-./run dumpshmamp
+### Dump Tool 
+The dump tool (package name 'dumpshmamp') is a Python 3 package that provides a CLI for collecting data about installed
+development tools from a workstation and packaging them into one tarball.
 
-# installer
-./run shminstaller --help
-
+#### How To Install
+```bash
+pip3 install --user dumpshmamp
 ```
 
-## Running Tools from Any Workstation
-
-`curl https://raw.githubusercontent.com/sha1n/devenv-tools/master/standalone.sh | bash -s -- <module-name> [options]`
-
-
-## Installing 
-See individual module README files. 
+#### How To Run
+```bash
+python3 -m dumpshmamp
+``` 
