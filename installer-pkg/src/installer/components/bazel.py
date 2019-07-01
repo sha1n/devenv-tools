@@ -1,11 +1,12 @@
 from inspector.api.context import Context
 from inspector.api.reactor import Reactor, ReactorCommand
-from inspector.api.tags import macos, experimental
+from inspector.api.tags import macos, experimental, prerequisites
 from inspector.api.validator import ValidationResult, Status
 
 
 @macos
 @experimental
+@prerequisites("homebrew")
 class BazelInstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):

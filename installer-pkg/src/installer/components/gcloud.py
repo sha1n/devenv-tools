@@ -1,12 +1,13 @@
 from inspector.api.context import Context
 from inspector.api.reactor import Reactor, ReactorCommand, UserInput
-from inspector.api.tags import macos, interactive, experimental
+from inspector.api.tags import macos, interactive, experimental, prerequisites
 from inspector.api.validator import ValidationResult, Status
 
 
 @macos
 @interactive
 @experimental
+@prerequisites("homebrew")
 class GCloudInstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):
@@ -23,6 +24,7 @@ class GCloudInstallReactor(Reactor):
 @macos
 @interactive
 @experimental
+@prerequisites("gcloud", "network-connectivity")
 class GCloudConfigInstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):

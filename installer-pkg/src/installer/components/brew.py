@@ -1,12 +1,13 @@
 from inspector.api.context import Context
 from inspector.api.reactor import Reactor, ReactorCommand
-from inspector.api.tags import macos, interactive
+from inspector.api.tags import macos, interactive, prerequisites
 from inspector.api.validator import ValidationResult, Status
 from installer.components.macosutil import download_command_for
 
 
 @macos
 @interactive
+@prerequisites("disk-space", "network-connectivity")
 class HomebrewInstallReactor(Reactor):
 
     def react(self, data: ValidationResult, ctx: Context):
