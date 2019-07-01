@@ -1,9 +1,12 @@
 import subprocess
 from collections import namedtuple
 
+from networkx import DiGraph, is_directed_acyclic_graph, topological_sort
+
 from inspector.api.context import Context, Mode
 from inspector.api.reactor import ReactorCommand
-from inspector.api.tags import is_experimental, stringify, is_interactive, is_compatible_with_current_platform
+from inspector.api.tags import is_experimental, stringify, is_interactive, is_compatible_with_current_platform, \
+    prerequisites_of
 from inspector.api.validator import Status
 from inspector.util.cmd import execute_with_streamed_output
 
@@ -48,7 +51,7 @@ class ExecPlanExecutor:
     def execute(self, ctx: Context):
         index = 0
 
-        for comp_id in _effective_component_ids(ctx):
+        for comp_id in _execution_order_comp_ids(ctx):
             collector = _handler_or_none(ctx.registry.find_collector(comp_id), ctx)
 
             if collector is not None:
@@ -79,7 +82,7 @@ class Executor:
     def _exec(self, handle_command, ctx: Context):
         total = 0
         problems = 0
-        for comp_id in _effective_component_ids(ctx):
+        for comp_id in _execution_order_comp_ids(ctx):
             collector = _handler_or_none(ctx.registry.find_collector(comp_id), ctx)
             if collector is not None:
                 data = collector.collect(ctx)
@@ -137,8 +140,59 @@ def _handler_or_none(handler, ctx):
     return handler
 
 
-def _effective_component_ids(ctx):
-    if ctx.components is None:
-        return ctx.registry.component_ids()
-    else:
-        return ctx.components
+def _execution_order_comp_ids(ctx):
+    return ExecutionGraph(ctx).topologically_ordered_comp_ids()
+
+
+class ExecutionGraph:
+    def __init__(self, ctx: Context):
+        self.graph = DiGraph()
+        self.ctx = ctx
+
+        ctx.logger.info("Preparing execution plan...")
+
+        comp_ids = self._effective_component_ids()
+        for comp_id in comp_ids:
+            self._add_component(comp_id)
+
+    def _add_deps(self, dependencies, comp_id):
+        for dep in dependencies:
+            self.ctx.logger.progress("Adding dependency: {} -> {}".format(comp_id, dep))
+            self.graph.add_node(dep)
+            self.graph.add_edge(dep, comp_id)
+
+            if not is_directed_acyclic_graph(self.graph):
+                raise CyclicDependencyError("Dependency {} -> {} forms a cycle!".format(comp_id, dep))
+
+            self._add_component(dep)
+
+    def _effective_component_ids(self):
+        if self.ctx.components is None:
+            return self.ctx.registry.component_ids()
+        else:
+            requested = list(self.ctx.components)
+            self.ctx.logger.progress("Requested components: {}".format(requested))
+            return requested
+
+    def _add_component(self, comp_id):
+        self.graph.add_node(comp_id)
+
+        if not self.ctx.registry.component_ids().__contains__(comp_id):
+            raise MissingDependencyError("No component with id '{}' is registered! "
+                                         "You might need to add '--experimental' or '-e'")
+
+        self._add_deps(prerequisites_of(self.ctx.registry.find_collector(comp_id)), comp_id)
+        self._add_deps(prerequisites_of(self.ctx.registry.find_validator(comp_id)), comp_id)
+        for reactor in self.ctx.registry.find_reactors(comp_id):
+            self._add_deps(prerequisites_of(reactor), comp_id)
+
+    def topologically_ordered_comp_ids(self):
+        return topological_sort(self.graph)
+
+
+class CyclicDependencyError(BaseException):
+    pass
+
+
+class MissingDependencyError(BaseException):
+    pass

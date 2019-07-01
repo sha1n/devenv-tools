@@ -29,6 +29,7 @@ setup(
     ],
     install_requires=[
         'workstation-inspector-sha1n>=0.0.1',
+        'networkx>=2.2,<3',
     ],
     test_suite="tests"
 )

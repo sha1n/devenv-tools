@@ -120,6 +120,34 @@ def _platform_tag_name_for(p: Platform):
 
 
 #
+# Dependencies
+#
+
+_PREREQ_TAG_PREFIX = "@requires:"
+
+
+def prerequisites(*comp_ids):
+    return _set_tags((_prerequisite_tag_name_for(comp_id) for comp_id in comp_ids))
+
+
+def prerequisites_of(obj):
+    if obj is None:
+        return set()
+    else:
+        all_tags = tags_of(obj)
+        return set(
+            _strip_prerequisite_prefix_for(prereq) for prereq in all_tags if prereq.startswith(_PREREQ_TAG_PREFIX))
+
+
+def _prerequisite_tag_name_for(comp_id):
+    return "{}{}".format(_PREREQ_TAG_PREFIX, comp_id)
+
+
+def _strip_prerequisite_prefix_for(tag):
+    return tag[len(_PREREQ_TAG_PREFIX):]
+
+
+#
 # Utilities
 #
 def stringify(obj):

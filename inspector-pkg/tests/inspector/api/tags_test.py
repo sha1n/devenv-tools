@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from inspector.api.tags import experimental, is_experimental, is_interactive, interactive, tags, has_tag, tags_of, \
     _platform_tag_name_for, Platform, CURRENT_PLATFORM, target_platform, linux, \
-    is_compatible_with_current_platform
+    is_compatible_with_current_platform, prerequisites, prerequisites_of
 
 TAG_A = str(uuid4())
 TAG_B = str(uuid4())
@@ -46,8 +46,19 @@ class TagsTest(unittest.TestCase):
 
         self.assertFalse(is_interactive(obj))
 
+    def test_prerequisites_on_tagged_object(self):
+        obj = TaggedDummy()
+
+        self.assertEqual({COMP_ID_A, COMP_ID_B}, prerequisites_of(obj))
+
+    def test_prerequisites_on_untagged_object(self):
+        obj = UnTaggedDummy()
+
+        self.assertEqual(set(), prerequisites_of(obj))
+
 
 @tags(TAG_A, TAG_B)
+@prerequisites(COMP_ID_A, COMP_ID_B)
 @interactive
 @experimental
 class TaggedDummy:
