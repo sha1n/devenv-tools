@@ -19,7 +19,7 @@ class GCloudConfigInstallReactorTest(unittest.TestCase):
         reactor = GCloudConfigInstallReactor()
 
         commands = reactor.react(
-            data=validation_result_with(status=Status.NOT_FOUND, docker_ok=False, auth_ok=False),
+            data=validation_not_found_result(),
             ctx=test_context(mode=Mode.INTERACTIVE)
         )
 
@@ -66,6 +66,10 @@ class GCloudConfigInstallReactorTest(unittest.TestCase):
 
 def validation_result_with(status: Status, auth_ok=True, docker_ok=True):
     return ValidationResult(GCloudConfig(account="acc", auth_ok=auth_ok, docker_ok=docker_ok), status)
+
+
+def validation_not_found_result():
+    return ValidationResult(None, Status.NOT_FOUND)
 
 
 if __name__ == '__main__':
