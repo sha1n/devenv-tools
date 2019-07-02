@@ -3,7 +3,7 @@ import uuid
 
 from shminspector.api.context import Context, Mode
 from shminspector.api.semver import SemVer
-from shminspector.cliapp import CliAppRunner
+from shminstaller.cliapp import CliAppRunner
 from shminspector.components.bazel import BazelInfo
 
 

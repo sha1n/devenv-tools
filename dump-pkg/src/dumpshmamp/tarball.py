@@ -10,7 +10,7 @@ from dumpshmamp.collectors.env import EnvDataCollector
 from dumpshmamp.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
 from shminspector.api.context import Context
 from shminspector.api.registry import Registry
-from shminspector.cliapp import run_safe
+from shminstaller.cliapp import run_safe
 
 platform.uname()
 user_home_dir_path = os.path.expanduser("~")
