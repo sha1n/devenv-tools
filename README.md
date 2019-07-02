@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/sha1n/devenv-tools.svg?branch=master)](https://travis-ci.org/sha1n/devenv-tools)
 
 # devenv-tools
-This repository contains tools for development workstation configuration management.
+This repository contains tools for development workstation configuration management. *Currently only MacOS is supported*
 
 ## Tools
 

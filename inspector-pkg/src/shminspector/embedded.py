@@ -6,6 +6,7 @@ from shminspector.components.bazel import BazelInfoCollector, BazelInfoValidator
 from shminspector.components.brew import HomebrewCommandCollectorValidator
 from shminspector.components.debugreactor import DebugReactor
 from shminspector.components.disk import DiskInfoCollector, DiskInfoValidator
+from shminspector.components.docker import DockerInfoCollector, DockerInfoValidator
 from shminspector.components.gcloud import GCloudCommandCollectorValidator, GCloudConfigCollector, \
     GCloudConfigValidator
 from shminspector.components.hardware import HardwareInfoValidator, HardwareInfoCollector
@@ -56,6 +57,11 @@ def register_components(registry: Registry):
     registry.register_collector(GCLOUD_CONFIG_COMP_ID, GCloudConfigCollector())
     registry.register_validator(GCLOUD_CONFIG_COMP_ID, GCloudConfigValidator())
     registry.register_reactor(GCLOUD_CONFIG_COMP_ID, log_reactor)
+
+    registry.register_collector(DOCKER_COMP_ID, DockerInfoCollector())
+    registry.register_validator(DOCKER_COMP_ID, DockerInfoValidator())
+    registry.register_reactor(DOCKER_COMP_ID, log_reactor)
+
 
 
 def run_embedded(ctx):

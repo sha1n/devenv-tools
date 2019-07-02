@@ -16,6 +16,7 @@ class Python3InstallReactor(Reactor):
         commands = []
         if data.status == Status.NOT_FOUND:
             commands = download_and_install_commands_for(ctx.config["installer"]["python"]["macos_package_url"])
+            commands.append(ReactorCommand(["/Applications/Python 3.6/Install Certificates.command"]))
         else:
             ctx.logger.info("Python 3 already installed! Detected version: {} - {}!"
                             .format(data.input_data.version, data.status.name))

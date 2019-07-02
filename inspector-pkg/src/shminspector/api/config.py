@@ -16,6 +16,9 @@ _DEFAULT_CONFIG = {
     "installer": {
         "python": {
             "macos_package_url": "https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg"
+        },
+        "docker": {
+            "macos_package_url": "https://download.docker.com/mac/stable/Docker.dmg"
         }
     }
 }

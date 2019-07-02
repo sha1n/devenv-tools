@@ -7,6 +7,7 @@ from shminspector.components import *
 from shminstaller.cliapp import CliAppRunner
 from shminstaller.components.bazel import BazelInstallReactor
 from shminstaller.components.brew import HomebrewInstallReactor
+from shminstaller.components.docker import DockerInstallReactor
 from shminstaller.components.gcloud import GCloudInstallReactor, GCloudConfigInstallReactor
 from shminstaller.components.python import PythonInstallReactor, Python3InstallReactor
 from shminstaller.components.xcode import XcodeInstallReactor
@@ -22,7 +23,7 @@ def register_components(registry: Registry):
     registry.register_reactor(XCODE_COMP_ID, XcodeInstallReactor())
     registry.register_reactor(GCLOUD_COMP_ID, GCloudInstallReactor())
     registry.register_reactor(GCLOUD_CONFIG_COMP_ID, GCloudConfigInstallReactor())
-
+    registry.register_reactor(inspector.DOCKER_COMP_ID, DockerInstallReactor())
 
 def _inspection_context():
     registry = Registry()
