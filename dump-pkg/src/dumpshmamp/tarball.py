@@ -10,7 +10,6 @@ from dumpshmamp.collectors.env import EnvDataCollector
 from dumpshmamp.collectors.jetbrains import JetBrainsProductDataCollector, JetBrainsProductInfo
 from shminspector.api.context import Context
 from shminspector.api.registry import Registry
-from shminstaller.cliapp import run_safe
 
 platform.uname()
 user_home_dir_path = os.path.expanduser("~")
@@ -164,3 +163,12 @@ def resolve_output_file_path(args):
     else:
         os.makedirs(default_target_dir_path, exist_ok=True)
         return "{}/envdump-{}-{}.tar.gz".format(default_target_dir_path, username, datetime.now().isoformat())
+
+
+def run_safe(ctx: Context, fn):
+    try:
+        fn(ctx)
+    except Exception as err:
+        ctx.logger.error(err)
+        ctx.logger.failure("Unexpected error - exiting :(")
+        exit(1)
