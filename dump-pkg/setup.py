@@ -5,7 +5,7 @@ from os.path import splitext
 from setuptools import setup, find_packages
 
 PKG_NAME = "dumpshmamp"
-PKG_VERSION = "0.0.4"
+PKG_VERSION = "0.0.5"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -28,7 +28,7 @@ setup(
         "Operating System :: MacOS",
     ],
     install_requires=[
-        'shminspector>=0.0.3',
+        'shminspector>=0.0.4',
     ],
     test_suite="tests"
 )
