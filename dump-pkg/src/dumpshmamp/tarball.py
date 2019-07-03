@@ -26,41 +26,29 @@ def _prepare_env_info_file(ctx):
     env.collect()
 
 
-def _prepare_intellij_info_files(ctx):
-    intellij_target_dir_path = "%s/intellij" % archive_content_dir_path
+def _jetbrains_product_info_collector_for(product_name, log_dir_segment=None, pref_dir_segment=None):
+    def prepare_files(ctx):
+        target_dir_path = os.path.join(archive_content_dir_path, product_name.lower())
 
-    intellij = JetBrainsProductDataCollector(
-        product_info=JetBrainsProductInfo(name="IntelliJ", log_dir_segment="Idea", pref_dir_segment="Idea"),
-        user_home_dir_path=user_home_dir_path,
-        target_dir_path=intellij_target_dir_path,
-        ctx=ctx
-    )
-    intellij.collect()
+        collector = JetBrainsProductDataCollector(
+            product_info=JetBrainsProductInfo(
+                name=product_name,
+                log_dir_segment=log_dir_segment if log_dir_segment is not None else product_name,
+                pref_dir_segment=pref_dir_segment if pref_dir_segment is not None else product_name
+            ),
+            user_home_dir_path=user_home_dir_path,
+            target_dir_path=target_dir_path,
+            ctx=ctx
+        )
+        collector.collect()
 
-
-def _prepare_goland_info_files(ctx):
-    goland_target_dir_path = "{}/goland".format(archive_content_dir_path)
-
-    goland = JetBrainsProductDataCollector(
-        product_info=JetBrainsProductInfo(name="GoLand", log_dir_segment="GoLand", pref_dir_segment="GoLand"),
-        user_home_dir_path=user_home_dir_path,
-        target_dir_path=goland_target_dir_path,
-        ctx=ctx
-    )
-
-    goland.collect()
+    return prepare_files
 
 
-def _prepare_pycharm_info_files(ctx):
-    pycharm_target_dir_path = "{}/pycharm".format(archive_content_dir_path)
-
-    pycharm = JetBrainsProductDataCollector(
-        product_info=JetBrainsProductInfo(name="PyCharm", log_dir_segment="PyCharm", pref_dir_segment="PyCharm"),
-        user_home_dir_path=user_home_dir_path,
-        target_dir_path=pycharm_target_dir_path,
-        ctx=ctx
-    )
-    pycharm.collect()
+_prepare_intellij_info_files = _jetbrains_product_info_collector_for("IntelliJ", "Idea", "Idea")
+_prepare_webstore_info_files = _jetbrains_product_info_collector_for("WebStorm")
+_prepare_goland_info_files = _jetbrains_product_info_collector_for("GoLand")
+_prepare_pycharm_info_files = _jetbrains_product_info_collector_for("PyCharm")
 
 
 def _create_dump_archive(ctx):
@@ -104,6 +92,7 @@ def tarball():
             context,
             _prepare_env_info_file,
             _prepare_intellij_info_files,
+            _prepare_webstore_info_files,
             _prepare_goland_info_files,
             _prepare_pycharm_info_files,
         )
