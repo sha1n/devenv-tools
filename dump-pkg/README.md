@@ -1,7 +1,7 @@
 
 # Install
 ```bash
-pip3 install --user dumpshmamp --install-option="--install-scripts=/usr/local/bin"
+pip3 install --user envdump-sha1n --install-option="--install-scripts=/usr/local/bin"
 ```
 
 # Take a dump file

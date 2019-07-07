@@ -11,7 +11,7 @@ install:
 	pip3 install --user . --install-option="--install-scripts=/usr/local/bin"
 
 uninstall:
-	pip3 uninstall -y shminstaller
+	pip3 uninstall -y envinstaller-sha1n
 
 release:
 	python3 -m pip install --user --upgrade setuptools wheel

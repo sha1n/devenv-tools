@@ -11,7 +11,7 @@ install:
 	pip3 install --user . --install-option="--install-scripts=/usr/local/bin"
 
 uninstall:
-	pip3 uninstall -y dumpshmamp
+	pip3 uninstall -y envdump-sha1n
 
 
 release:

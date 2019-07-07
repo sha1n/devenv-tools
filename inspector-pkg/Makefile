@@ -15,7 +15,7 @@ ciinstall:
 	pip3 install .
 
 uninstall:
-	pip3 uninstall -y shminspector
+	pip3 uninstall -y envinspector-sha1n
 
 release:
 	python3 -m pip install --user --upgrade setuptools wheel

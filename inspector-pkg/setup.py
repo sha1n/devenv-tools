@@ -4,8 +4,8 @@ from os.path import splitext
 
 from setuptools import setup, find_packages
 
-PKG_NAME = "shminspector"
-PKG_VERSION = "0.0.4"
+PKG_NAME = "envinspector-sha1n"
+PKG_VERSION = "0.0.1"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
