@@ -20,7 +20,7 @@ class Python3InstallReactorTest(unittest.TestCase):
 
         commands = reactor.react(validation_result_with(status=Status.NOT_FOUND), ctx=test_context())
 
-        self.assertEqual(3, len(commands))
+        self.assertEqual(4, len(commands))
 
         download_command = commands[0]
         self.assertIn("curl -s", str(download_command))
@@ -28,8 +28,11 @@ class Python3InstallReactorTest(unittest.TestCase):
         install_command = commands[1]
         self.assertIn("sudo installer", str(install_command))
 
-        install_command = commands[2]
-        self.assertIn("/Install Certificates.command", str(install_command))
+        install_certs_command = commands[2]
+        self.assertIn("/Install Certificates.command", str(install_certs_command))
+
+        update_shell_profile_command = commands[3]
+        self.assertIn("/Update Shell Profile.command", str(update_shell_profile_command))
 
     def test_reaction_to_upgrade_required(self):
         reactor = Python3InstallReactor()
