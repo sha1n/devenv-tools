@@ -5,7 +5,7 @@ from os.path import splitext
 from setuptools import setup, find_packages
 
 PKG_NAME = "dumpshmamp"
-PKG_VERSION = "0.0.5"
+PKG_VERSION = "0.0.6"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -30,5 +30,10 @@ setup(
     install_requires=[
         'shminspector>=0.0.4',
     ],
+    entry_points={
+        "console_scripts": [
+            "envdump=dumpshmamp.app:run"
+        ],
+    },
     test_suite="tests"
 )

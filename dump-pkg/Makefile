@@ -8,7 +8,7 @@ test:
 	python3 setup.py test
 
 install:
-	pip3 install --user .
+	pip3 install --user . --install-option="--install-scripts=/usr/local/bin"
 
 uninstall:
 	pip3 uninstall -y dumpshmamp

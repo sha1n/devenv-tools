@@ -11,12 +11,12 @@ state, installing missing components and configuring specific tools.
 
 #### How To Install
 ```bash
-pip3 install --user shminstaller
+pip3 install --user shminstaller --install-option="--install-scripts=/usr/local/bin"
 ```
 
 #### How To Run
 ```bash
-python3 -m shminstaller
+$ envinstall
 ``` 
 
 ### Dump Tool 
@@ -25,10 +25,10 @@ development tools from a workstation and packaging them into one tarball.
 
 #### How To Install
 ```bash
-pip3 install --user dumpshmamp
+pip3 install --user dumpshmamp --install-option="--install-scripts=/usr/local/bin"
 ```
 
 #### How To Run
 ```bash
-python3 -m dumpshmamp
+$ envdump
 ``` 

@@ -1,3 +1,3 @@
-from dumpshmamp.tarball import tarball
+from dumpshmamp.app import run
 
-tarball()
+run()

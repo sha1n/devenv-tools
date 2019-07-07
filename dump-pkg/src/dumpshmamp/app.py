@@ -82,7 +82,7 @@ def _safe(ctx, *methods):
         raise Exception("All data collection tasks have failed...")
 
 
-def tarball():
+def run():
     ctx = _parse_context()  # fixme shai: use executor where possible
 
     def dump(context):

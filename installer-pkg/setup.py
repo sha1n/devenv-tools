@@ -5,7 +5,7 @@ from os.path import splitext
 from setuptools import setup, find_packages
 
 PKG_NAME = "shminstaller"
-PKG_VERSION = "0.0.5"
+PKG_VERSION = "0.0.6"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -31,5 +31,10 @@ setup(
         'shminspector>=0.0.4',
         'networkx>=2.2,<3',
     ],
+    entry_points={
+        "console_scripts": [
+            "envinstall=shminstaller.app:run"
+        ],
+    },
     test_suite="tests"
 )
