@@ -11,7 +11,7 @@ install:
 	pip3 install --user .
 
 uninstall:
-	pip3 uninstall -y dumpshamamp
+	pip3 uninstall -y dumpshmamp
 
 
 release:
